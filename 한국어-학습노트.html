@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="한국어ノート">
+<meta name="theme-color" content="#0f172a">
+<title>한국어 学習ノート</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:#0f172a;color:#e2e8f0;font-family:'Noto Sans JP','Noto Sans KR',sans-serif;min-height:100vh;overflow-x:hidden}
+input,button,label,select{font-family:'Noto Sans JP','Noto Sans KR',sans-serif}
+.bg1{position:fixed;top:-120px;right:-80px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(99,102,241,.15) 0%,transparent 70%);pointer-events:none;z-index:0}
+.bg2{position:fixed;bottom:-100px;left:-60px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(20,184,166,.12) 0%,transparent 70%);pointer-events:none;z-index:0}
+header{display:flex;align-items:center;justify-content:space-between;padding:20px 20px 10px;position:relative;z-index:1}
+.logo{font-size:26px;font-weight:900;background:linear-gradient(135deg,#818cf8,#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo-sub{font-size:15px;color:#94a3b8;font-weight:500;margin-left:8px}
+.word-count{font-size:13px;color:#64748b;background:#1e293b;padding:4px 12px;border-radius:20px;border:1px solid #334155}
+nav{display:flex;gap:4px;padding:0 16px 12px;position:relative;z-index:1}
+.tab-btn{flex:1;padding:10px 0;border-radius:12px;border:none;background:transparent;color:#64748b;font-weight:600;font-size:14px;cursor:pointer;transition:all .2s}
+.tab-btn.active{background:linear-gradient(135deg,#4f46e5,#0ea5e9);color:#fff;box-shadow:0 4px 12px rgba(79,70,229,.35)}
+main{padding:0 16px 40px;position:relative;z-index:1}
+.section{display:none}.section.active{display:block}
+.card{background:#1e293b;border-radius:18px;padding:20px 18px;margin-bottom:16px;border:1px solid #334155}
+.card-sm{background:#1e293b;border-radius:14px;padding:14px 16px;margin-bottom:16px;border:1px solid #334155}
+.card-title{font-weight:700;font-size:16px;margin-bottom:14px;color:#f1f5f9}
+.form-group{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+label.field-label{font-size:12px;color:#64748b;font-weight:600;letter-spacing:.05em}
+input[type=text],input[type=date],input[type=number],select{background:#0f172a;border:1px solid #334155;border-radius:10px;padding:10px 14px;color:#f1f5f9;font-size:15px;outline:none;width:100%}
+input[type=number]{width:80px}
+select option{background:#1e293b}
+.btn-primary{background:linear-gradient(135deg,#4f46e5,#0ea5e9);color:#fff;border:none;border-radius:10px;padding:11px 22px;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 4px 12px rgba(79,70,229,.3)}
+.btn-ghost{background:transparent;color:#94a3b8;border:1px solid #334155;border-radius:10px;padding:11px 22px;font-weight:600;font-size:14px;cursor:pointer}
+.btn-sm{background:#334155;color:#cbd5e1;border:none;border-radius:7px;padding:5px 12px;font-size:12px;cursor:pointer;font-weight:600}
+.btn-danger{background:#7f1d1d;color:#fca5a5}
+.btn-row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+/* Category chips */
+.cat-scroll{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px;scrollbar-width:none}
+.cat-scroll::-webkit-scrollbar{display:none}
+.cat-chip{flex-shrink:0;padding:6px 14px;border-radius:20px;border:1.5px solid #334155;background:#1e293b;color:#94a3b8;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s}
+.cat-chip.active{background:linear-gradient(135deg,#4f46e5,#0ea5e9);color:#fff;border-color:transparent;box-shadow:0 2px 8px rgba(79,70,229,.3)}
+/* Level summary */
+.level-summary{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.level-chip{display:flex;align-items:center;gap:5px;background:#1e293b;border:1.5px solid #334155;border-radius:20px;padding:6px 12px;cursor:pointer;transition:all .2s;font-size:13px;font-weight:700}
+.search-wrap{display:flex;align-items:center;gap:8px;background:#1e293b;border-radius:12px;padding:10px 14px;margin-bottom:12px;border:1px solid #334155}
+.search-wrap input{background:transparent;border:none;outline:none;color:#f1f5f9;font-size:15px;flex:1}
+.word-list{display:flex;flex-direction:column;gap:10px}
+.word-card{background:#1e293b;border-radius:14px;padding:14px 16px;border:1px solid #334155}
+.word-card-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.korean{font-size:20px;font-weight:800;color:#818cf8;letter-spacing:-.01em}
+.japanese{font-size:15px;color:#94a3b8}
+.memo-line{font-size:13px;color:#64748b;margin-bottom:8px}
+.cat-tag{font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;background:#312e81;color:#a5b4fc;margin-bottom:6px;display:inline-block}
+.word-card-bot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}
+.date-tag{font-size:11px;color:#475569;background:#0f172a;padding:3px 8px;border-radius:6px;border:1px solid #1e293b}
+.stamp-btn{background:transparent;border:none;cursor:pointer;font-size:18px;padding:2px;border-radius:6px;transition:transform .15s;line-height:1}
+.stamp-btn.active{transform:scale(1.2)}
+.speak-btn{background:transparent;border:none;cursor:pointer;font-size:18px;padding:2px 4px;border-radius:6px;line-height:1;transition:transform .15s;flex-shrink:0}
+.divider{width:1px;height:16px;background:#334155;margin:0 2px}
+.empty{text-align:center;color:#475569;padding:30px 0;font-size:14px}
+/* Category manager */
+.cat-manage-row{display:flex;gap:6px;align-items:center}
+.cat-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.cat-item{display:flex;align-items:center;gap:6px;background:#0f172a;border:1px solid #334155;border-radius:20px;padding:5px 12px;font-size:13px}
+.cat-item button{background:transparent;border:none;color:#64748b;cursor:pointer;font-size:14px;padding:0 2px;line-height:1}
+/* Backup */
+.backup-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.backup-note{font-size:11px;color:#475569;margin-top:6px}
+/* Translate */
+.btn-translate{background:linear-gradient(135deg,#0f766e,#0284c7);color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.btn-translate:disabled{opacity:.5;cursor:not-allowed}
+.translate-hint{font-size:11px;color:#475569;margin-top:4px}
+/* Test */
+.mode-btns{display:flex;gap:8px;margin-bottom:16px}
+.mode-btn{flex:1;padding:12px 8px;border-radius:12px;border:2px solid #334155;background:#0f172a;color:#94a3b8;font-weight:700;font-size:13px;cursor:pointer;transition:all .2s;line-height:1.4}
+.mode-btn.active{background:linear-gradient(135deg,#312e81,#0c4a6e);border:2px solid #818cf8;color:#e0e7ff;box-shadow:0 4px 12px rgba(129,140,248,.25)}
+.lf-scroll{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.lf-btn{padding:6px 12px;border-radius:20px;border:1.5px solid #334155;background:#0f172a;color:#94a3b8;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+.lf-btn.active{background:#1e293b;color:#f1f5f9;border-color:#818cf8}
+.progress-bar{height:5px;background:#0f172a;border-radius:99px;overflow:hidden;margin-bottom:10px}
+.progress-fill{height:100%;background:linear-gradient(90deg,#4f46e5,#38bdf8);border-radius:99px;transition:width .4s ease}
+.test-counter{font-size:12px;color:#64748b;text-align:right;margin-bottom:20px}
+.test-q-row{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:4px}
+.test-question{font-size:28px;font-weight:900;text-align:center;color:#f1f5f9;line-height:1.3}
+.test-memo{font-size:12px;color:#64748b;text-align:center;margin-bottom:8px}
+input.test-input{font-size:20px;text-align:center;margin-top:16px;width:100%}
+.result-banner{border-radius:10px;padding:12px 16px;font-weight:700;font-size:16px;margin-top:12px;display:flex;align-items:center;justify-content:center;gap:10px}
+.result-banner.correct{background:#166534}
+.result-banner.wrong{background:#7f1d1d}
+.score-box{text-align:center;padding:20px 0}
+.score-pct{font-size:64px;font-weight:900;background:linear-gradient(135deg,#818cf8,#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+.score-detail{margin-top:8px;font-size:16px;font-weight:600}
+.score-note{font-size:12px;color:#64748b;margin-top:6px}
+.wrong-list{margin-top:20px}
+.wrong-title{font-weight:700;margin-bottom:8px;color:#ef4444}
+.wrong-item{background:#0f172a;border-radius:10px;padding:10px 14px;margin-bottom:8px;border:1px solid #450a0a}
+.wrong-item .your-ans{color:#f87171;font-size:13px}
+.stat-chips{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.stat-chip{display:flex;align-items:center;gap:10px;border-radius:12px;padding:10px 14px;flex:1;min-width:80px}
+.stat-chip .num{font-weight:800;font-size:20px;line-height:1}
+.stat-chip .lbl{color:#94a3b8;font-size:11px}
+.level-bar{height:10px;border-radius:99px;overflow:hidden;display:flex;background:#0f172a}
+.level-bar-seg{height:100%;transition:width .5s}
+.date-group{margin-bottom:20px}
+.date-group-header{font-size:13px;font-weight:700;color:#64748b;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.badge{background:#1e293b;color:#818cf8;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:700}
+.log-item{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid #1e293b;flex-wrap:wrap;gap:6px}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);color:#fff;padding:10px 24px;border-radius:12px;font-weight:700;font-size:14px;z-index:999;box-shadow:0 8px 24px rgba(0,0,0,.4);white-space:nowrap;display:none;transition:opacity .3s}
+</style>
+</head>
+<body>
+<div class="bg1"></div><div class="bg2"></div>
+
+<header>
+  <div style="display:flex;align-items:baseline">
+    <span class="logo">한국어</span><span class="logo-sub">学習ノート</span>
+  </div>
+  <div class="word-count" id="wordCount">0語</div>
+</header>
+
+<nav>
+  <button class="tab-btn active" onclick="switchTab('vocab')">単語帳</button>
+  <button class="tab-btn" onclick="switchTab('test')">テスト</button>
+  <button class="tab-btn" onclick="switchTab('record')">記録</button>
+</nav>
+
+<main>
+<!-- ===== 単語帳 ===== -->
+<div id="sec-vocab" class="section active">
+
+  <!-- カテゴリ横スクロール -->
+  <div class="cat-scroll" id="catScroll"></div>
+
+  <!-- 習熟度フィルター -->
+  <div class="level-summary" id="levelSummary"></div>
+
+  <!-- 入力フォーム -->
+  <div class="card">
+    <div class="card-title" id="formTitle">＋ 単語を追加</div>
+    <div class="form-group">
+      <label class="field-label">韓国語 *</label>
+      <div style="display:flex;gap:6px;align-items:center">
+        <input type="text" id="fKorean" placeholder="예: 안녕하세요" oninput="onKoreanInput()">
+        <button class="btn-translate" id="translateBtn" onclick="doTranslate()" disabled>✨ 翻訳</button>
+      </div>
+      <div class="translate-hint" id="translateHint">韓国語を入力すると翻訳ボタンが使えます</div>
+    </div>
+    <div class="form-group"><label class="field-label">日本語訳 *</label><input type="text" id="fJapanese" placeholder="例: こんにちは"></div>
+    <div class="form-group"><label class="field-label">メモ</label><input type="text" id="fMemo" placeholder="用法・例文など"></div>
+    <div class="form-group">
+      <label class="field-label">カテゴリ</label>
+      <select id="fCategory"></select>
+    </div>
+    <div class="form-group"><label class="field-label">学習日</label><input type="date" id="fDate"></div>
+    <div class="btn-row">
+      <button class="btn-primary" onclick="handleSave()" id="saveBtn">追加する</button>
+      <button class="btn-ghost" onclick="cancelEdit()" id="cancelBtn" style="display:none">キャンセル</button>
+    </div>
+  </div>
+
+  <!-- カテゴリ管理 -->
+  <div class="card-sm">
+    <div style="font-size:13px;color:#94a3b8;font-weight:600;margin-bottom:8px">🗂 カテゴリ管理</div>
+    <div class="cat-manage-row">
+      <input type="text" id="newCatInput" placeholder="新しいカテゴリ名" style="font-size:13px;padding:7px 12px">
+      <button class="btn-sm" onclick="addCategory()" style="white-space:nowrap;flex-shrink:0">追加</button>
+    </div>
+    <div class="cat-list" id="catList"></div>
+  </div>
+
+  <!-- バックアップ -->
+  <div class="card-sm">
+    <div class="backup-row">
+      <span style="font-size:13px;color:#94a3b8;font-weight:600">💾 バックアップ</span>
+      <div style="display:flex;gap:8px">
+        <button class="btn-sm" onclick="exportData()">書き出し</button>
+        <label class="btn-sm" style="cursor:pointer">読み込み<input type="file" accept=".json" style="display:none" onchange="importData(event)"></label>
+      </div>
+    </div>
+    <div class="backup-note">機種変前に「書き出し」→ 新スマホで「読み込み」でデータ移行できます</div>
+  </div>
+
+  <!-- 検索 -->
+  <div class="search-wrap">
+    <span>🔍</span>
+    <input type="text" id="searchInput" placeholder="検索…" oninput="renderWords()">
+  </div>
+
+  <div class="word-list" id="wordList"></div>
+</div>
+
+<!-- ===== テスト ===== -->
+<div id="sec-test" class="section">
+  <div id="testSetup" class="card">
+    <div class="card-title">📝 テストモード選択</div>
+    <p style="color:#94a3b8;font-size:14px;margin-bottom:16px">出題方向・カテゴリ・習熟度を選んでください。</p>
+    <div class="mode-btns">
+      <button class="mode-btn active" id="modeJK" onclick="setTestMode('ja2ko')">🇯🇵 日本語 → 韓国語</button>
+      <button class="mode-btn" id="modeKJ" onclick="setTestMode('ko2ja')">🇰🇷 韓国語 → 日本語</button>
+    </div>
+    <div class="form-group">
+      <label class="field-label">カテゴリ</label>
+      <div class="lf-scroll" id="testCatFilters"></div>
+    </div>
+    <div class="form-group" style="margin-top:8px">
+      <label class="field-label">習熟度</label>
+      <div class="lf-scroll" id="levelFilters"></div>
+    </div>
+    <div class="form-group" style="margin-top:12px">
+      <label class="field-label">出題数</label>
+      <input type="number" id="testCount" value="10" min="1">
+    </div>
+    <div class="btn-row"><button class="btn-primary" onclick="startTest()">テスト開始</button></div>
+  </div>
+
+  <div id="testQ" class="card" style="display:none">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="test-counter" id="testCounter"></div>
+    <div class="test-q-row">
+      <div class="test-question" id="testQuestion"></div>
+      <button class="speak-btn" id="testSpeakBtn" onclick="speakTest()" style="font-size:22px;display:none">🔈</button>
+    </div>
+    <div class="test-memo" id="testMemo"></div>
+    <input type="text" class="test-input" id="testInput" placeholder="韓国語を入力…" onkeydown="testKeydown(event)">
+    <div class="btn-row"><button class="btn-primary" id="testActionBtn" onclick="testAction()" style="width:100%">答え合わせ</button></div>
+    <div id="resultBanner" class="result-banner" style="display:none">
+      <span id="resultText"></span>
+      <button class="speak-btn" id="resultSpeakBtn" onclick="speakResult()" style="display:none">🔈</button>
+    </div>
+    <div class="btn-row" id="nextBtnRow" style="display:none">
+      <button class="btn-primary" onclick="nextQuestion()" style="width:100%">次へ →</button>
+    </div>
+  </div>
+
+  <div id="testDone" class="card" style="display:none">
+    <div class="card-title">🎉 結果</div>
+    <div class="score-box">
+      <div class="score-pct" id="scorePct"></div>
+      <div class="score-detail" id="scoreDetail"></div>
+      <div class="score-note">習熟度が自動更新されました</div>
+    </div>
+    <div id="wrongSection" class="wrong-list"></div>
+    <div class="btn-row"><button class="btn-primary" onclick="resetTest()">もう一度</button></div>
+  </div>
+</div>
+
+<!-- ===== 記録 ===== -->
+<div id="sec-record" class="section">
+  <div class="card">
+    <div class="card-title">📊 習熟度まとめ</div>
+    <div id="statChips" class="stat-chips"></div>
+    <div class="level-bar" id="levelBar"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">📅 日付別まとめ</div>
+    <div id="recordList"></div>
+  </div>
+</div>
+</main>
+
+<div id="toast"></div>
+
+<script>
+const STORAGE_KEY = 'korean_vocab_list';
+const CAT_KEY = 'korean_categories';
+
+const LEVELS = [
+  {key:'unset', label:'未設定', emoji:'⬜', color:'#475569', bg:'#1e293b'},
+  {key:'hard',  label:'むずかしい', emoji:'🔴', color:'#ef4444', bg:'#450a0a'},
+  {key:'unsure',label:'あやしい',   emoji:'🟡', color:'#eab308', bg:'#422006'},
+  {key:'ok',    label:'覚えた',     emoji:'🟢', color:'#22c55e', bg:'#052e16'},
+];
+const DEFAULT_CATS = ['マイ単語','TOPIK 3級','TOPIK 4級','推し','ドラマ・映画'];
+function getLv(key){ return LEVELS.find(l=>l.key===key)||LEVELS[0]; }
+
+// ===== State =====
+let words = [];
+let categories = [];
+let editId = null;
+let filterLevel = 'all';
+let filterCat = 'all';
+let testMode = 'ja2ko';
+let testLevelFilter = 'all';
+let testCatFilter = 'all';
+let testPool = [];
+let testIdx = 0;
+let testScore = {correct:0,wrong:0};
+let wrongList = [];
+let testAnswer = '';
+let testPhase = 'question';
+
+function loadWords(){ try{ const r=localStorage.getItem(STORAGE_KEY); return r?JSON.parse(r):[]; }catch{return[];} }
+function loadCats(){ try{ const r=localStorage.getItem(CAT_KEY); return r?JSON.parse(r):[...DEFAULT_CATS]; }catch{return[...DEFAULT_CATS];} }
+function saveWords(){ try{ localStorage.setItem(STORAGE_KEY,JSON.stringify(words)); }catch{} }
+function saveCats(){ try{ localStorage.setItem(CAT_KEY,JSON.stringify(categories)); }catch{} }
+
+window.addEventListener('load',()=>{
+  words=loadWords(); categories=loadCats();
+  document.getElementById('fDate').value=today();
+  if(window.speechSynthesis){
+    window.speechSynthesis.getVoices();
+    window.speechSynthesis.addEventListener('voiceschanged',()=>window.speechSynthesis.getVoices());
+  }
+  renderAll();
+});
+
+function today(){ return new Date().toISOString().slice(0,10); }
+
+// ===== Tabs =====
+function switchTab(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  ['vocab','test','record'].forEach((t,i)=>{ if(t===id) document.querySelectorAll('.tab-btn')[i].classList.add('active'); });
+  if(id==='record') renderRecord();
+  if(id==='test'){ renderTestCatFilters(); renderLevelFilters(); }
+}
+
+// ===== Toast =====
+let toastTimer;
+function showToast(msg,type='ok'){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.style.background=type==='err'?'#7f1d1d':'#166534';
+  t.style.display='block'; t.style.opacity='1';
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>{ t.style.opacity='0'; setTimeout(()=>t.style.display='none',300); },2200);
+}
+
+function renderAll(){
+  document.getElementById('wordCount').textContent=words.length+'語';
+  renderCatScroll();
+  renderCatSelect();
+  renderCatList();
+  renderLevelSummary();
+  renderWords();
+}
+
+// ===== Categories =====
+function renderCatScroll(){
+  const el=document.getElementById('catScroll');
+  const allActive=filterCat==='all';
+  let html=`<button class="cat-chip${allActive?' active':''}" onclick="setCatFilter('all')">すべて</button>`;
+  categories.forEach(c=>{
+    const active=filterCat===c;
+    html+=`<button class="cat-chip${active?' active':''}" onclick="setCatFilter('${esc(c)}')">${esc(c)}</button>`;
+  });
+  el.innerHTML=html;
+}
+
+function renderCatSelect(){
+  const sel=document.getElementById('fCategory');
+  const cur=sel.value;
+  sel.innerHTML=categories.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  if(cur && categories.includes(cur)) sel.value=cur;
+}
+
+function renderCatList(){
+  const el=document.getElementById('catList');
+  if(categories.length===0){ el.innerHTML='<span style="color:#475569;font-size:12px">カテゴリがありません</span>'; return; }
+  el.innerHTML=categories.map(c=>`
+    <div class="cat-item">
+      <span style="font-size:13px">${esc(c)}</span>
+      <button onclick="deleteCategory('${esc(c)}')" title="削除">×</button>
+    </div>`).join('');
+}
+
+function addCategory(){
+  const input=document.getElementById('newCatInput');
+  const name=input.value.trim();
+  if(!name){ showToast('カテゴリ名を入力してください','err'); return; }
+  if(categories.includes(name)){ showToast('同じ名前のカテゴリがあります','err'); return; }
+  categories.push(name); saveCats(); input.value='';
+  renderAll(); showToast(`「${name}」を追加しました ✓`);
+}
+
+function deleteCategory(name){
+  if(!confirm(`「${name}」を削除しますか？\n（このカテゴリの単語は「マイ単語」に移動します）`)) return;
+  categories=categories.filter(c=>c!==name);
+  words=words.map(w=>w.category===name?{...w,category:categories[0]||'マイ単語'}:w);
+  if(filterCat===name) filterCat='all';
+  if(testCatFilter===name) testCatFilter='all';
+  saveCats(); saveWords(); renderAll(); showToast(`「${name}」を削除しました`,'err');
+}
+
+function setCatFilter(cat){
+  filterCat=cat; renderAll();
+}
+
+// ===== Level Summary =====
+function getCounts(){
+  const c={unset:0,hard:0,unsure:0,ok:0};
+  words.forEach(w=>{ const k=w.level||'unset'; c[k]=(c[k]||0)+1; });
+  return c;
+}
+
+function renderLevelSummary(){
+  const counts=getCounts();
+  const el=document.getElementById('levelSummary');
+  el.innerHTML=LEVELS.map(l=>{
+    const cnt=l.key==='all'?words.length:(counts[l.key]||0);
+    const active=filterLevel===l.key;
+    const border=active?`1.5px solid ${l.color}`:'1.5px solid #334155';
+    const bg=active&&l.bg?l.bg:'#1e293b';
+    return `<button class="level-chip" style="border:${border};background:${bg}" onclick="toggleLevelFilter('${l.key}')">
+      <span>${l.emoji}</span><span style="color:${l.color}">${cnt}</span>
+    </button>`;
+  }).join('');
+}
+
+function toggleLevelFilter(key){
+  filterLevel=filterLevel===key?'all':key;
+  renderLevelSummary(); renderWords();
+}
+
+// ===== Words =====
+function renderWords(){
+  const search=document.getElementById('searchInput').value;
+  const list=document.getElementById('wordList');
+  const filtered=words.filter(w=>{
+    const ms=w.korean.includes(search)||w.japanese.includes(search)||(w.memo||'').includes(search);
+    const ml=filterLevel==='all'||(w.level||'unset')===filterLevel;
+    const mc=filterCat==='all'||(w.category||categories[0]||'マイ単語')===filterCat;
+    return ms&&ml&&mc;
+  }).slice().reverse();
+
+  if(filtered.length===0){ list.innerHTML='<div class="empty">単語がありません。</div>'; return; }
+
+  list.innerHTML=filtered.map(w=>{
+    const lv=getLv(w.level||'unset');
+    const stamps=LEVELS.slice(1).map(l=>{
+      const active=(w.level||'unset')===l.key;
+      return `<button class="stamp-btn${active?' active':''}" onclick="toggleLevel(${w.id},'${l.key}')" title="${l.label}">${l.emoji}</button>`;
+    }).join('');
+    const cat=w.category||categories[0]||'マイ単語';
+    return `<div class="word-card" style="border-left:3px solid ${lv.color}">
+      <div class="word-card-top">
+        <span class="korean">${esc(w.korean)}</span>
+        <button class="speak-btn" onclick="speakWord('${esc(w.korean)}',${w.id})" id="spk-${w.id}">🔈</button>
+        <span class="japanese">${esc(w.japanese)}</span>
+      </div>
+      <div><span class="cat-tag">${esc(cat)}</span></div>
+      ${w.memo?`<div class="memo-line">📝 ${esc(w.memo)}</div>`:''}
+      <div class="word-card-bot">
+        <span class="date-tag">${w.date||'—'}</span>
+        <div style="display:flex;gap:4px;align-items:center">
+          ${stamps}
+          <div class="divider"></div>
+          <button class="btn-sm" onclick="editWord(${w.id})">編集</button>
+          <button class="btn-sm btn-danger" onclick="deleteWord(${w.id})">削除</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ===== CRUD =====
+function handleSave(){
+  const korean=document.getElementById('fKorean').value.trim();
+  const japanese=document.getElementById('fJapanese').value.trim();
+  const memo=document.getElementById('fMemo').value.trim();
+  const category=document.getElementById('fCategory').value||categories[0]||'マイ単語';
+  const date=document.getElementById('fDate').value;
+  if(!korean||!japanese){ showToast('韓国語と日本語は必須です','err'); return; }
+  if(editId!==null){
+    words=words.map(w=>w.id===editId?{...w,korean,japanese,memo,category,date}:w);
+    showToast('更新しました ✓'); editId=null;
+    document.getElementById('formTitle').textContent='＋ 単語を追加';
+    document.getElementById('saveBtn').textContent='追加する';
+    document.getElementById('cancelBtn').style.display='none';
+  } else {
+    words.push({id:Date.now(),korean,japanese,memo,category,date,level:'unset',addedAt:new Date().toISOString()});
+    showToast('追加しました ✓');
+  }
+  document.getElementById('fKorean').value='';
+  document.getElementById('fJapanese').value='';
+  document.getElementById('fMemo').value='';
+  document.getElementById('fDate').value=today();
+  document.getElementById('translateHint').textContent='韓国語を入力すると翻訳ボタンが使えます';
+  document.getElementById('translateHint').style.color='';
+  document.getElementById('translateBtn').disabled=true;
+  saveWords(); renderAll();
+}
+
+function editWord(id){
+  const w=words.find(x=>x.id===id); if(!w) return;
+  document.getElementById('fKorean').value=w.korean;
+  document.getElementById('fJapanese').value=w.japanese;
+  document.getElementById('fMemo').value=w.memo||'';
+  document.getElementById('fDate').value=w.date||today();
+  renderCatSelect();
+  if(w.category) document.getElementById('fCategory').value=w.category;
+  editId=id;
+  document.getElementById('formTitle').textContent='✏️ 編集中';
+  document.getElementById('saveBtn').textContent='更新する';
+  document.getElementById('cancelBtn').style.display='';
+  switchTab('vocab'); window.scrollTo(0,0);
+}
+
+function cancelEdit(){
+  editId=null;
+  document.getElementById('formTitle').textContent='＋ 単語を追加';
+  document.getElementById('saveBtn').textContent='追加する';
+  document.getElementById('cancelBtn').style.display='none';
+  ['fKorean','fJapanese','fMemo'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fDate').value=today();
+}
+
+function deleteWord(id){
+  words=words.filter(w=>w.id!==id);
+  saveWords(); renderAll(); showToast('削除しました','err');
+}
+
+function toggleLevel(id,key){
+  words=words.map(w=>w.id===id?{...w,level:(w.level||'unset')===key?'unset':key}:w);
+  saveWords(); renderAll();
+}
+
+// ===== Backup =====
+function exportData(){
+  const json=JSON.stringify({version:2,exportedAt:new Date().toISOString(),categories,words},null,2);
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([json],{type:'application/json'}));
+  a.download=`korean-vocab-${today()}.json`;
+  a.click(); showToast('エクスポートしました 📥');
+}
+
+function importData(e){
+  const file=e.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const data=JSON.parse(ev.target.result);
+      const imported=data.words||data;
+      if(!Array.isArray(imported)) throw new Error();
+      // merge categories
+      if(data.categories) data.categories.forEach(c=>{ if(!categories.includes(c)) categories.push(c); });
+      const ids=new Set(words.map(w=>w.id));
+      const newW=imported.filter(w=>!ids.has(w.id));
+      words=[...words,...newW];
+      saveCats(); saveWords(); renderAll(); showToast(`${newW.length}語をインポートしました ✓`);
+    }catch{ showToast('ファイルが読み込めませんでした','err'); }
+  };
+  reader.readAsText(file); e.target.value='';
+}
+
+// ===== AI Translation =====
+function onKoreanInput(){
+  const val=document.getElementById('fKorean').value.trim();
+  document.getElementById('translateBtn').disabled=val.length===0;
+  document.getElementById('translateHint').textContent=val.length>0?'✨ ボタンで日本語訳を自動提案します':'韓国語を入力すると翻訳ボタンが使えます';
+  document.getElementById('translateHint').style.color='';
+}
+
+async function doTranslate(){
+  const korean=document.getElementById('fKorean').value.trim();
+  if(!korean) return;
+  const btn=document.getElementById('translateBtn');
+  const hint=document.getElementById('translateHint');
+  const japInput=document.getElementById('fJapanese');
+  btn.disabled=true; btn.textContent='⏳ 翻訳中…'; hint.textContent='AIが翻訳しています…';
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:200,
+        messages:[{role:'user',content:`韓国語「${korean}」を日本語に翻訳してください。翻訳結果だけを1行で答えてください。補足や説明は不要です。`}]
+      })
+    });
+    const data=await res.json();
+    const text=data.content?.find(c=>c.type==='text')?.text?.trim();
+    if(text){
+      japInput.value=text;
+      hint.textContent='✅ 翻訳しました！ニュアンスが違う場合は編集してください';
+      hint.style.color='#22c55e';
+    } else {
+      hint.textContent='翻訳できませんでした。手動で入力してください'; hint.style.color='#ef4444';
+    }
+  }catch{
+    hint.textContent='翻訳エラー。手動で入力してください'; hint.style.color='#ef4444';
+  }
+  btn.disabled=false; btn.textContent='✨ 翻訳';
+  setTimeout(()=>{ hint.style.color=''; hint.textContent='✨ ボタンで日本語訳を自動提案します'; },4000);
+}
+
+// ===== Speech =====
+function speakKorean(text,onEnd){
+  if(!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='ko-KR'; u.rate=0.9;
+  const v=window.speechSynthesis.getVoices().find(v=>v.lang.startsWith('ko'));
+  if(v) u.voice=v;
+  if(onEnd) u.onend=onEnd;
+  window.speechSynthesis.speak(u);
+}
+function speakWord(text,id){
+  const btn=document.getElementById('spk-'+id);
+  if(btn) btn.textContent='🔊';
+  speakKorean(text,()=>{ if(btn) btn.textContent='🔈'; });
+}
+function speakTest(){
+  const cur=testPool[testIdx]; if(!cur) return;
+  const btn=document.getElementById('testSpeakBtn');
+  btn.textContent='🔊'; speakKorean(cur.korean,()=>btn.textContent='🔈');
+}
+function speakResult(){
+  const btn=document.getElementById('resultSpeakBtn');
+  btn.textContent='🔊'; speakKorean(testAnswer,()=>btn.textContent='🔈');
+}
+
+// ===== Test =====
+function setTestMode(mode){
+  testMode=mode;
+  document.getElementById('modeJK').classList.toggle('active',mode==='ja2ko');
+  document.getElementById('modeKJ').classList.toggle('active',mode==='ko2ja');
+}
+
+function renderTestCatFilters(){
+  const el=document.getElementById('testCatFilters');
+  const total=words.length;
+  let html=`<button class="lf-btn${testCatFilter==='all'?' active':''}" onclick="setTestCatFilter('all')">すべて（${total}）</button>`;
+  categories.forEach(c=>{
+    const cnt=words.filter(w=>(w.category||categories[0]||'マイ単語')===c).length;
+    const active=testCatFilter===c;
+    html+=`<button class="lf-btn${active?' active':''}" onclick="setTestCatFilter('${esc(c)}')">${esc(c)}（${cnt}）</button>`;
+  });
+  el.innerHTML=html;
+  updateTestCount();
+}
+
+function setTestCatFilter(cat){
+  testCatFilter=cat; renderTestCatFilters(); renderLevelFilters();
+}
+
+function renderLevelFilters(){
+  const counts=getCounts();
+  const el=document.getElementById('levelFilters');
+  const allBtn=`<button class="lf-btn${testLevelFilter==='all'?' active':''}" onclick="setTestLevelFilter('all')">すべて（${getTestPool().length}）</button>`;
+  const lvBtns=LEVELS.slice(1).map(l=>{
+    const active=testLevelFilter===l.key;
+    const style=active?`border-color:${l.color};color:${l.color}`:'';
+    return `<button class="lf-btn${active?' active':''}" style="${style}" onclick="setTestLevelFilter('${l.key}')">${l.emoji} ${l.label}（${counts[l.key]||0}）</button>`;
+  }).join('');
+  el.innerHTML=allBtn+lvBtns;
+  updateTestCount();
+}
+
+function setTestLevelFilter(key){
+  testLevelFilter=testLevelFilter===key?'all':key; renderLevelFilters();
+}
+
+function getTestPool(){
+  return words.filter(w=>{
+    const mc=testCatFilter==='all'||(w.category||categories[0]||'マイ単語')===testCatFilter;
+    const ml=testLevelFilter==='all'||(w.level||'unset')===testLevelFilter;
+    return mc&&ml;
+  });
+}
+
+function updateTestCount(){
+  const avail=getTestPool().length;
+  const el=document.getElementById('testCount');
+  el.max=Math.max(1,avail);
+  el.value=Math.min(parseInt(el.value)||10,avail||1);
+}
+
+function startTest(){
+  const pool=getTestPool();
+  if(pool.length===0){ showToast('対象の単語がありません','err'); return; }
+  const count=Math.min(parseInt(document.getElementById('testCount').value)||10,pool.length);
+  testPool=[...pool].sort(()=>Math.random()-.5).slice(0,count);
+  testIdx=0; testScore={correct:0,wrong:0}; wrongList=[]; testPhase='question';
+  document.getElementById('testSetup').style.display='none';
+  document.getElementById('testDone').style.display='none';
+  document.getElementById('testQ').style.display='';
+  showQuestion();
+}
+
+function showQuestion(){
+  testPhase='question';
+  const cur=testPool[testIdx];
+  document.getElementById('progressFill').style.width=(testIdx/testPool.length*100)+'%';
+  document.getElementById('testCounter').textContent=(testIdx+1)+' / '+testPool.length;
+  document.getElementById('testQuestion').textContent=testMode==='ja2ko'?cur.japanese:cur.korean;
+  document.getElementById('testMemo').textContent=cur.memo?'メモ：'+cur.memo:'';
+  document.getElementById('testInput').value='';
+  document.getElementById('testInput').disabled=false;
+  document.getElementById('testInput').placeholder=testMode==='ja2ko'?'韓国語を入力…':'日本語を入力…';
+  document.getElementById('testActionBtn').textContent='答え合わせ';
+  document.getElementById('testActionBtn').style.display='';
+  document.getElementById('resultBanner').style.display='none';
+  document.getElementById('nextBtnRow').style.display='none';
+  const spk=document.getElementById('testSpeakBtn');
+  spk.style.display=testMode==='ko2ja'?'':'none'; spk.textContent='🔈';
+  setTimeout(()=>document.getElementById('testInput').focus(),100);
+}
+
+function testKeydown(e){
+  if(e.key==='Enter'){ if(testPhase==='question') testAction(); else nextQuestion(); }
+}
+function testAction(){ if(testPhase==='question') checkAnswer(); }
+
+function checkAnswer(){
+  const cur=testPool[testIdx];
+  const ans=document.getElementById('testInput').value.trim();
+  const correct=(testMode==='ja2ko'?cur.korean:cur.japanese).trim();
+  testAnswer=correct;
+  const norm=s=>s.replace(/\s/g,'').toLowerCase();
+  const isOk=norm(ans)===norm(correct);
+  testScore.correct+=isOk?1:0; testScore.wrong+=isOk?0:1;
+  if(!isOk) wrongList.push({...cur,yourAnswer:ans});
+  // 習熟度更新
+  if(isOk){
+    const lv=cur.level||'unset';
+    const newLv=(lv==='unset'||lv==='hard')?'unsure':(lv==='unsure'?'ok':'ok');
+    words=words.map(w=>w.id===cur.id?{...w,level:newLv}:w);
+  } else {
+    words=words.map(w=>w.id===cur.id?{...w,level:'hard'}:w);
+  }
+  saveWords();
+  document.getElementById('testInput').disabled=true;
+  const banner=document.getElementById('resultBanner');
+  banner.className='result-banner '+(isOk?'correct':'wrong');
+  banner.style.display='flex';
+  document.getElementById('resultText').textContent=isOk?'⭕ 正解！':'❌ 不正解 → '+correct;
+  const rspk=document.getElementById('resultSpeakBtn');
+  rspk.style.display=''; rspk.textContent='🔈';
+  document.getElementById('nextBtnRow').style.display='';
+  document.getElementById('testActionBtn').style.display='none';
+  testPhase='result';
+}
+
+function nextQuestion(){
+  document.getElementById('testActionBtn').style.display='';
+  if(testIdx+1>=testPool.length){ showDone(); return; }
+  testIdx++; showQuestion();
+}
+
+function showDone(){
+  document.getElementById('testQ').style.display='none';
+  document.getElementById('testDone').style.display='';
+  const pct=Math.round(testScore.correct/testPool.length*100);
+  document.getElementById('scorePct').textContent=pct+'%';
+  document.getElementById('scoreDetail').innerHTML=`<span style="color:#22c55e">正解 ${testScore.correct}</span>　<span style="color:#ef4444">不正解 ${testScore.wrong}</span>`;
+  const ws=document.getElementById('wrongSection');
+  if(wrongList.length===0){ ws.innerHTML=''; return; }
+  ws.innerHTML='<div class="wrong-title">❌ 間違えた単語</div>'+
+    wrongList.map(w=>`<div class="wrong-item">
+      <div><b>${esc(w.japanese)}</b> → 正解：<span style="color:#4ade80">${esc(w.korean)}</span></div>
+      ${w.yourAnswer?`<div class="your-ans">あなた：${esc(w.yourAnswer)}</div>`:''}
+    </div>`).join('');
+}
+
+function resetTest(){
+  document.getElementById('testDone').style.display='none';
+  document.getElementById('testQ').style.display='none';
+  document.getElementById('testSetup').style.display='';
+  renderTestCatFilters(); renderLevelFilters();
+}
+
+// ===== Record =====
+function renderRecord(){
+  const counts=getCounts();
+  const chips=LEVELS.slice(1).map(l=>`
+    <div class="stat-chip" style="background:${l.bg};border:1px solid ${l.color}">
+      <span style="font-size:18px">${l.emoji}</span>
+      <div><div class="num" style="color:${l.color}">${counts[l.key]||0}</div><div class="lbl">${l.label}</div></div>
+    </div>`).join('');
+  document.getElementById('statChips').innerHTML=chips;
+  const bar=LEVELS.slice(1).map(l=>{
+    const w2=words.length>0?((counts[l.key]||0)/words.length*100):0;
+    return w2>0?`<div class="level-bar-seg" style="width:${w2}%;background:${l.color}"></div>`:'';
+  }).join('');
+  document.getElementById('levelBar').innerHTML=bar||'<div style="width:100%;background:#334155;height:100%;border-radius:99px"></div>';
+
+  const byDate={};
+  words.forEach(w=>{ const d=w.date||'日付なし'; if(!byDate[d]) byDate[d]=[]; byDate[d].push(w); });
+  const html=Object.entries(byDate).sort((a,b)=>b[0].localeCompare(a[0])).map(([date,ws])=>`
+    <div class="date-group">
+      <div class="date-group-header">${date} <span class="badge">${ws.length}語</span></div>
+      ${ws.map(w=>{
+        const lv=getLv(w.level||'unset');
+        const cat=w.category||'';
+        return `<div class="log-item">
+          <span>${lv.emoji}</span>
+          ${cat?`<span style="font-size:11px;color:#818cf8;font-weight:700">[${esc(cat)}]</span>`:''}
+          <span class="korean">${esc(w.korean)}</span>
+          <span style="color:#94a3b8;margin:0 4px">→</span>
+          <span style="color:#e2e8f0">${esc(w.japanese)}</span>
+        </div>`;
+      }).join('')}
+    </div>`).join('');
+  document.getElementById('recordList').innerHTML=html||'<div class="empty">単語がありません。</div>';
+}
+</script>
+</body>
+</html>
