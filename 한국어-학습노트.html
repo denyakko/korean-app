@@ -225,10 +225,9 @@ textarea{background:#0f172a;border:1px solid #334155;border-radius:10px;padding:
   <div id="testSetup" class="card">
     <div class="card-title">📝 テストモード選択</div>
     <p style="color:#94a3b8;font-size:14px;margin-bottom:16px">出題方向・カテゴリ・習熟度を選んでください。</p>
-    <div class="mode-btns" style="flex-wrap:wrap">
-      <button class="mode-btn active" id="modeJK" onclick="setTestMode('ja2ko')">🇯🇵 日→韓</button>
-      <button class="mode-btn" id="modeKJ" onclick="setTestMode('ko2ja')">🇰🇷 韓→日</button>
-      <button class="mode-btn" id="modeMemo" onclick="setTestMode('memo')">📝 例文</button>
+    <div class="mode-btns">
+      <button class="mode-btn active" id="modeJK" onclick="setTestMode('ja2ko')">🇯🇵 日本語 → 韓国語</button>
+      <button class="mode-btn" id="modeKJ" onclick="setTestMode('ko2ja')">🇰🇷 韓国語 → 日本語</button>
     </div>
     <div class="form-group">
       <label class="field-label">カテゴリ</label>
@@ -331,7 +330,7 @@ let currentPage = 1;
 const PAGE_SIZE = 30;
 let filterLevel = 'all';
 let filterCat = 'all';
-let testMode = 'ja2ko'; // 'ja2ko' | 'ko2ja' | 'memo'
+let testMode = 'ja2ko';
 let testLevelFilter = 'all';
 let testCatFilter = 'all';
 let testPool = [];
@@ -696,13 +695,6 @@ function setTestMode(mode){
   testMode=mode;
   document.getElementById('modeJK').classList.toggle('active',mode==='ja2ko');
   document.getElementById('modeKJ').classList.toggle('active',mode==='ko2ja');
-  document.getElementById('modeMemo').classList.toggle('active',mode==='memo');
-  // 例文モードはメモがある単語のみ
-  if(mode==='memo'){
-    const hasEx=getTestPool().filter(w=>w.memo&&w.memo.trim().length>0).length;
-    document.getElementById('testCount').max=Math.max(1,hasEx);
-    document.getElementById('testCount').value=Math.min(parseInt(document.getElementById('testCount').value)||10,hasEx||1);
-  }
 }
 
 function renderTestCatFilters(){
@@ -743,8 +735,7 @@ function getTestPool(){
   return words.filter(w=>{
     const mc=testCatFilter==='all'||(w.category||categories[0]||'マイ単語')===testCatFilter;
     const ml=testLevelFilter==='all'||(w.level||'unset')===testLevelFilter;
-    const mm=testMode!=='memo'||(w.memo&&w.memo.trim().length>0);
-    return mc&&ml&&mm;
+    return mc&&ml;
   });
 }
 
@@ -772,22 +763,17 @@ function showQuestion(){
   const cur=testPool[testIdx];
   document.getElementById('progressFill').style.width=(testIdx/testPool.length*100)+'%';
   document.getElementById('testCounter').textContent=(testIdx+1)+' / '+testPool.length;
-  if(testMode==='memo'){
-    document.getElementById('testQuestion').textContent=cur.memo||'';
-    document.getElementById('testMemo').textContent='👆 この例文の単語は？（韓国語で答えてください）';
-  } else {
-    document.getElementById('testQuestion').textContent=testMode==='ja2ko'?cur.japanese:cur.korean;
-    document.getElementById('testMemo').textContent='';
-  }
+  document.getElementById('testQuestion').textContent=testMode==='ja2ko'?cur.japanese:cur.korean;
+  document.getElementById('testMemo').textContent='';
   document.getElementById('testInput').value='';
   document.getElementById('testInput').disabled=false;
-  document.getElementById('testInput').placeholder=testMode==='memo'?'韓国語を入力…':testMode==='ja2ko'?'韓国語を入力…':'日本語を入力…';
+  document.getElementById('testInput').placeholder=testMode==='ja2ko'?'韓国語を入力…':'日本語を入力…';
   document.getElementById('testActionBtn').textContent='答え合わせ';
   document.getElementById('testActionBtn').style.display='';
   document.getElementById('resultBanner').style.display='none';
   document.getElementById('nextBtnRow').style.display='none';
   const spk=document.getElementById('testSpeakBtn');
-  spk.style.display=(testMode==='ko2ja'||testMode==='memo')?'':'none'; spk.textContent='🔈';
+  spk.style.display=testMode==='ko2ja'?'':'none'; spk.textContent='🔈';
   setTimeout(()=>document.getElementById('testInput').focus(),100);
 }
 
@@ -799,7 +785,7 @@ function testAction(){ if(testPhase==='question') checkAnswer(); }
 function checkAnswer(){
   const cur=testPool[testIdx];
   const ans=document.getElementById('testInput').value.trim();
-  const correct=(testMode==='memo'?cur.korean:testMode==='ja2ko'?cur.korean:cur.japanese).trim();
+  const correct=(testMode==='ja2ko'?cur.korean:cur.japanese).trim();
   testAnswer=correct;
   const norm=s=>s.replace(/\s/g,'').toLowerCase();
   // 「・」「/」「、」で区切られた訳のどれか1つでも正解
