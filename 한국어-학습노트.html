@@ -119,6 +119,12 @@ input.test-input{font-size:20px;text-align:center;margin-top:16px;width:100%}
 .note-words-title{font-size:11px;color:#64748b;font-weight:700;margin-bottom:6px}
 .note-word-chip{display:inline-block;background:#312e81;color:#a5b4fc;font-size:12px;padding:2px 8px;border-radius:10px;margin:2px}
 textarea{background:#0f172a;border:1px solid #334155;border-radius:10px;padding:10px 14px;color:#f1f5f9;font-size:15px;outline:none;width:100%;resize:vertical;min-height:100px;font-family:'Noto Sans JP','Noto Sans KR',sans-serif;line-height:1.6}
+/* Paging */
+.paging-row{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px}
+.page-btn{background:#1e293b;border:1px solid #334155;color:#94a3b8;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:700;cursor:pointer}
+.page-btn.active{background:linear-gradient(135deg,#4f46e5,#0ea5e9);color:#fff;border-color:transparent}
+.page-btn:disabled{opacity:.4;cursor:not-allowed}
+.page-info{font-size:13px;color:#64748b}
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);color:#fff;padding:10px 24px;border-radius:12px;font-weight:700;font-size:14px;z-index:999;box-shadow:0 8px 24px rgba(0,0,0,.4);white-space:nowrap;display:none;transition:opacity .3s}
 </style>
 </head>
@@ -310,6 +316,8 @@ function getLv(key){ return LEVELS.find(l=>l.key===key)||LEVELS[0]; }
 let words = [];
 let categories = [];
 let editId = null;
+let currentPage = 1;
+const PAGE_SIZE = 30;
 let filterLevel = 'all';
 let filterCat = 'all';
 let testMode = 'ja2ko';
@@ -417,7 +425,7 @@ function deleteCategory(name){
 }
 
 function setCatFilter(cat){
-  filterCat=cat; renderAll();
+  filterCat=cat; currentPage=1; renderAll();
 }
 
 // ===== Level Summary =====
@@ -443,11 +451,12 @@ function renderLevelSummary(){
 
 function toggleLevelFilter(key){
   filterLevel=filterLevel===key?'all':key;
-  renderLevelSummary(); renderWords();
+  currentPage=1; renderLevelSummary(); renderWords();
 }
 
 // ===== Words =====
-function renderWords(){
+function renderWords(resetPage){
+  if(resetPage) currentPage=1;
   const search=document.getElementById('searchInput').value;
   const list=document.getElementById('wordList');
   const filtered=words.filter(w=>{
@@ -459,7 +468,12 @@ function renderWords(){
 
   if(filtered.length===0){ list.innerHTML='<div class="empty">単語がありません。</div>'; return; }
 
-  list.innerHTML=filtered.map(w=>{
+  const totalPages=Math.ceil(filtered.length/PAGE_SIZE);
+  if(currentPage>totalPages) currentPage=totalPages;
+  const start=(currentPage-1)*PAGE_SIZE;
+  const paged=filtered.slice(start,start+PAGE_SIZE);
+
+  list.innerHTML=paged.map(w=>{
     const lv=getLv(w.level||'unset');
     const stamps=LEVELS.slice(1).map(l=>{
       const active=(w.level||'unset')===l.key;
@@ -485,6 +499,26 @@ function renderWords(){
       </div>
     </div>`;
   }).join('');
+
+  // paging controls
+  if(totalPages>1){
+    let pagingHtml='<div class="paging-row">';
+    pagingHtml+=`<button class="page-btn" onclick="changePage(1)" ${currentPage===1?'disabled':''}>«</button>`;
+    pagingHtml+=`<button class="page-btn" onclick="changePage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
+    pagingHtml+=`<span class="page-info">${currentPage} / ${totalPages}ページ（${filtered.length}語）</span>`;
+    pagingHtml+=`<button class="page-btn" onclick="changePage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>›</button>`;
+    pagingHtml+=`<button class="page-btn" onclick="changePage(${totalPages})" ${currentPage===totalPages?'disabled':''}>»</button>`;
+    pagingHtml+='</div>';
+    list.innerHTML+=pagingHtml;
+  } else {
+    list.innerHTML+=`<div style="text-align:center;font-size:12px;color:#475569;margin-top:12px">${filtered.length}語</div>`;
+  }
+}
+
+function changePage(p){
+  currentPage=p;
+  renderWords();
+  window.scrollTo(0,300);
 }
 
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
