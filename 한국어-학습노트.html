@@ -109,6 +109,16 @@ input.test-input{font-size:20px;text-align:center;margin-top:16px;width:100%}
 .date-group-header{font-size:13px;font-weight:700;color:#64748b;margin-bottom:8px;display:flex;align-items:center;gap:8px}
 .badge{background:#1e293b;color:#818cf8;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:700}
 .log-item{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid #1e293b;flex-wrap:wrap;gap:6px}
+/* Lesson Notes */
+.note-card{background:#1e293b;border-radius:16px;padding:16px;margin-bottom:12px;border:1px solid #334155;border-left:3px solid #818cf8}
+.note-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.note-date{font-size:12px;color:#818cf8;font-weight:700}
+.note-theme{font-size:15px;font-weight:700;color:#f1f5f9;margin-bottom:6px}
+.note-body{font-size:14px;color:#94a3b8;line-height:1.7;white-space:pre-wrap}
+.note-words{margin-top:10px;padding-top:10px;border-top:1px solid #334155}
+.note-words-title{font-size:11px;color:#64748b;font-weight:700;margin-bottom:6px}
+.note-word-chip{display:inline-block;background:#312e81;color:#a5b4fc;font-size:12px;padding:2px 8px;border-radius:10px;margin:2px}
+textarea{background:#0f172a;border:1px solid #334155;border-radius:10px;padding:10px 14px;color:#f1f5f9;font-size:15px;outline:none;width:100%;resize:vertical;min-height:100px;font-family:'Noto Sans JP','Noto Sans KR',sans-serif;line-height:1.6}
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);color:#fff;padding:10px 24px;border-radius:12px;font-weight:700;font-size:14px;z-index:999;box-shadow:0 8px 24px rgba(0,0,0,.4);white-space:nowrap;display:none;transition:opacity .3s}
 </style>
 </head>
@@ -126,6 +136,7 @@ input.test-input{font-size:20px;text-align:center;margin-top:16px;width:100%}
   <button class="tab-btn active" onclick="switchTab('vocab')">単語帳</button>
   <button class="tab-btn" onclick="switchTab('test')">テスト</button>
   <button class="tab-btn" onclick="switchTab('record')">記録</button>
+  <button class="tab-btn" onclick="switchTab('notes')">ノート</button>
 </nav>
 
 <main>
@@ -260,6 +271,24 @@ input.test-input{font-size:20px;text-align:center;margin-top:16px;width:100%}
     <div id="recordList"></div>
   </div>
 </div>
+
+<!-- ===== レッスンノート ===== -->
+<div id="sec-notes" class="section">
+  <div class="card">
+    <div class="card-title" id="noteFormTitle">📝 レッスンノートを追加</div>
+    <div class="form-group"><label class="field-label">レッスン日</label><input type="date" id="nDate"></div>
+    <div class="form-group"><label class="field-label">テーマ・トピック</label><input type="text" id="nTheme" placeholder="例：敬語、買い物の表現、発音練習"></div>
+    <div class="form-group">
+      <label class="field-label">気づいたこと・メモ</label>
+      <textarea id="nBody" placeholder="レッスンで気づいたこと、難しかった表現、次回やりたいことなど…"></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn-primary" onclick="saveNote()" id="noteSaveBtn">保存する</button>
+      <button class="btn-ghost" onclick="cancelNote()" id="noteCancelBtn" style="display:none">キャンセル</button>
+    </div>
+  </div>
+  <div id="noteList"></div>
+</div>
 </main>
 
 <div id="toast"></div>
@@ -315,9 +344,10 @@ function switchTab(id){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('sec-'+id).classList.add('active');
-  ['vocab','test','record'].forEach((t,i)=>{ if(t===id) document.querySelectorAll('.tab-btn')[i].classList.add('active'); });
+  ['vocab','test','record','notes'].forEach((t,i)=>{ if(t===id) document.querySelectorAll('.tab-btn')[i].classList.add('active'); });
   if(id==='record') renderRecord();
   if(id==='test'){ renderTestCatFilters(); renderLevelFilters(); }
+  if(id==='notes') renderNotes();
 }
 
 // ===== Toast =====
@@ -690,7 +720,7 @@ function showQuestion(){
   document.getElementById('progressFill').style.width=(testIdx/testPool.length*100)+'%';
   document.getElementById('testCounter').textContent=(testIdx+1)+' / '+testPool.length;
   document.getElementById('testQuestion').textContent=testMode==='ja2ko'?cur.japanese:cur.korean;
-  document.getElementById('testMemo').textContent=cur.memo?'メモ：'+cur.memo:'';
+  document.getElementById('testMemo').textContent=''; // テスト中はメモ非表示
   document.getElementById('testInput').value='';
   document.getElementById('testInput').disabled=false;
   document.getElementById('testInput').placeholder=testMode==='ja2ko'?'韓国語を入力…':'日本語を入力…';
@@ -714,7 +744,9 @@ function checkAnswer(){
   const correct=(testMode==='ja2ko'?cur.korean:cur.japanese).trim();
   testAnswer=correct;
   const norm=s=>s.replace(/\s/g,'').toLowerCase();
-  const isOk=norm(ans)===norm(correct);
+  // 「・」「/」「、」で区切られた訳のどれか1つでも正解
+  const variants=correct.split(/[・\/、]/).map(s=>s.trim()).filter(s=>s.length>0);
+  const isOk=variants.some(v=>norm(ans)===norm(v))||norm(ans)===norm(correct);
   testScore.correct+=isOk?1:0; testScore.wrong+=isOk?0:1;
   if(!isOk) wrongList.push({...cur,yourAnswer:ans});
   // 習熟度更新
@@ -800,6 +832,105 @@ function renderRecord(){
     </div>`).join('');
   document.getElementById('recordList').innerHTML=html||'<div class="empty">単語がありません。</div>';
 }
+
+// ===== Lesson Notes =====
+const NOTE_KEY = 'korean_lesson_notes';
+let notes_data = [];
+let editNoteId = null;
+
+function loadNotes(){ try{ const r=localStorage.getItem(NOTE_KEY); return r?JSON.parse(r):[]; }catch{return[];} }
+function saveNotes(){ try{ localStorage.setItem(NOTE_KEY,JSON.stringify(notes_data)); }catch{} }
+
+// init notes on load
+const _origLoad = window.onload;
+window.addEventListener('load',()=>{
+  notes_data = loadNotes();
+  document.getElementById('nDate').value = today();
+});
+
+function saveNote(){
+  const date = document.getElementById('nDate').value;
+  const theme = document.getElementById('nTheme').value.trim();
+  const body = document.getElementById('nBody').value.trim();
+  if(!date){ showToast('日付を入力してください','err'); return; }
+  // 同じ日付の単語を自動ひもづけ
+  const linkedWords = words.filter(w=>w.date===date);
+  if(editNoteId!==null){
+    notes_data = notes_data.map(n=>n.id===editNoteId?{...n,date,theme,body,linkedWords}:n);
+    showToast('更新しました ✓'); editNoteId=null;
+    document.getElementById('noteFormTitle').textContent='📝 レッスンノートを追加';
+    document.getElementById('noteSaveBtn').textContent='保存する';
+    document.getElementById('noteCancelBtn').style.display='none';
+  } else {
+    notes_data.push({id:Date.now(),date,theme,body,linkedWords,createdAt:new Date().toISOString()});
+    showToast('保存しました ✓');
+  }
+  document.getElementById('nDate').value=today();
+  document.getElementById('nTheme').value='';
+  document.getElementById('nBody').value='';
+  saveNotes(); renderNotes();
+}
+
+function cancelNote(){
+  editNoteId=null;
+  document.getElementById('noteFormTitle').textContent='📝 レッスンノートを追加';
+  document.getElementById('noteSaveBtn').textContent='保存する';
+  document.getElementById('noteCancelBtn').style.display='none';
+  document.getElementById('nTheme').value='';
+  document.getElementById('nBody').value='';
+  document.getElementById('nDate').value=today();
+}
+
+function editNote(id){
+  const n=notes_data.find(x=>x.id===id); if(!n) return;
+  document.getElementById('nDate').value=n.date||today();
+  document.getElementById('nTheme').value=n.theme||'';
+  document.getElementById('nBody').value=n.body||'';
+  editNoteId=id;
+  document.getElementById('noteFormTitle').textContent='✏️ ノート編集中';
+  document.getElementById('noteSaveBtn').textContent='更新する';
+  document.getElementById('noteCancelBtn').style.display='';
+  window.scrollTo(0,0);
+}
+
+function deleteNote(id){
+  if(!confirm('このノートを削除しますか？')) return;
+  notes_data=notes_data.filter(n=>n.id!==id);
+  saveNotes(); renderNotes(); showToast('削除しました','err');
+}
+
+function renderNotes(){
+  const el=document.getElementById('noteList');
+  if(notes_data.length===0){
+    el.innerHTML='<div class="empty">レッスンノートがありません。<br>レッスン後に気づきを記録しましょう！</div>';
+    return;
+  }
+  const sorted=[...notes_data].sort((a,b)=>b.date.localeCompare(a.date));
+  el.innerHTML=sorted.map(n=>{
+    // 最新の同日単語を取得
+    const dayWords=words.filter(w=>w.date===n.date);
+    const wordChips=dayWords.length>0
+      ? '<div class="note-words"><div class="note-words-title">📚 この日追加した単語 ('+dayWords.length+'語)</div>'
+        + dayWords.map(w=>`<span class="note-word-chip">${esc(w.korean)}</span>`).join('')
+        + '</div>'
+      : '';
+    return `<div class="note-card">
+      <div class="note-header">
+        <div>
+          <div class="note-date">${n.date}</div>
+          ${n.theme?`<div class="note-theme">${esc(n.theme)}</div>`:''}
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="btn-sm" onclick="editNote(${n.id})">編集</button>
+          <button class="btn-sm btn-danger" onclick="deleteNote(${n.id})">削除</button>
+        </div>
+      </div>
+      ${n.body?`<div class="note-body">${esc(n.body)}</div>`:''}
+      ${wordChips}
+    </div>`;
+  }).join('');
+}
+
 </script>
 </body>
 </html>
