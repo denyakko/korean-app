@@ -248,6 +248,10 @@ textarea{background:#0f172a;border:1px solid #334155;border-radius:10px;padding:
       <span id="resultText"></span>
       <button class="speak-btn" id="resultSpeakBtn" onclick="speakResult()" style="display:none">🔈</button>
     </div>
+    <div id="selfJudgeRow" style="display:none;gap:8px;margin-top:10px">
+      <button onclick="selfJudge(true)" style="flex:1;padding:12px;border-radius:10px;border:none;background:#166534;color:#fff;font-size:16px;font-weight:700;cursor:pointer">⭕ 合ってた</button>
+      <button onclick="selfJudge(false)" style="flex:1;padding:12px;border-radius:10px;border:none;background:#7f1d1d;color:#fff;font-size:16px;font-weight:700;cursor:pointer">❌ 違った</button>
+    </div>
     <div class="btn-row" id="nextBtnRow" style="display:none">
       <button class="btn-primary" onclick="nextQuestion()" style="width:100%">次へ →</button>
     </div>
@@ -755,29 +759,83 @@ function showQuestion(){
   document.getElementById('testCounter').textContent=(testIdx+1)+' / '+testPool.length;
   document.getElementById('testQuestion').textContent=testMode==='ja2ko'?cur.japanese:cur.korean;
   document.getElementById('testMemo').textContent='';
-  document.getElementById('testInput').value='';
-  document.getElementById('testInput').disabled=false;
-  document.getElementById('testInput').placeholder=testMode==='ja2ko'?'韓国語を入力…':'日本語を入力…';
-  document.getElementById('testActionBtn').textContent='答え合わせ';
-  document.getElementById('testActionBtn').style.display='';
   document.getElementById('resultBanner').style.display='none';
   document.getElementById('nextBtnRow').style.display='none';
   const spk=document.getElementById('testSpeakBtn');
   spk.style.display=testMode==='ko2ja'?'':'none'; spk.textContent='🔈';
-  setTimeout(()=>document.getElementById('testInput').focus(),100);
+  if(testMode==='ko2ja'){
+    // 自己採点モード：入力欄を隠して「答えを見る」ボタン
+    document.getElementById('testInput').style.display='none';
+    document.getElementById('testActionBtn').textContent='答えを見る';
+    document.getElementById('testActionBtn').style.display='';
+    document.getElementById('selfJudgeRow').style.display='none';
+  } else {
+    document.getElementById('testInput').style.display='';
+    document.getElementById('testInput').value='';
+    document.getElementById('testInput').disabled=false;
+    document.getElementById('testInput').placeholder='韓国語を入力…';
+    document.getElementById('testActionBtn').textContent='答え合わせ';
+    document.getElementById('testActionBtn').style.display='';
+    document.getElementById('selfJudgeRow').style.display='none';
+    setTimeout(()=>document.getElementById('testInput').focus(),100);
+  }
 }
 
 function testKeydown(e){
   if(e.key==='Enter'){ if(testPhase==='question') testAction(); else nextQuestion(); }
 }
-function testAction(){ if(testPhase==='question') checkAnswer(); }
+function testAction(){
+  if(testPhase==='question'){
+    if(testMode==='ko2ja') showAnswer();
+    else checkAnswer();
+  }
+}
+
+function showAnswer(){
+  // 答えを見せて自己採点ボタンを表示
+  const cur=testPool[testIdx];
+  testAnswer=cur.japanese;
+  const banner=document.getElementById('resultBanner');
+  banner.className='result-banner';
+  banner.style.background='#1e3a5f';
+  banner.style.display='flex';
+  document.getElementById('resultText').textContent='📖 '+cur.japanese;
+  const rspk=document.getElementById('resultSpeakBtn');
+  rspk.style.display='none';
+  document.getElementById('testActionBtn').style.display='none';
+  document.getElementById('selfJudgeRow').style.display='flex';
+  testPhase='result';
+}
+
+function selfJudge(isOk){
+  const cur=testPool[testIdx];
+  testScore.correct+=isOk?1:0; testScore.wrong+=isOk?0:1;
+  if(!isOk) wrongList.push({...cur,yourAnswer:'（自己採点：不正解）'});
+  // 習熟度更新
+  if(isOk){
+    const lv=cur.level||'unset';
+    const newLv=(lv==='unset'||lv==='hard')?'unsure':(lv==='unsure'?'ok':'ok');
+    words=words.map(w=>w.id===cur.id?{...w,level:newLv}:w);
+  } else {
+    words=words.map(w=>w.id===cur.id?{...w,level:'hard'}:w);
+  }
+  saveWords();
+  const banner=document.getElementById('resultBanner');
+  banner.className='result-banner '+(isOk?'correct':'wrong');
+  banner.style.background='';
+  document.getElementById('resultText').textContent=isOk?'⭕ 正解！':'❌ 不正解';
+  document.getElementById('selfJudgeRow').style.display='none';
+  document.getElementById('nextBtnRow').style.display='';
+}
 
 function checkAnswer(){
   const cur=testPool[testIdx];
   const ans=document.getElementById('testInput').value.trim();
   const correct=(testMode==='ja2ko'?cur.korean:cur.japanese).trim();
   testAnswer=correct;
-  const norm=s=>s.replace(/\s/g,'').toLowerCase();
+  // 漢字→ひらがな変換（カタカナもひらがなに統一して比較）
+  const toHira=s=>s.replace(/[\u30A1-\u30F6]/g,c=>String.fromCharCode(c.charCodeAt(0)-0x60));
+  const norm=s=>toHira(s.replace(/\s/g,'')).toLowerCase();
   // 「・」「/」「、」で区切られた訳のどれか1つでも正解
   const variants=correct.split(/[・\/、]/).map(s=>s.trim()).filter(s=>s.length>0);
   const isOk=variants.some(v=>norm(ans)===norm(v))||norm(ans)===norm(correct);
