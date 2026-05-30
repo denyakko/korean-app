@@ -288,9 +288,9 @@ const CAT_KEY = 'korean_categories';
 
 const LEVELS = [
   {key:'unset', label:'未設定', emoji:'⬜', color:'#a08070', bg:'#ede8e3'},
-  {key:'hard',  label:'むずかしい', emoji:'🔴', color:'#c05040', bg:'#fdf0ee'},
+  {key:'hard',  label:'むずかしい', emoji:'🔴', color:'#e05040', bg:'#4a2020'},
   {key:'unsure',label:'あやしい',   emoji:'🟡', color:'#b07830', bg:'#fdf8ee'},
-  {key:'ok',    label:'覚えた',     emoji:'🟢', color:'#3a8050', bg:'#eef8f0'},
+  {key:'ok',    label:'覚えた',     emoji:'🟢', color:'#3a9050', bg:'#1e3828'},
 ];
 const DEFAULT_CATS = ['マイ単語','TOPIK 3級','TOPIK 4級','推し','ドラマ・映画'];
 function getLv(key){ return LEVELS.find(l=>l.key===key)||LEVELS[0]; }
@@ -494,7 +494,7 @@ function renderWords(resetPage){
       return `<button class="stamp-btn${active?' active':''}" style="${activeBg}" onclick="toggleLevel(${w.id},'${l.key}')" title="${l.label}">${l.emoji}</button>`;
     }).join('');
     const cat=w.category||categories[0]||'マイ単語';
-    return `<div style="background:#3d2e28;border-radius:16px;padding:14px 16px;border:1px solid #5a4035;border-left:6px solid ${lv.color};box-shadow:0 2px 12px rgba(80,40,20,.15);margin-bottom:10px">
+    return `<div style="background:${lv.bg};border-radius:16px;padding:14px 16px;border:1px solid #5a4035;border-left:6px solid ${lv.color};box-shadow:0 2px 12px rgba(80,40,20,.15);margin-bottom:10px">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
         <span style="font-size:24px;font-weight:800;color:#f0a878;letter-spacing:-.01em">${esc(w.korean)}</span>
         <button class="speak-btn" onclick="speakWord('${esc(w.korean)}',${w.id})" id="spk-${w.id}">🔈</button>
