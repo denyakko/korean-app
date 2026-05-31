@@ -78,8 +78,8 @@ textarea{background:#f7f3ef;border:1.5px solid #e0d8d0;border-radius:12px;paddin
 .lf-btn{padding:7px 14px;border-radius:20px;border:2px solid #e0d8d0;background:#f7f3ef;color:#a08070;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .2s}
 .lf-btn.active{background:linear-gradient(135deg,#c4724a,#d4956a);color:#fff;border-color:transparent;box-shadow:0 2px 8px rgba(196,114,74,.35);font-weight:700}
 .mode-btns{display:flex;gap:0;margin-bottom:16px;background:#f0ebe5;border-radius:14px;padding:4px}
-.mode-btn{flex:1;padding:11px 8px;border-radius:10px;border:none;background:transparent;color:#b09080;font-weight:700;font-size:13px;cursor:pointer;transition:all .25s;line-height:1.4;font-family:'Klee One',cursive}
-.mode-btn.active{background:#fff;color:#c4724a;box-shadow:0 2px 8px rgba(196,114,74,.2);font-weight:900;font-size:14px}
+.mode-btn{flex:1;padding:11px 8px;border-radius:10px;border:none;background:transparent;color:#b09080;font-weight:700;font-size:13px;cursor:pointer;transition:all .25s;line-height:1.4;font-family:'Klee One',cursive;white-space:nowrap;overflow:hidden}
+.mode-btn.active{background:#fff;color:#c4724a;box-shadow:0 2px 8px rgba(196,114,74,.2);font-weight:900}
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);color:#fff;padding:10px 24px;border-radius:12px;font-weight:700;font-size:14px;z-index:999;box-shadow:0 8px 24px rgba(0,0,0,.4);white-space:nowrap;display:none;transition:opacity .3s}
 </style>
 </head>
@@ -600,7 +600,13 @@ function deleteWord(id){
 }
 
 function toggleLevel(id,key){
-  words=words.map(w=>w.id===id?{...w,level:(w.level||'unset')===key?'unset':key}:w);
+  words=words.map(w=>{
+    if(w.id!==id) return w;
+    const newLevel=(w.level||'unset')===key?'unset':key;
+    // unsetに戻すときはフラグもリセット
+    if(newLevel==='unset') return {...w,level:'unset',ok_ja2ko:false,ok_ko2ja:false};
+    return {...w,level:newLevel};
+  });
   saveWords(); renderAll();
 }
 
@@ -795,7 +801,7 @@ function selfJudge(isOk){
       if(w.id!==cur.id) return w;
       const modeKey=testMode==='ja2ko'?'ok_ja2ko':'ok_ko2ja';
       const updated={...w,[modeKey]:true};
-      if(updated.ok_ja2ko && updated.ok_ko2ja){
+      if(updated.ok_ja2ko===true && updated.ok_ko2ja===true){
         updated.level='ok';
       } else {
         updated.level='unsure';
@@ -833,7 +839,7 @@ function checkAnswer(){
       if(w.id!==cur.id) return w;
       const modeKey=testMode==='ja2ko'?'ok_ja2ko':'ok_ko2ja';
       const updated={...w,[modeKey]:true};
-      if(updated.ok_ja2ko && updated.ok_ko2ja){
+      if(updated.ok_ja2ko===true && updated.ok_ko2ja===true){
         updated.level='ok';
       } else {
         updated.level='unsure';
