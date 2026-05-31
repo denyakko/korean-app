@@ -74,6 +74,12 @@ textarea{background:#f7f3ef;border:1.5px solid #e0d8d0;border-radius:12px;paddin
 .stamp-btn{background:transparent;border:none;cursor:pointer;font-size:20px;padding:3px;border-radius:8px;transition:all .15s;line-height:1}
 .stamp-btn.active{transform:scale(1.2)}
 .speak-btn{background:transparent;border:none;cursor:pointer;font-size:18px;padding:2px 4px;border-radius:6px;line-height:1;transition:transform .15s;flex-shrink:0}
+.lf-scroll{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.lf-btn{padding:7px 14px;border-radius:20px;border:2px solid #e0d8d0;background:#f7f3ef;color:#a08070;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .2s}
+.lf-btn.active{background:linear-gradient(135deg,#c4724a,#d4956a);color:#fff;border-color:transparent;box-shadow:0 2px 8px rgba(196,114,74,.35);font-weight:700}
+.mode-btns{display:flex;gap:0;margin-bottom:16px;background:#f0ebe5;border-radius:14px;padding:4px}
+.mode-btn{flex:1;padding:11px 8px;border-radius:10px;border:none;background:transparent;color:#b09080;font-weight:700;font-size:13px;cursor:pointer;transition:all .25s;line-height:1.4;font-family:'Klee One',cursive}
+.mode-btn.active{background:#fff;color:#c4724a;box-shadow:0 2px 8px rgba(196,114,74,.2);font-weight:900;font-size:14px}
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);color:#fff;padding:10px 24px;border-radius:12px;font-weight:700;font-size:14px;z-index:999;box-shadow:0 8px 24px rgba(0,0,0,.4);white-space:nowrap;display:none;transition:opacity .3s}
 </style>
 </head>
@@ -225,8 +231,8 @@ textarea{background:#f7f3ef;border:1.5px solid #e0d8d0;border-radius:12px;paddin
       <button class="speak-btn" id="resultSpeakBtn" onclick="speakResult()" style="display:none">🔈</button>
     </div>
     <div id="selfJudgeRow" style="display:none;gap:8px;margin-top:10px">
-      <button onclick="selfJudge(true)" style="flex:1;padding:12px;border-radius:10px;border:none;background:#d4826a;color:#fff;font-size:16px;font-weight:700;cursor:pointer">⭕ 合ってた</button>
-      <button onclick="selfJudge(false)" style="flex:1;padding:12px;border-radius:10px;border:none;background:#b06050;color:#fff;font-size:16px;font-weight:700;cursor:pointer">❌ 違った</button>
+      <button onclick="selfJudge(true)" style="flex:1;padding:12px;border-radius:10px;border:none;background:#5a9e6a;color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:'Klee One',cursive">⭕ 合ってた</button>
+      <button onclick="selfJudge(false)" style="flex:1;padding:12px;border-radius:10px;border:none;background:#c04040;color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:'Klee One',cursive">❌ 違った</button>
     </div>
     <div class="btn-row" id="nextBtnRow" style="display:none">
       <button class="btn-primary" onclick="nextQuestion()" style="width:100%">次へ →</button>
@@ -288,9 +294,9 @@ const CAT_KEY = 'korean_categories';
 
 const LEVELS = [
   {key:'unset', label:'未設定', emoji:'⬜', color:'#a08070', bg:'#ede8e3'},
-  {key:'hard',  label:'むずかしい', emoji:'🔴', color:'#e05040', bg:'#4a2020'},
-  {key:'unsure',label:'あやしい',   emoji:'🟡', color:'#b07830', bg:'#fdf8ee'},
-  {key:'ok',    label:'覚えた',     emoji:'🟢', color:'#3a9050', bg:'#1e3828'},
+  {key:'hard',  label:'むずかしい', emoji:'❌', color:'#e87878', bg:'#ffe8e8'},
+  {key:'unsure',label:'あやしい',   emoji:'⚠️', color:'#e8b830', bg:'#fff8d6'},
+  {key:'ok',    label:'覚えた',     emoji:'🟢', color:'#5aaa70', bg:'#e8f8e8'},
 ];
 const DEFAULT_CATS = ['マイ単語','TOPIK 3級','TOPIK 4級','推し','ドラマ・映画'];
 function getLv(key){ return LEVELS.find(l=>l.key===key)||LEVELS[0]; }
@@ -336,6 +342,7 @@ function switchTab(id){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('sec-'+id).classList.add('active');
   ['vocab','test','record','notes'].forEach((t,i)=>{ if(t===id) document.querySelectorAll('.tab-btn')[i].classList.add('active'); });
+  if(id==='vocab') renderAll();
   if(id==='record') renderRecord();
   if(id==='test'){ renderTestCatFilters(); renderLevelFilters(); }
   if(id==='notes'){
@@ -494,22 +501,22 @@ function renderWords(resetPage){
       return `<button class="stamp-btn${active?' active':''}" style="${activeBg}" onclick="toggleLevel(${w.id},'${l.key}')" title="${l.label}">${l.emoji}</button>`;
     }).join('');
     const cat=w.category||categories[0]||'マイ単語';
-    return `<div style="background:${lv.bg};border-radius:16px;padding:14px 16px;border:1px solid #5a4035;border-left:6px solid ${lv.color};box-shadow:0 2px 12px rgba(80,40,20,.15);margin-bottom:10px">
+    return `<div style="background:${lv.bg};border-radius:16px;padding:14px 16px;border:1px solid ${lv.color}88;border-left:6px solid ${lv.color};box-shadow:0 2px 8px rgba(180,140,120,.1);margin-bottom:10px">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
-        <span style="font-size:24px;font-weight:800;color:#f0a878;letter-spacing:-.01em">${esc(w.korean)}</span>
+        <span style="font-size:24px;font-weight:800;color:#c4724a;letter-spacing:-.01em">${esc(w.korean)}</span>
         <button class="speak-btn" onclick="speakWord('${esc(w.korean)}',${w.id})" id="spk-${w.id}">🔈</button>
-        <span style="font-size:13px;color:#d4b8a8;font-weight:600">${esc(w.japanese)}</span>
+        <span style="font-size:13px;color:#7a6050;font-weight:600">${esc(w.japanese)}</span>
       </div>
       <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap">
-        <span style="font-size:11px;font-weight:700;padding:2px 10px;border-radius:10px;background:rgba(240,168,120,.2);color:#f0a878;border:1px solid rgba(240,168,120,.3)">${esc(cat)}</span>
-        <span style="font-size:11px;color:#a08070;background:rgba(255,255,255,.08);padding:3px 8px;border-radius:6px;border:1px solid rgba(255,255,255,.1);font-weight:600">${w.date||'—'}</span>
+        <span style="font-size:11px;font-weight:700;padding:2px 10px;border-radius:10px;background:rgba(196,114,74,.15);color:#c4724a;border:1px solid rgba(196,114,74,.25)">${esc(cat)}</span>
+        <span style="font-size:11px;color:#a08070;background:rgba(0,0,0,.05);padding:3px 8px;border-radius:6px;border:1px solid rgba(0,0,0,.08);font-weight:600">${w.date||'—'}</span>
       </div>
-      ${w.memo?`<div style="font-size:13px;color:#c0a090;margin-bottom:8px;font-weight:600">📝 ${esc(w.memo)}</div>`:''}
-      <div style="display:flex;align-items:center;gap:4px;padding-top:8px;border-top:1px solid rgba(255,255,255,.1)">
+      ${w.memo?`<div style="font-size:13px;color:#a08070;margin-bottom:8px;font-weight:600">📝 ${esc(w.memo)}</div>`:''}
+      <div style="display:flex;align-items:center;gap:4px;padding-top:8px;border-top:1px solid rgba(0,0,0,.08)">
         ${stamps}
         <div style="flex:1"></div>
-        <button style="background:rgba(255,255,255,.12);color:#d4b8a8;border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:5px 12px;font-size:12px;cursor:pointer;font-weight:600;font-family:'Klee One',cursive" onclick="editWord(${w.id})">編集</button>
-        <button style="background:rgba(200,80,60,.25);color:#f0a090;border:1px solid rgba(200,80,60,.3);border-radius:8px;padding:5px 12px;font-size:12px;cursor:pointer;font-weight:600;font-family:'Klee One',cursive" onclick="deleteWord(${w.id})">削除</button>
+        <button style="background:rgba(160,128,112,.15);color:#8a6050;border:1px solid rgba(160,128,112,.25);border-radius:8px;padding:5px 12px;font-size:12px;cursor:pointer;font-weight:600;font-family:'Klee One',cursive" onclick="editWord(${w.id})">編集</button>
+        <button style="background:rgba(200,80,60,.15);color:#c05040;border:1px solid rgba(200,80,60,.25);border-radius:8px;padding:5px 12px;font-size:12px;cursor:pointer;font-weight:600;font-family:'Klee One',cursive" onclick="deleteWord(${w.id})">削除</button>
       </div>
     </div>`;
   }).join('');
@@ -678,13 +685,15 @@ function setTestCatFilter(cat){
 }
 
 function renderLevelFilters(){
-  const counts=getCounts();
+  // カテゴリフィルター適用後の習熟度カウント
+  const filteredWords=words.filter(w=>testCatFilter==='all'||(w.category||categories[0]||'マイ単語')===testCatFilter);
+  const counts={unset:0,hard:0,unsure:0,ok:0};
+  filteredWords.forEach(w=>{ const k=w.level||'unset'; counts[k]=(counts[k]||0)+1; });
   const el=document.getElementById('levelFilters');
   const allBtn=`<button class="lf-btn${testLevelFilter==='all'?' active':''}" onclick="setTestLevelFilter('all')">すべて（${getTestPool().length}）</button>`;
   const lvBtns=LEVELS.slice(1).map(l=>{
     const active=testLevelFilter===l.key;
-    const style=active?`border-color:${l.color};color:${l.color}`:'';
-    return `<button class="lf-btn${active?' active':''}" style="${style}" onclick="setTestLevelFilter('${l.key}')">${l.emoji} ${l.label}（${counts[l.key]||0}）</button>`;
+    return `<button class="lf-btn${active?' active':''}" onclick="setTestLevelFilter('${l.key}')">${l.emoji} ${l.label}（${counts[l.key]||0}）</button>`;
   }).join('');
   el.innerHTML=allBtn+lvBtns;
   updateTestCount();
@@ -780,7 +789,7 @@ function selfJudge(isOk){
   const cur=testPool[testIdx];
   testScore.correct+=isOk?1:0; testScore.wrong+=isOk?0:1;
   if(!isOk) wrongList.push({...cur,yourAnswer:'（自己採点：不正解）'});
-  // 習熟度更新（日→韓と韓→日両方正解で🟢）
+  // 習熟度更新（両方正解→🟢、片方正解→⚠️）
   if(isOk){
     words=words.map(w=>{
       if(w.id!==cur.id) return w;
@@ -788,7 +797,7 @@ function selfJudge(isOk){
       const updated={...w,[modeKey]:true};
       if(updated.ok_ja2ko && updated.ok_ko2ja){
         updated.level='ok';
-      } else if(w.level==='unset'||w.level==='hard'){
+      } else {
         updated.level='unsure';
       }
       return updated;
@@ -818,7 +827,7 @@ function checkAnswer(){
   const isOk=variants.some(v=>norm(ans)===norm(v))||norm(ans)===norm(correct);
   testScore.correct+=isOk?1:0; testScore.wrong+=isOk?0:1;
   if(!isOk) wrongList.push({...cur,yourAnswer:ans});
-  // 習熟度更新（日→韓と韓→日両方正解で🟢）
+  // 習熟度更新（両方正解→🟢、片方正解→⚠️）
   if(isOk){
     words=words.map(w=>{
       if(w.id!==cur.id) return w;
@@ -826,7 +835,7 @@ function checkAnswer(){
       const updated={...w,[modeKey]:true};
       if(updated.ok_ja2ko && updated.ok_ko2ja){
         updated.level='ok';
-      } else if(w.level==='unset'||w.level==='hard'){
+      } else {
         updated.level='unsure';
       }
       return updated;
