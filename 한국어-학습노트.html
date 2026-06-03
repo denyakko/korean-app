@@ -80,6 +80,17 @@ textarea{background:#f7f3ef;border:1.5px solid #e0d8d0;border-radius:12px;paddin
 .mode-btns{display:flex;gap:0;margin-bottom:16px;background:#f0ebe5;border-radius:14px;padding:4px}
 .mode-btn{flex:1;padding:11px 8px;border-radius:10px;border:none;background:transparent;color:#b09080;font-weight:700;font-size:13px;cursor:pointer;transition:all .25s;line-height:1.4;font-family:'Klee One',cursive;white-space:nowrap;overflow:hidden}
 .mode-btn.active{background:#fff;color:#c4724a;box-shadow:0 2px 8px rgba(196,114,74,.2);font-weight:900}
+.listen-play-btn{background:linear-gradient(135deg,#d4826a,#c4956a);border:none;border-radius:50%;width:80px;height:80px;font-size:32px;cursor:pointer;box-shadow:0 4px 16px rgba(212,130,106,.4);transition:transform .15s}
+.listen-play-btn:active{transform:scale(.95)}
+.streak-box{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#d4826a,#c4956a);border-radius:16px;padding:14px 18px;margin-bottom:16px;box-shadow:0 4px 12px rgba(212,130,106,.25)}
+.streak-fire{font-size:36px;line-height:1}
+.streak-num{font-size:40px;font-weight:900;color:#fff;line-height:1}
+.streak-label{font-size:13px;color:rgba(255,255,255,.85);font-weight:600}
+.streak-best{font-size:11px;color:rgba(255,255,255,.7);margin-top:2px}
+.graph-bar-wrap{display:flex;align-items:flex-end;gap:4px;height:80px;margin:12px 0}
+.graph-bar{flex:1;border-radius:6px 6px 0 0;transition:height .4s ease;min-height:4px}
+.graph-label{display:flex;gap:4px;justify-content:space-between}
+.graph-label span{flex:1;text-align:center;font-size:10px;color:#a08070}
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);color:#fff;padding:10px 24px;border-radius:12px;font-weight:700;font-size:14px;z-index:999;box-shadow:0 8px 24px rgba(0,0,0,.4);white-space:nowrap;display:none;transition:opacity .3s}
 </style>
 </head>
@@ -129,6 +140,7 @@ textarea{background:#f7f3ef;border:1.5px solid #e0d8d0;border-radius:12px;paddin
   <button class="tab-btn" onclick="switchTab('test')">テスト</button>
   <button class="tab-btn" onclick="switchTab('record')">記録</button>
   <button class="tab-btn" onclick="switchTab('notes')">ノート</button>
+  <button class="tab-btn" onclick="switchTab('listen')">聴く</button>
 </nav>
 
 <main>
@@ -284,6 +296,99 @@ textarea{background:#f7f3ef;border:1.5px solid #e0d8d0;border-radius:12px;paddin
   </div>
   <div id="noteList"></div>
 </div>
+
+<!-- ===== 聴く ===== -->
+<div id="sec-listen" class="section">
+
+  <!-- リスニングクイズ -->
+  <div class="card" id="listenQuizCard">
+    <div class="card-title">🎧 リスニングクイズ</div>
+    <p style="font-size:13px;color:#a08070;margin-bottom:14px">音声を聞いて日本語訳を答えます。テキストは表示されません。</p>
+    <div id="listenQuizSetup">
+      <div class="form-group">
+        <label class="field-label">カテゴリ</label>
+        <div class="lf-scroll" id="listenCatFilter"></div>
+      </div>
+      <div class="form-group" style="margin-top:10px">
+        <label class="field-label">出題数</label>
+        <input type="number" id="listenCount" value="10" min="1" style="width:80px">
+      </div>
+      <div class="btn-row">
+        <button class="btn-primary" onclick="startListenQuiz()">クイズ開始</button>
+      </div>
+    </div>
+    <div id="listenQuizMain" style="display:none">
+      <div class="progress-bar"><div class="progress-fill" id="listenProgress" style="width:0%"></div></div>
+      <div class="test-counter" id="listenCounter"></div>
+      <div style="text-align:center;margin:24px 0">
+        <button id="listenPlayBtn" onclick="playListenWord()" style="background:linear-gradient(135deg,#d4826a,#c4956a);border:none;border-radius:50%;width:80px;height:80px;font-size:32px;cursor:pointer;box-shadow:0 4px 16px rgba(212,130,106,.4)">🔈</button>
+        <div style="font-size:13px;color:#a08070;margin-top:8px">タップして再生</div>
+      </div>
+      <div style="text-align:center;color:#a08070;font-size:13px;margin-bottom:8px">頭の中で意味を考えてみましょう</div>
+      <div class="btn-row">
+        <button class="btn-primary" id="listenActionBtn" onclick="showListenAnswer()" style="width:100%">答えを見る</button>
+      </div>
+      <div id="listenResultBanner" style="display:none" class="result-banner"></div>
+      <div id="listenSelfJudge" style="display:none;gap:8px;margin-top:10px">
+        <button onclick="listenSelfJudge(true)" style="flex:1;padding:12px;border-radius:10px;border:none;background:#5a9e6a;color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:'Klee One',cursive">⭕ 合ってた</button>
+        <button onclick="listenSelfJudge(false)" style="flex:1;padding:12px;border-radius:10px;border:none;background:#c04040;color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:'Klee One',cursive">❌ 違った</button>
+      </div>
+      <div class="btn-row" id="listenNextRow" style="display:none">
+        <button class="btn-primary" onclick="nextListenQuestion()" style="width:100%">次へ →</button>
+      </div>
+    </div>
+    <div id="listenQuizDone" style="display:none">
+      <div class="score-box">
+        <div class="score-pct" id="listenScorePct"></div>
+        <div class="score-detail" id="listenScoreDetail"></div>
+      </div>
+      <div id="listenWrongList" class="wrong-list"></div>
+      <div class="btn-row">
+        <button class="btn-primary" onclick="resetListenQuiz()">もう一度</button>
+        <button class="btn-ghost" onclick="switchTab('vocab')">単語帳へ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 聞き流し -->
+  <div class="card">
+    <div class="card-title">▶️ 聞き流し</div>
+    <p style="font-size:13px;color:#a08070;margin-bottom:14px">韓国語→日本語訳の順で自動再生します。ながら勉強に！</p>
+    <div id="flowSetup">
+      <div class="form-group">
+        <label class="field-label">カテゴリ</label>
+        <div class="lf-scroll" id="flowCatFilter"></div>
+      </div>
+      <div class="form-group" style="margin-top:10px">
+        <label class="field-label">間隔（秒）</label>
+        <input type="number" id="flowInterval" value="3" min="1" max="10" style="width:80px">
+      </div>
+      <div class="btn-row">
+        <button class="btn-primary" onclick="startFlow()">再生開始</button>
+      </div>
+    </div>
+    <div id="flowMain" style="display:none">
+      <div class="progress-bar"><div class="progress-fill" id="flowProgress" style="width:0%"></div></div>
+      <div class="test-counter" id="flowCounter"></div>
+      <div style="text-align:center;padding:20px 0">
+        <div id="flowKorean" style="font-size:28px;font-weight:800;color:#c4724a;margin-bottom:8px"></div>
+        <div id="flowJapanese" style="font-size:16px;color:#a08070;min-height:24px"></div>
+        <div id="flowStatus" style="font-size:12px;color:#c0a898;margin-top:8px"></div>
+      </div>
+      <div class="btn-row" style="justify-content:center">
+        <button class="btn-ghost" onclick="stopFlow()">⏹ 停止</button>
+      </div>
+    </div>
+    <div id="flowDone" style="display:none">
+      <div style="text-align:center;padding:20px 0;color:#a08070;font-size:15px">🎉 再生完了！</div>
+      <div class="btn-row">
+        <button class="btn-primary" onclick="resetFlow()">もう一度</button>
+        <button class="btn-ghost" onclick="switchTab('vocab')">単語帳へ</button>
+      </div>
+    </div>
+  </div>
+
+</div>
 </main>
 
 <div id="toast"></div>
@@ -341,10 +446,11 @@ function switchTab(id){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('sec-'+id).classList.add('active');
-  ['vocab','test','record','notes'].forEach((t,i)=>{ if(t===id) document.querySelectorAll('.tab-btn')[i].classList.add('active'); });
+  ['vocab','test','record','notes','listen'].forEach((t,i)=>{ if(t===id) document.querySelectorAll('.tab-btn')[i].classList.add('active'); });
   if(id==='vocab') renderAll();
   if(id==='record') renderRecord();
   if(id==='test'){ renderTestCatFilters(); renderLevelFilters(); }
+  if(id==='listen') renderListen();
   if(id==='notes'){
     if(openMonths.size===0 && notes_data.length>0){
       const latest=notes_data.map(n=>n.date?n.date.slice(0,7):'不明').sort().reverse()[0];
@@ -561,6 +667,7 @@ function handleSave(){
   } else {
     words.push({id:Date.now(),korean,japanese,memo,category,date,level:'unset',addedAt:new Date().toISOString()});
     showToast('追加しました ✓');
+    recordActivity();
   }
   document.getElementById('fKorean').value='';
   document.getElementById('fJapanese').value='';
@@ -869,6 +976,7 @@ function nextQuestion(){
 }
 
 function showDone(){
+  recordActivity();
   document.getElementById('testQ').style.display='none';
   document.getElementById('testDone').style.display='';
   const pct=Math.round(testScore.correct/testPool.length*100);
@@ -892,6 +1000,9 @@ function resetTest(){
 
 // ===== Record =====
 function renderRecord(){
+  recordActivity();
+  renderStreak();
+  renderWeekGraph();
   const counts=getCounts();
   const chips=LEVELS.slice(1).map(l=>`
     <div class="stat-chip" style="background:${l.bg};border:1px solid ${l.color}">
@@ -923,6 +1034,38 @@ function renderRecord(){
       }).join('')}
     </div>`).join('');
   document.getElementById('recordList').innerHTML=html||'<div class="empty">単語がありません。</div>';
+}
+
+
+function renderWeekGraph(){
+  const activity=loadActivity();
+  const days=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date(); d.setDate(d.getDate()-i);
+    days.push(d.toISOString().slice(0,10));
+  }
+  const counts=days.map(d=>activity[d]||0);
+  const max=Math.max(...counts,1);
+  const dayNames=['日','月','火','水','木','金','土'];
+
+  const bars=days.map((d,i)=>{
+    const h=Math.round((counts[i]/max)*70)+4;
+    const isToday=d===today();
+    const color=isToday?'#d4826a':'#e8d5cc';
+    return `<div class="graph-bar" style="height:${h}px;background:${color}" title="${counts[i]}回"></div>`;
+  }).join('');
+
+  const labels=days.map((d,i)=>{
+    const dn=new Date(d+'T00:00:00');
+    const isToday=d===today();
+    return `<span style="${isToday?'color:#d4826a;font-weight:700':''}">${ dayNames[dn.getDay()]}</span>`;
+  }).join('');
+
+  const total=counts.reduce((a,b)=>a+b,0);
+
+  document.getElementById('weekGraph').innerHTML=bars;
+  document.getElementById('weekLabels').innerHTML=labels;
+  document.getElementById('weekTotal').textContent=`今週の操作数：${total}回`;
 }
 
 // ===== Lesson Notes =====
@@ -1048,6 +1191,232 @@ function toggleMonth(month){
   if(openMonths.has(month)) openMonths.delete(month);
   else openMonths.add(month);
   renderNotes();
+}
+
+
+
+// ===== ストリーク =====
+const STREAK_KEY='korean_streak';
+const ACTIVITY_KEY='korean_activity';
+
+function loadStreak(){ try{ return JSON.parse(localStorage.getItem(STREAK_KEY)||'{"current":0,"best":0,"lastDate":""}'); }catch{return{current:0,best:0,lastDate:''}; } }
+function saveStreak(s){ try{ localStorage.setItem(STREAK_KEY,JSON.stringify(s)); }catch{} }
+function loadActivity(){ try{ return JSON.parse(localStorage.getItem(ACTIVITY_KEY)||'{}'); }catch{return{}; } }
+function saveActivity(a){ try{ localStorage.setItem(ACTIVITY_KEY,JSON.stringify(a)); }catch{} }
+
+function recordActivity(){
+  const t=today();
+  const streak=loadStreak();
+  const activity=loadActivity();
+  activity[t]=(activity[t]||0)+1;
+  saveActivity(activity);
+  if(streak.lastDate===t) return; // 今日すでに記録済み
+  const yesterday=new Date(); yesterday.setDate(yesterday.getDate()-1);
+  const yStr=yesterday.toISOString().slice(0,10);
+  if(streak.lastDate===yStr){
+    streak.current+=1;
+  } else if(streak.lastDate!==t){
+    streak.current=1;
+  }
+  streak.best=Math.max(streak.best,streak.current);
+  streak.lastDate=t;
+  saveStreak(streak);
+}
+
+function renderStreak(){
+  const streak=loadStreak();
+  const el=document.getElementById('streakBox');
+  if(!el) return;
+  const isToday=streak.lastDate===today();
+  el.innerHTML=`
+    <div class="streak-fire">${isToday?'🔥':'🌙'}</div>
+    <div>
+      <div style="display:flex;align-items:baseline;gap:6px">
+        <div class="streak-num">${streak.current}</div>
+        <div class="streak-label">日連続！</div>
+      </div>
+      <div class="streak-best">🏆 最高記録 ${streak.best}日</div>
+    </div>
+    <div style="margin-left:auto;text-align:right">
+      <div style="font-size:11px;color:rgba(255,255,255,.7)">${isToday?'✅ 今日達成':'今日まだ！'}</div>
+    </div>`;
+}
+
+// ===== 聴く機能 =====
+let listenPool=[], listenIdx=0, listenScore={correct:0,wrong:0}, listenWrong=[];
+let listenCatFilter='all', listenPhase='question';
+let flowPool=[], flowIdx=0, flowTimer=null, flowCatFilter='all';
+
+function renderListen(){
+  renderListenCatFilter();
+  renderFlowCatFilter();
+}
+
+function renderListenCatFilter(){
+  const el=document.getElementById('listenCatFilter');
+  if(!el) return;
+  let html=`<button class="lf-btn${listenCatFilter==='all'?' active':''}" onclick="setListenCat('all')">すべて（${words.length}）</button>`;
+  categories.forEach(c=>{
+    const cnt=words.filter(w=>(w.category||categories[0]||'マイ単語')===c).length;
+    html+=`<button class="lf-btn${listenCatFilter===c?' active':''}" onclick="setListenCat('${esc(c)}')">${esc(c)}（${cnt}）</button>`;
+  });
+  el.innerHTML=html;
+  const avail=getListenPool().length;
+  document.getElementById('listenCount').max=Math.max(1,avail);
+  document.getElementById('listenCount').value=Math.min(parseInt(document.getElementById('listenCount').value)||10,avail||1);
+}
+
+function setListenCat(cat){ listenCatFilter=cat; renderListenCatFilter(); }
+function getListenPool(){ return words.filter(w=>listenCatFilter==='all'||(w.category||categories[0]||'マイ単語')===listenCatFilter); }
+
+function startListenQuiz(){
+  const pool=getListenPool();
+  if(pool.length===0){ showToast('対象の単語がありません','err'); return; }
+  const count=Math.min(parseInt(document.getElementById('listenCount').value)||10,pool.length);
+  listenPool=[...pool].sort(()=>Math.random()-.5).slice(0,count);
+  listenIdx=0; listenScore={correct:0,wrong:0}; listenWrong=[]; listenPhase='question';
+  document.getElementById('listenQuizSetup').style.display='none';
+  document.getElementById('listenQuizDone').style.display='none';
+  document.getElementById('listenQuizMain').style.display='';
+  showListenQuestion();
+}
+
+function showListenQuestion(){
+  listenPhase='question';
+  const cur=listenPool[listenIdx];
+  document.getElementById('listenProgress').style.width=(listenIdx/listenPool.length*100)+'%';
+  document.getElementById('listenCounter').textContent=(listenIdx+1)+' / '+listenPool.length;
+  document.getElementById('listenResultBanner').style.display='none';
+  document.getElementById('listenResultBanner').style.background='';
+  document.getElementById('listenResultBanner').style.color='';
+  document.getElementById('listenNextRow').style.display='none';
+  document.getElementById('listenSelfJudge').style.display='none';
+  document.getElementById('listenActionBtn').style.display='';
+  document.getElementById('listenPlayBtn').textContent='🔈';
+  // 自動再生
+  setTimeout(()=>playListenWord(),400);
+}
+
+function playListenWord(){
+  const cur=listenPool[listenIdx]; if(!cur) return;
+  const btn=document.getElementById('listenPlayBtn');
+  btn.textContent='🔊';
+  speakKorean(cur.korean,()=>btn.textContent='🔈');
+}
+
+function showListenAnswer(){
+  const cur=listenPool[listenIdx];
+  document.getElementById('listenActionBtn').style.display='none';
+  const banner=document.getElementById('listenResultBanner');
+  banner.style.display='flex'; banner.className='result-banner';
+  banner.style.background='#f5ede6'; banner.style.color='#7a4030';
+  banner.textContent='📖 '+cur.japanese;
+  document.getElementById('listenSelfJudge').style.display='flex';
+  listenPhase='result';
+}
+
+function listenSelfJudge(isOk){
+  const cur=listenPool[listenIdx];
+  listenScore.correct+=isOk?1:0; listenScore.wrong+=isOk?0:1;
+  if(!isOk) listenWrong.push({...cur,yourAnswer:'（自己採点：不正解）'});
+  const banner=document.getElementById('listenResultBanner');
+  banner.className='result-banner '+(isOk?'correct':'wrong');
+  banner.style.background=''; banner.style.color='';
+  banner.textContent=isOk?'⭕ 正解！':'❌ 不正解';
+  document.getElementById('listenSelfJudge').style.display='none';
+  document.getElementById('listenNextRow').style.display='';
+  listenPhase='result';
+}
+
+function nextListenQuestion(){
+  if(listenIdx+1>=listenPool.length){ showListenDone(); return; }
+  listenIdx++; showListenQuestion();
+}
+
+function showListenDone(){
+  recordActivity();
+  document.getElementById('listenQuizMain').style.display='none';
+  document.getElementById('listenQuizDone').style.display='';
+  const pct=Math.round(listenScore.correct/listenPool.length*100);
+  document.getElementById('listenScorePct').textContent=pct+'%';
+  document.getElementById('listenScoreDetail').innerHTML=`<span style="color:#5a9e6a">正解 ${listenScore.correct}</span>　<span style="color:#c04040">不正解 ${listenScore.wrong}</span>`;
+  const ws=document.getElementById('listenWrongList');
+  if(listenWrong.length===0){ ws.innerHTML=''; return; }
+  ws.innerHTML='<div class="wrong-title">❌ 間違えた単語</div>'+
+    listenWrong.map(w=>`<div class="wrong-item"><div><b>${esc(w.japanese)}</b> → 正解：<span style="color:#5a9e6a">${esc(w.korean)}</span></div>${w.yourAnswer?`<div class="your-ans">あなた：${esc(w.yourAnswer)}</div>`:''}</div>`).join('');
+}
+
+function resetListenQuiz(){
+  document.getElementById('listenQuizDone').style.display='none';
+  document.getElementById('listenQuizMain').style.display='none';
+  document.getElementById('listenQuizSetup').style.display='';
+  renderListenCatFilter();
+}
+
+// ===== 聞き流し =====
+function renderFlowCatFilter(){
+  const el=document.getElementById('flowCatFilter');
+  if(!el) return;
+  let html=`<button class="lf-btn${flowCatFilter==='all'?' active':''}" onclick="setFlowCat('all')">すべて（${words.length}）</button>`;
+  categories.forEach(c=>{
+    const cnt=words.filter(w=>(w.category||categories[0]||'マイ単語')===c).length;
+    html+=`<button class="lf-btn${flowCatFilter===c?' active':''}" onclick="setFlowCat('${esc(c)}')">${esc(c)}（${cnt}）</button>`;
+  });
+  el.innerHTML=html;
+}
+
+function setFlowCat(cat){ flowCatFilter=cat; renderFlowCatFilter(); }
+function getFlowPool(){ return words.filter(w=>flowCatFilter==='all'||(w.category||categories[0]||'マイ単語')===flowCatFilter); }
+
+function startFlow(){
+  const pool=getFlowPool();
+  if(pool.length===0){ showToast('対象の単語がありません','err'); return; }
+  flowPool=[...pool].sort(()=>Math.random()-.5);
+  flowIdx=0;
+  document.getElementById('flowSetup').style.display='none';
+  document.getElementById('flowDone').style.display='none';
+  document.getElementById('flowMain').style.display='';
+  playFlowWord();
+}
+
+function playFlowWord(){
+  if(flowIdx>=flowPool.length){ stopFlow(); document.getElementById('flowDone').style.display=''; return; }
+  const cur=flowPool[flowIdx];
+  const interval=parseInt(document.getElementById('flowInterval').value)||3;
+  document.getElementById('flowProgress').style.width=(flowIdx/flowPool.length*100)+'%';
+  document.getElementById('flowCounter').textContent=(flowIdx+1)+' / '+flowPool.length;
+  document.getElementById('flowKorean').textContent=cur.korean;
+  document.getElementById('flowJapanese').textContent='';
+  document.getElementById('flowStatus').textContent='▶ 再生中…';
+  // 韓国語を読み上げ
+  speakKorean(cur.korean,()=>{
+    document.getElementById('flowStatus').textContent='…';
+    flowTimer=setTimeout(()=>{
+      // 日本語訳を表示＋読み上げ
+      if(!document.getElementById('flowMain').style.display==='none') return;
+      document.getElementById('flowJapanese').textContent=cur.japanese;
+      document.getElementById('flowStatus').textContent='🇯🇵 '+cur.japanese;
+      // 次の単語へ
+      flowTimer=setTimeout(()=>{
+        flowIdx++;
+        playFlowWord();
+      }, interval*1000);
+    }, 800);
+  });
+}
+
+function stopFlow(){
+  if(flowTimer){ clearTimeout(flowTimer); flowTimer=null; }
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  document.getElementById('flowMain').style.display='none';
+  document.getElementById('flowSetup').style.display='';
+}
+
+function resetFlow(){
+  document.getElementById('flowDone').style.display='none';
+  document.getElementById('flowMain').style.display='none';
+  document.getElementById('flowSetup').style.display='';
+  renderFlowCatFilter();
 }
 
 </script>
