@@ -99,37 +99,50 @@ textarea{background:#f7f3ef;border:1.5px solid #e0d8d0;border-radius:12px;paddin
 
 <header>
   <div style="display:flex;align-items:center;gap:10px">
-    <!-- トイプーちゃん シンプル版 -->
-    <svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <!-- 耳（左ふわ） -->
-      <circle cx="10" cy="26" r="9" fill="#c8985a"/>
-      <circle cx="10" cy="26" r="6" fill="#d4a870"/>
-      <!-- 耳（右ふわ） -->
-      <circle cx="42" cy="26" r="9" fill="#c8985a"/>
-      <circle cx="42" cy="26" r="6" fill="#d4a870"/>
-      <!-- 顔 -->
-      <circle cx="26" cy="28" r="18" fill="#d4a870"/>
-      <!-- 顔ハイライト -->
-      <circle cx="26" cy="26" r="13" fill="#ddb880" opacity="0.5"/>
-      <!-- 口まわり -->
-      <ellipse cx="26" cy="34" rx="8" ry="5.5" fill="#e0c090"/>
+    <!-- くまさんが鉢植えを持ってる -->
+    <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- 鉢 -->
+      <path d="M20 48 L22 40 L34 40 L36 48 Z" fill="#c4724a"/>
+      <rect x="19" y="38" width="18" height="3" rx="1.5" fill="#d4826a"/>
+      <!-- 土 -->
+      <ellipse cx="28" cy="39" rx="7" ry="2" fill="#8B5E3C"/>
+      <!-- 植物の茎 -->
+      <path d="M28 38 Q26 32 24 27" stroke="#5a8a3a" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M28 38 Q30 30 33 26" stroke="#5a8a3a" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M28 38 Q28 30 28 23" stroke="#5a8a3a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <!-- 葉っぱ -->
+      <ellipse cx="22" cy="25" rx="5" ry="3" fill="#6aaa4a" transform="rotate(-30 22 25)"/>
+      <ellipse cx="34" cy="24" rx="5" ry="3" fill="#7aba5a" transform="rotate(30 34 24)"/>
+      <ellipse cx="28" cy="21" rx="4" ry="3" fill="#5a9a3a"/>
+      <!-- 新芽 -->
+      <ellipse cx="28" cy="17" rx="2.5" ry="3.5" fill="#8aca6a"/>
+      <!-- くまさん耳 -->
+      <circle cx="17" cy="9" r="5" fill="#c8905a"/>
+      <circle cx="39" cy="9" r="5" fill="#c8905a"/>
+      <circle cx="17" cy="9" r="3" fill="#d4a870"/>
+      <circle cx="39" cy="9" r="3" fill="#d4a870"/>
+      <!-- くまさん顔 -->
+      <circle cx="28" cy="17" r="11" fill="#d4a870"/>
+      <ellipse cx="28" cy="20" rx="5" ry="3.5" fill="#e0c090"/>
       <!-- ほっぺ -->
-      <ellipse cx="15" cy="32" rx="4" ry="3" fill="#f4a0a0" opacity="0.6"/>
-      <ellipse cx="37" cy="32" rx="4" ry="3" fill="#f4a0a0" opacity="0.6"/>
-      <!-- 目（左） -->
-      <circle cx="20" cy="27" r="3.2" fill="#1a0a00"/>
-      <circle cx="21.2" cy="25.8" r="1.1" fill="white"/>
-      <!-- 目（右） -->
-      <circle cx="32" cy="27" r="3.2" fill="#1a0a00"/>
-      <circle cx="33.2" cy="25.8" r="1.1" fill="white"/>
+      <ellipse cx="21" cy="19" rx="3" ry="2" fill="#f4a0a0" opacity="0.6"/>
+      <ellipse cx="35" cy="19" rx="3" ry="2" fill="#f4a0a0" opacity="0.6"/>
+      <!-- 目 -->
+      <circle cx="24" cy="15" r="2.2" fill="#1a0a00"/>
+      <circle cx="24.8" cy="14.2" r="0.8" fill="white"/>
+      <circle cx="32" cy="15" r="2.2" fill="#1a0a00"/>
+      <circle cx="32.8" cy="14.2" r="0.8" fill="white"/>
       <!-- 鼻 -->
-      <ellipse cx="26" cy="33" rx="2.8" ry="2" fill="#1a0a00"/>
-      <!-- 口 -->
-      <path d="M22.5 36 Q26 39.5 29.5 36" stroke="#1a0a00" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+      <ellipse cx="28" cy="19" rx="2" ry="1.4" fill="#1a0a00"/>
+      <!-- 口（笑顔） -->
+      <path d="M25.5 21.5 Q28 24 30.5 21.5" stroke="#1a0a00" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+      <!-- 腕 -->
+      <path d="M17 27 Q15 33 19 38" stroke="#c8905a" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      <path d="M39 27 Q41 33 37 38" stroke="#c8905a" stroke-width="3.5" fill="none" stroke-linecap="round"/>
     </svg>
-    <div style="display:flex;flex-direction:column;line-height:1.1">
-      <span class="logo">한국어 노트</span>
-      <span class="logo-sub">学習ノート</span>
+    <div style="display:flex;flex-direction:column;line-height:1.2">
+      <span class="logo">나만의 단어장</span>
+      <span class="logo-sub">自分色に育てよう</span>
     </div>
   </div>
   <div class="word-count" id="wordCount">0語</div>
