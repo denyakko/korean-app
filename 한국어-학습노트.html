@@ -9,12 +9,12 @@
 <meta name="theme-color" content="#f7f3ef">
 <title>한국어 学習ノート</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
 /* ===== Korean Cafe Natural Design ===== */
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{background:#f7f3ef;color:#2d2420;font-family:'Klee One','Noto Sans KR',cursive;min-height:100vh;overflow-x:hidden;font-weight:600}
-input,button,label,select{font-family:'Klee One','Noto Sans KR',cursive}
+body{background:#f7f3ef;color:#2d2420;font-family:'M PLUS Rounded 1c','Noto Sans KR',sans-serif;min-height:100vh;overflow-x:hidden;font-weight:600}
+input,button,label,select{font-family:'M PLUS Rounded 1c','Noto Sans KR',sans-serif}
 /* 背景デコ */
 .bg1{position:fixed;top:-100px;right:-60px;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(255,192,168,.2) 0%,transparent 65%);pointer-events:none;z-index:0}
 .bg2{position:fixed;bottom:-80px;left:-60px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(255,220,150,.15) 0%,transparent 65%);pointer-events:none;z-index:0}
@@ -64,7 +64,7 @@ select option{background:#fff;color:#2d2420}
 .note-words{margin-top:10px;padding-top:10px;border-top:1px solid #f0e8e0}
 .note-words-title{font-size:11px;color:#64748b;font-weight:700;margin-bottom:6px}
 .note-word-chip{display:inline-block;background:#fdf0eb;color:#c4724a;font-size:12px;padding:2px 8px;border-radius:10px;margin:2px;border:1px solid #f0d8cc}
-textarea{background:#f7f3ef;border:1.5px solid #e0d8d0;border-radius:12px;padding:10px 14px;color:#2d2420;font-size:15px;outline:none;width:100%;resize:vertical;min-height:100px;font-family:'Klee One','Noto Sans KR',cursive;line-height:1.6}
+textarea{background:#f7f3ef;border:1.5px solid #e0d8d0;border-radius:12px;padding:10px 14px;color:#2d2420;font-size:15px;outline:none;width:100%;resize:vertical;min-height:100px;font-family:'M PLUS Rounded 1c','Noto Sans KR',sans-serif;line-height:1.6}
 /* Paging */
 .paging-row{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px}
 .page-btn{background:#f7f3ef;border:1px solid #e0d8d0;color:#a08070;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:700;cursor:pointer}
@@ -78,7 +78,7 @@ textarea{background:#f7f3ef;border:1.5px solid #e0d8d0;border-radius:12px;paddin
 .lf-btn{padding:7px 14px;border-radius:20px;border:2px solid #e0d8d0;background:#f7f3ef;color:#a08070;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .2s}
 .lf-btn.active{background:linear-gradient(135deg,#c4724a,#d4956a);color:#fff;border-color:transparent;box-shadow:0 2px 8px rgba(196,114,74,.35);font-weight:700}
 .mode-btns{display:flex;gap:0;margin-bottom:16px;background:#f0ebe5;border-radius:14px;padding:4px}
-.mode-btn{flex:1;padding:11px 8px;border-radius:10px;border:none;background:transparent;color:#b09080;font-weight:700;font-size:13px;cursor:pointer;transition:all .25s;line-height:1.4;font-family:'Klee One',cursive;white-space:nowrap;overflow:hidden}
+.mode-btn{flex:1;padding:11px 8px;border-radius:10px;border:none;background:transparent;color:#b09080;font-weight:700;font-size:13px;cursor:pointer;transition:all .25s;line-height:1.4;font-family:'M PLUS Rounded 1c',sans-serif;white-space:nowrap;overflow:hidden}
 .mode-btn.active{background:#fff;color:#c4724a;box-shadow:0 2px 8px rgba(196,114,74,.2);font-weight:900}
 .listen-play-btn{background:linear-gradient(135deg,#d4826a,#c4956a);border:none;border-radius:50%;width:80px;height:80px;font-size:32px;cursor:pointer;box-shadow:0 4px 16px rgba(212,130,106,.4);transition:transform .15s}
 .listen-play-btn:active{transform:scale(.95)}
@@ -150,7 +150,9 @@ textarea{background:#f7f3ef;border:1.5px solid #e0d8d0;border-radius:12px;paddin
       <input type="text" id="fKorean" placeholder="예: 안녕하세요">
     </div>
     <div class="form-group"><label class="field-label">日本語訳 *</label><input type="text" id="fJapanese" placeholder="例: こんにちは"></div>
-    <div class="form-group"><label class="field-label">メモ</label><input type="text" id="fMemo" placeholder="用法・例文など"></div>
+    <div class="form-group"><label class="field-label">メモ</label><input type="text" id="fMemo" placeholder="覚え方・用法など"></div>
+    <div class="form-group"><label class="field-label">例文</label><input type="text" id="fExample" placeholder="예: 오늘 학교에 갔어요"></div>
+    <div class="form-group"><label class="field-label">例文の訳（任意）</label><input type="text" id="fExampleJp" placeholder="例: 今日学校に行きました"></div>
     <div class="form-group">
       <label class="field-label">カテゴリ</label>
       <select id="fCategory"></select>
@@ -184,8 +186,9 @@ textarea{background:#f7f3ef;border:1.5px solid #e0d8d0;border-radius:12px;paddin
   <div class="card-sm" style="margin-top:8px">
     <div class="backup-row">
       <span style="font-size:13px;color:#94a3b8;font-weight:700">💾 バックアップ</span>
-      <div style="display:flex;gap:8px">
-        <button class="btn-sm" onclick="exportData()">書き出し</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn-sm" onclick="exportData()">書き出し（JSON）</button>
+        <button class="btn-sm" onclick="exportCSV()">書き出し（CSV）</button>
         <label class="btn-sm" style="cursor:pointer">読み込み<input type="file" accept=".json" style="display:none" onchange="importData(event)"></label>
       </div>
     </div>
@@ -232,8 +235,8 @@ textarea{background:#f7f3ef;border:1.5px solid #e0d8d0;border-radius:12px;paddin
       <button class="speak-btn" id="resultSpeakBtn" onclick="speakResult()" style="display:none">🔈</button>
     </div>
     <div id="selfJudgeRow" style="display:none;gap:8px;margin-top:10px">
-      <button onclick="selfJudge(true)" style="flex:1;padding:12px;border-radius:10px;border:none;background:#5a9e6a;color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:'Klee One',cursive">⭕ 合ってた</button>
-      <button onclick="selfJudge(false)" style="flex:1;padding:12px;border-radius:10px;border:none;background:#c04040;color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:'Klee One',cursive">❌ 違った</button>
+      <button onclick="selfJudge(true)" style="flex:1;padding:12px;border-radius:10px;border:none;background:#5a9e6a;color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:'M PLUS Rounded 1c',sans-serif">⭕ 合ってた</button>
+      <button onclick="selfJudge(false)" style="flex:1;padding:12px;border-radius:10px;border:none;background:#c04040;color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:'M PLUS Rounded 1c',sans-serif">❌ 違った</button>
     </div>
     <div class="btn-row" id="nextBtnRow" style="display:none">
       <button class="btn-primary" onclick="nextQuestion()" style="width:100%">次へ →</button>
@@ -253,15 +256,122 @@ textarea{background:#f7f3ef;border:1.5px solid #e0d8d0;border-radius:12px;paddin
       <button class="btn-ghost" onclick="switchTab('vocab')">単語帳へ</button>
     </div>
   </div>
-</div>
 
-<!-- ===== 記録 ===== -->
-<div id="sec-record" class="section">
+
+
+
+
+
+  
+
+  <!-- 例文テスト -->
+  <div class="card" id="exampleQuizCard">
+    <div class="card-title">💬 例文テスト</div>
+    <p style="font-size:13px;color:#a08070;margin-bottom:6px">例文を聞いて日本語訳を考えましょう。例文が登録された単語のみ出題されます。</p>
+    <p style="font-size:12px;color:#c0a898;margin-bottom:14px">※ 習熟度には反映されません</p>
+    <div id="exQuizSetup">
+      <div id="exQuizCount" style="font-size:13px;color:#a08070;margin-bottom:10px"></div>
+      <div class="btn-row">
+        <button class="btn-primary" onclick="startExQuiz()">テスト開始</button>
+      </div>
+    </div>
+    <div id="exQuizMain" style="display:none">
+      <div class="progress-bar"><div class="progress-fill" id="exProgress" style="width:0%"></div></div>
+      <div class="test-counter" id="exCounter"></div>
+      <div style="text-align:center;padding:24px 0 16px">
+        <div id="exQuestion" style="font-size:20px;font-weight:700;color:#2d2420;line-height:1.6;margin-bottom:12px"></div>
+        <button onclick="speakEx()" style="background:linear-gradient(135deg,#d4826a,#c4956a);border:none;border-radius:50%;width:56px;height:56px;font-size:24px;cursor:pointer;box-shadow:0 4px 12px rgba(212,130,106,.3)">🔈</button>
+        <div style="font-size:12px;color:#a08070;margin-top:6px">タップして再生</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-primary" id="exActionBtn" onclick="showExAnswer()" style="width:100%">訳を見る</button>
+      </div>
+      <div id="exAnswerBanner" style="display:none;margin-top:12px;background:#f5ede6;border-radius:12px;padding:14px;text-align:center">
+        <div style="font-size:12px;color:#a08070;margin-bottom:4px">単語：<b style="color:#c4724a" id="exWord"></b></div>
+        <div style="font-size:16px;font-weight:700;color:#7a4030" id="exAnswer"></div>
+      </div>
+      <div id="exSelfJudge" style="display:none;gap:8px;margin-top:10px">
+        <button onclick="exJudge(true)" style="flex:1;padding:12px;border-radius:10px;border:none;background:#5a9e6a;color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:'M PLUS Rounded 1c',sans-serif">⭕ わかった</button>
+        <button onclick="exJudge(false)" style="flex:1;padding:12px;border-radius:10px;border:none;background:#c04040;color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:'M PLUS Rounded 1c',sans-serif">❌ わからなかった</button>
+      </div>
+      <div class="btn-row" id="exNextRow" style="display:none">
+        <button class="btn-primary" onclick="nextExQuestion()" style="width:100%">次へ →</button>
+      </div>
+    </div>
+    <div id="exQuizDone" style="display:none">
+      <div class="score-box">
+        <div class="score-pct" id="exScorePct"></div>
+        <div class="score-detail" id="exScoreDetail"></div>
+      </div>
+      <div id="exWrongList" class="wrong-list"></div>
+      <div class="btn-row">
+        <button class="btn-primary" onclick="resetExQuiz()">もう一度</button>
+        <button class="btn-ghost" onclick="switchTab('vocab')">単語帳へ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 数字クイズ -->
   <div class="card">
+    <div class="card-title">🔢 数字クイズ</div>
+    <p style="font-size:13px;color:#a08070;margin-bottom:14px">韓国語の数字には2種類あります。何を数えるかによって使い分けが必要！数字と単位を答えましょう。</p>
+    <div id="numQuizSetup">
+      <div class="form-group">
+        <label class="field-label">出題数</label>
+        <input type="number" id="numCount" value="10" min="1" max="30" style="width:80px">
+      </div>
+      <div class="btn-row">
+        <button class="btn-primary" onclick="startNumQuiz()">クイズ開始</button>
+      </div>
+    </div>
+    <div id="numQuizMain" style="display:none">
+      <div class="progress-bar"><div class="progress-fill" id="numProgress" style="width:0%"></div></div>
+      <div class="test-counter" id="numCounter"></div>
+      <div style="text-align:center;padding:20px 0">
+        <div id="numQuestion" style="font-size:24px;font-weight:800;color:#2d2420;line-height:1.5;margin-bottom:8px"></div>
+        <div id="numHint" style="font-size:13px;color:#a08070"></div>
+      </div>
+      <input type="text" id="numInput" placeholder="数字部分を入力（例：세 마리）" style="font-size:18px;text-align:center;width:100%;margin-top:4px" onkeydown="if(event.key==='Enter')checkNumAnswer()">
+      <div class="btn-row" style="margin-top:8px">
+        <button class="btn-primary" onclick="checkNumAnswer()" style="width:100%">答え合わせ</button>
+      </div>
+      <div id="numResult" style="display:none;margin-top:12px;border-radius:12px;padding:14px;text-align:center"></div>
+      <div class="btn-row" id="numNextRow" style="display:none">
+        <button class="btn-primary" onclick="nextNumQuestion()" style="width:100%">次へ →</button>
+      </div>
+    </div>
+    <div id="numQuizDone" style="display:none">
+      <div class="score-box">
+        <div class="score-pct" id="numScorePct"></div>
+        <div class="score-detail" id="numScoreDetail"></div>
+      </div>
+      <div id="numWrongList" class="wrong-list"></div>
+      <div class="btn-row">
+        <button class="btn-primary" onclick="resetNumQuiz()">もう一度</button>
+      </div>
+    </div>
+  </div></div>
+
+<div id="sec-record" class="section">
+  <!-- ストリーク -->
+  <div class="streak-box" id="streakBox"></div>
+
+  <!-- 週間グラフ -->
+  <div class="card">
+    <div class="card-title">📈 週間学習グラフ</div>
+    <div class="graph-bar-wrap" id="weekGraph"></div>
+    <div class="graph-label" id="weekLabels"></div>
+    <div style="font-size:12px;color:#a08070;margin-top:8px;text-align:center" id="weekTotal"></div>
+  </div>
+
+  <!-- 習熟度まとめ -->
+  <div class="card" id="statCard">
     <div class="card-title">📊 習熟度まとめ</div>
     <div id="statChips" class="stat-chips"></div>
     <div class="level-bar" id="levelBar"></div>
   </div>
+
+  <!-- 日付別まとめ -->
   <div class="card">
     <div class="card-title">📅 日付別まとめ</div>
     <div id="recordList"></div>
@@ -292,7 +402,7 @@ textarea{background:#f7f3ef;border:1.5px solid #e0d8d0;border-radius:12px;paddin
   <!-- リスニングクイズ -->
   <div class="card" id="listenQuizCard">
     <div class="card-title">🎧 リスニングクイズ</div>
-    <p style="font-size:13px;color:#a08070;margin-bottom:14px">音声を聞いて日本語訳を答えます。テキストは表示されません。</p>
+    <p style="font-size:13px;color:#a08070;margin-bottom:14px">🔈 韓国語の音声を聞いて、意味を頭の中で考えましょう。</p>
     <div id="listenQuizSetup">
       <div class="form-group">
         <label class="field-label">カテゴリ</label>
@@ -319,8 +429,8 @@ textarea{background:#f7f3ef;border:1.5px solid #e0d8d0;border-radius:12px;paddin
       </div>
       <div id="listenResultBanner" style="display:none" class="result-banner"></div>
       <div id="listenSelfJudge" style="display:none;gap:8px;margin-top:10px">
-        <button onclick="listenSelfJudge(true)" style="flex:1;padding:12px;border-radius:10px;border:none;background:#5a9e6a;color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:'Klee One',cursive">⭕ 合ってた</button>
-        <button onclick="listenSelfJudge(false)" style="flex:1;padding:12px;border-radius:10px;border:none;background:#c04040;color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:'Klee One',cursive">❌ 違った</button>
+        <button onclick="listenSelfJudge(true)" style="flex:1;padding:12px;border-radius:10px;border:none;background:#5a9e6a;color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:'M PLUS Rounded 1c',sans-serif">⭕ 合ってた</button>
+        <button onclick="listenSelfJudge(false)" style="flex:1;padding:12px;border-radius:10px;border:none;background:#c04040;color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:'M PLUS Rounded 1c',sans-serif">❌ 違った</button>
       </div>
       <div class="btn-row" id="listenNextRow" style="display:none">
         <button class="btn-primary" onclick="nextListenQuestion()" style="width:100%">次へ →</button>
@@ -337,7 +447,7 @@ textarea{background:#f7f3ef;border:1.5px solid #e0d8d0;border-radius:12px;paddin
         <button class="btn-ghost" onclick="switchTab('vocab')">単語帳へ</button>
       </div>
     </div>
-  </div>
+  
 
   <!-- 聞き流し -->
   <div class="card">
@@ -347,6 +457,13 @@ textarea{background:#f7f3ef;border:1.5px solid #e0d8d0;border-radius:12px;paddin
       <div class="form-group">
         <label class="field-label">カテゴリ</label>
         <div class="lf-scroll" id="flowCatFilter"></div>
+      </div>
+      <div class="form-group" style="margin-top:10px">
+        <label class="field-label">モード</label>
+        <div style="display:flex;gap:0;background:#f0ebe5;border-radius:12px;padding:3px;margin-top:4px">
+          <button id="flowModeStudy" onclick="setFlowMode('study')" style="flex:1;padding:9px 8px;border-radius:9px;border:none;background:#fff;color:#c4724a;font-weight:900;font-size:13px;cursor:pointer;font-family:'M PLUS Rounded 1c',sans-serif;box-shadow:0 2px 6px rgba(196,114,74,.2)">📚 勉強モード<br><span style="font-size:10px;font-weight:600;color:#a08070">韓国語のみ</span></button>
+          <button id="flowModeReview" onclick="setFlowMode('review')" style="flex:1;padding:9px 8px;border-radius:9px;border:none;background:transparent;color:#b09080;font-weight:700;font-size:13px;cursor:pointer;font-family:'M PLUS Rounded 1c',sans-serif">🔄 復習モード<br><span style="font-size:10px;font-weight:600;color:#c0a898">韓→日</span></button>
+        </div>
       </div>
       <div class="form-group" style="margin-top:10px">
         <label class="field-label">間隔（秒）</label>
@@ -378,8 +495,12 @@ textarea{background:#f7f3ef;border:1.5px solid #e0d8d0;border-radius:12px;paddin
   </div>
 
 </div>
-</main>
+</div>
 
+
+
+
+</main>
 <div id="toast"></div>
 
 <script>
@@ -387,12 +508,11 @@ const STORAGE_KEY = 'korean_vocab_list';
 const CAT_KEY = 'korean_categories';
 
 const LEVELS = [
-  {key:'unset', label:'未設定', emoji:'⬜', color:'#a08070', bg:'#ede8e3'},
-  {key:'hard',  label:'むずかしい', emoji:'❌', color:'#e87878', bg:'#ffe8e8'},
-  {key:'unsure',label:'あやしい',   emoji:'⚠️', color:'#e8b830', bg:'#fff8d6'},
-  {key:'ok',    label:'覚えた',     emoji:'🟢', color:'#5aaa70', bg:'#e8f8e8'},
-];
-const DEFAULT_CATS = ['マイ単語','TOPIK 3級','TOPIK 4級','推し','ドラマ・映画'];
+  {key:'unset', label:'未設定',       emoji:'⬜', color:'#a08070', bg:'#ede8e3'},
+  {key:'hard',  label:'むり😇',       emoji:'❌', color:'#e87878', bg:'#ffe8e8'},
+  {key:'unsure',label:'あとすこし🥹', emoji:'⚠️', color:'#e8b830', bg:'#fff8d6'},
+  {key:'ok',    label:'けんちゃな🥰', emoji:'🟢', color:'#5aaa70', bg:'#e8f8e8'},
+];const DEFAULT_CATS = ['マイ単語','TOPIK 3級','TOPIK 4級','推し','ドラマ・映画'];
 function getLv(key){ return LEVELS.find(l=>l.key===key)||LEVELS[0]; }
 
 // ===== State =====
@@ -437,8 +557,14 @@ function switchTab(id){
   document.getElementById('sec-'+id).classList.add('active');
   ['vocab','test','record','notes','listen'].forEach((t,i)=>{ if(t===id) document.querySelectorAll('.tab-btn')[i].classList.add('active'); });
   if(id==='vocab') renderAll();
-  if(id==='record') renderRecord();
-  if(id==='test'){ renderTestCatFilters(); renderLevelFilters(); }
+  if(id==='record'){
+    if(openRecordMonths.size===0 && words.length>0){
+      const dates=words.map(w=>w.date||'').filter(Boolean).sort().reverse();
+      if(dates[0]) openRecordMonths.add(dates[0].slice(0,7));
+    }
+    renderRecord();
+  }
+  if(id==='test'){ renderTestCatFilters(); renderLevelFilters(); renderExQuiz(); }
   if(id==='listen') renderListen();
   if(id==='notes'){
     if(openMonths.size===0 && notes_data.length>0){
@@ -606,12 +732,13 @@ function renderWords(resetPage){
         <span style="font-size:11px;font-weight:700;padding:2px 10px;border-radius:10px;background:rgba(196,114,74,.15);color:#c4724a;border:1px solid rgba(196,114,74,.25)">${esc(cat)}</span>
         <span style="font-size:11px;color:#a08070;background:rgba(0,0,0,.05);padding:3px 8px;border-radius:6px;border:1px solid rgba(0,0,0,.08);font-weight:600">${w.date||'—'}</span>
       </div>
-      ${w.memo?`<div style="font-size:13px;color:#a08070;margin-bottom:8px;font-weight:600">📝 ${esc(w.memo)}</div>`:''}
+      ${w.memo?`<div style="font-size:13px;color:#a08070;margin-bottom:4px;font-weight:600">📝 ${esc(w.memo)}</div>`:''}
+      ${w.example?`<div style="font-size:13px;color:#5a8a9a;margin-bottom:2px;font-weight:600">💬 ${esc(w.example)}</div>`:''}${w.exampleJp?`<div style="font-size:12px;color:#a08070;margin-bottom:8px">　→ ${esc(w.exampleJp)}</div>`:''}
       <div style="display:flex;align-items:center;gap:4px;padding-top:8px;border-top:1px solid rgba(0,0,0,.08)">
         ${stamps}
         <div style="flex:1"></div>
-        <button style="background:rgba(160,128,112,.15);color:#8a6050;border:1px solid rgba(160,128,112,.25);border-radius:8px;padding:5px 12px;font-size:12px;cursor:pointer;font-weight:600;font-family:'Klee One',cursive" onclick="editWord(${w.id})">編集</button>
-        <button style="background:rgba(200,80,60,.15);color:#c05040;border:1px solid rgba(200,80,60,.25);border-radius:8px;padding:5px 12px;font-size:12px;cursor:pointer;font-weight:600;font-family:'Klee One',cursive" onclick="deleteWord(${w.id})">削除</button>
+        <button style="background:rgba(160,128,112,.15);color:#8a6050;border:1px solid rgba(160,128,112,.25);border-radius:8px;padding:5px 12px;font-size:12px;cursor:pointer;font-weight:600;font-family:'M PLUS Rounded 1c',sans-serif" onclick="editWord(${w.id})">編集</button>
+        <button style="background:rgba(200,80,60,.15);color:#c05040;border:1px solid rgba(200,80,60,.25);border-radius:8px;padding:5px 12px;font-size:12px;cursor:pointer;font-weight:600;font-family:'M PLUS Rounded 1c',sans-serif" onclick="deleteWord(${w.id})">削除</button>
       </div>
     </div>`;
   }).join('');
@@ -644,23 +771,27 @@ function handleSave(){
   const korean=document.getElementById('fKorean').value.trim();
   const japanese=document.getElementById('fJapanese').value.trim();
   const memo=document.getElementById('fMemo').value.trim();
+  const example=document.getElementById('fExample').value.trim();
+  const exampleJp=document.getElementById('fExampleJp').value.trim();
   const category=document.getElementById('fCategory').value||categories[0]||'マイ単語';
   const date=document.getElementById('fDate').value;
   if(!korean||!japanese){ showToast('韓国語と日本語は必須です','err'); return; }
   if(editId!==null){
-    words=words.map(w=>w.id===editId?{...w,korean,japanese,memo,category,date}:w);
+    words=words.map(w=>w.id===editId?{...w,korean,japanese,memo,example,exampleJp,category,date}:w);
     showToast('更新しました ✓'); editId=null;
     document.getElementById('formTitle').textContent='＋ 単語を追加';
     document.getElementById('saveBtn').textContent='追加する';
     document.getElementById('cancelBtn').style.display='none';
   } else {
-    words.push({id:Date.now(),korean,japanese,memo,category,date,level:'unset',addedAt:new Date().toISOString()});
+    words.push({id:Date.now(),korean,japanese,memo,example,exampleJp,category,date,level:'unset',addedAt:new Date().toISOString()});
     showToast('追加しました ✓');
     recordActivity();
   }
   document.getElementById('fKorean').value='';
   document.getElementById('fJapanese').value='';
   document.getElementById('fMemo').value='';
+  document.getElementById('fExample').value='';
+  document.getElementById('fExampleJp').value='';
   document.getElementById('fDate').value=today();
 
   saveWords(); renderAll();
@@ -671,6 +802,8 @@ function editWord(id){
   document.getElementById('fKorean').value=w.korean;
   document.getElementById('fJapanese').value=w.japanese;
   document.getElementById('fMemo').value=w.memo||'';
+  document.getElementById('fExample').value=w.example||'';
+  document.getElementById('fExampleJp').value=w.exampleJp||'';
   document.getElementById('fDate').value=w.date||today();
   renderCatSelect();
   if(w.category) document.getElementById('fCategory').value=w.category;
@@ -713,6 +846,29 @@ function exportData(){
   a.href=URL.createObjectURL(new Blob([json],{type:'application/json'}));
   a.download=`korean-vocab-${today()}.json`;
   a.click(); showToast('エクスポートしました 📥');
+}
+
+function exportCSV(){
+  const BOM='﻿'; // Excel文字化け対策
+  const header='韓国語,日本語訳,メモ,カテゴリ,学習日,習熟度';
+  const levelLabel={unset:'未設定',hard:'むずかしい',unsure:'あやしい',ok:'覚えた'};
+  const rows=words.map(w=>{
+    const escape=s=>'"'+String(s||'').replace(/"/g,'""')+'"';
+    return [
+      escape(w.korean),
+      escape(w.japanese),
+      escape(w.memo||''),
+      escape(w.category||''),
+      escape(w.date||''),
+      escape(levelLabel[w.level||'unset']||'未設定')
+    ].join(',');
+  });
+  const csv=BOM+header+'\n'+rows.join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download=`korean-vocab-${today()}.csv`;
+  a.click();
+  showToast('CSVをエクスポートしました 📊');
 }
 
 function importData(e){
@@ -988,6 +1144,21 @@ function resetTest(){
 }
 
 // ===== Record =====
+let openRecordMonths=new Set();
+let openRecordDates=new Set();
+
+function toggleRecordMonth(month){
+  if(openRecordMonths.has(month)) openRecordMonths.delete(month);
+  else openRecordMonths.add(month);
+  renderRecord();
+}
+
+function toggleRecordDate(date){
+  if(openRecordDates.has(date)) openRecordDates.delete(date);
+  else openRecordDates.add(date);
+  renderRecord();
+}
+
 function renderRecord(){
   recordActivity();
   renderStreak();
@@ -1005,12 +1176,26 @@ function renderRecord(){
   }).join('');
   document.getElementById('levelBar').innerHTML=bar||'<div style="width:100%;background:#334155;height:100%;border-radius:99px"></div>';
 
+  // 月別→日付別の2段階折りたたみ
   const byDate={};
   words.forEach(w=>{ const d=w.date||'日付なし'; if(!byDate[d]) byDate[d]=[]; byDate[d].push(w); });
-  const html=Object.entries(byDate).sort((a,b)=>b[0].localeCompare(a[0])).map(([date,ws])=>`
-    <div class="date-group">
-      <div class="date-group-header">${date} <span class="badge">${ws.length}語</span></div>
-      ${ws.map(w=>{
+
+  const byMonth={};
+  Object.entries(byDate).forEach(([date,ws])=>{
+    const m=date.length>=7?date.slice(0,7):'不明';
+    if(!byMonth[m]) byMonth[m]=[];
+    byMonth[m].push([date,ws]);
+  });
+
+  const html=Object.entries(byMonth).sort((a,b)=>b[0].localeCompare(a[0])).map(([month,dateEntries])=>{
+    const [y,m]=month.split('-');
+    const label=month==='不明'?'日付なし':`${y}年${parseInt(m)}月`;
+    const total=dateEntries.reduce((sum,[,ws])=>sum+ws.length,0);
+    const isOpen=openRecordMonths.has(month);
+
+    const datesHtml=dateEntries.sort((a,b)=>b[0].localeCompare(a[0])).map(([date,ws])=>{
+      const isDateOpen=openRecordDates.has(date);
+      const wordsHtml=ws.map(w=>{
         const lv=getLv(w.level||'unset');
         const cat=w.category||categories[0]||'マイ単語';
         return `<div class="log-item">
@@ -1020,8 +1205,25 @@ function renderRecord(){
           <span style="color:#c0a898;margin:0 4px">→</span>
           <span style="color:#5a4030">${esc(w.japanese)}</span>
         </div>`;
-      }).join('')}
-    </div>`).join('');
+      }).join('');
+      return `<div style="margin-bottom:6px;margin-left:8px">
+        <button onclick="toggleRecordDate('${date}')" style="width:100%;display:flex;align-items:center;justify-content:space-between;background:#fdf7f3;border:1px solid #ede8e3;border-radius:10px;padding:8px 14px;cursor:pointer;font-family:'M PLUS Rounded 1c',sans-serif;font-weight:700;font-size:13px;color:#8a6050">
+          <span>${isDateOpen?'▼':'▶'} ${date}</span>
+          <span style="font-size:12px;color:#b09080">${ws.length}語</span>
+        </button>
+        ${isDateOpen?`<div style="margin-top:4px">${wordsHtml}</div>`:''}
+      </div>`;
+    }).join('');
+
+    return `<div style="margin-bottom:10px">
+      <button onclick="toggleRecordMonth('${month}')" style="width:100%;display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid #e0d8d0;border-radius:14px;padding:12px 16px;cursor:pointer;font-family:'M PLUS Rounded 1c',sans-serif;font-weight:700;font-size:15px;color:#7a4030;box-shadow:0 2px 6px rgba(180,140,120,.08)">
+        <span>${isOpen?'▼':'▶'} ${label}</span>
+        <span style="font-size:13px;color:#b09080;font-weight:600">${total}語</span>
+      </button>
+      ${isOpen?`<div style="margin-top:8px">${datesHtml}</div>`:''}
+    </div>`;
+  }).join('');
+
   document.getElementById('recordList').innerHTML=html||'<div class="empty">単語がありません。</div>';
 }
 
@@ -1145,9 +1347,12 @@ function renderNotes(){
     const isOpen=openMonths.has(month);
     const notesHtml=notes.map(n=>{
       const dayWords=words.filter(w=>w.date===n.date);
+      const maxShow=10;
       const wordChips=dayWords.length>0
         ?'<div class="note-words"><div class="note-words-title">📚 この日追加した単語（'+dayWords.length+'語）</div>'
-          +dayWords.map(w=>`<span class="note-word-chip">${esc(w.korean)}</span>`).join('')+'</div>'
+          +dayWords.slice(0,maxShow).map(w=>`<span class="note-word-chip">${esc(w.korean)}</span>`).join('')
+          +(dayWords.length>maxShow?`<span class="note-word-chip" style="background:rgba(196,114,74,.1);color:#a08070">+${dayWords.length-maxShow}語</span>`:'')
+          +'</div>'
         :'';
       return `<div class="note-card">
         <div class="note-header">
@@ -1166,7 +1371,7 @@ function renderNotes(){
     }).join('');
 
     return `<div style="margin-bottom:10px">
-      <button onclick="toggleMonth('${month}')" style="width:100%;display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid #e0d8d0;border-radius:14px;padding:12px 16px;cursor:pointer;font-family:'Klee One',cursive;font-weight:700;font-size:15px;color:#7a4030;box-shadow:0 2px 6px rgba(180,140,120,.08)">
+      <button onclick="toggleMonth('${month}')" style="width:100%;display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid #e0d8d0;border-radius:14px;padding:12px 16px;cursor:pointer;font-family:'M PLUS Rounded 1c',sans-serif;font-weight:700;font-size:15px;color:#7a4030;box-shadow:0 2px 6px rgba(180,140,120,.08)">
         <span>${isOpen?'▼':'▶'} ${label}</span>
         <span style="font-size:13px;color:#b09080;font-weight:600">${notes.length}回</span>
       </button>
@@ -1188,7 +1393,7 @@ function toggleMonth(month){
 const STREAK_KEY='korean_streak';
 const ACTIVITY_KEY='korean_activity';
 
-function loadStreak(){ try{ return JSON.parse(localStorage.getItem(STREAK_KEY)||'{"current":0,"best":0,"lastDate":""}'); }catch{return{current:0,best:0,lastDate:''}; } }
+function loadStreak(){ try{ return JSON.parse(localStorage.getItem(STREAK_KEY)||'{"current":0,"best":0,"lastDate":"","startDate":""}'); }catch{return{current:0,best:0,lastDate:'',startDate:''}; } }
 function saveStreak(s){ try{ localStorage.setItem(STREAK_KEY,JSON.stringify(s)); }catch{} }
 function loadActivity(){ try{ return JSON.parse(localStorage.getItem(ACTIVITY_KEY)||'{}'); }catch{return{}; } }
 function saveActivity(a){ try{ localStorage.setItem(ACTIVITY_KEY,JSON.stringify(a)); }catch{} }
@@ -1196,6 +1401,8 @@ function saveActivity(a){ try{ localStorage.setItem(ACTIVITY_KEY,JSON.stringify(
 function recordActivity(){
   const t=today();
   const streak=loadStreak();
+  // 初回使用日を記録
+  if(!streak.startDate){ streak.startDate=t; saveStreak(streak); }
   const activity=loadActivity();
   activity[t]=(activity[t]||0)+1;
   saveActivity(activity);
@@ -1217,6 +1424,7 @@ function renderStreak(){
   const el=document.getElementById('streakBox');
   if(!el) return;
   const isToday=streak.lastDate===today();
+  const startLabel=streak.startDate?`🌱 スタート日：${streak.startDate}`:'';
   el.innerHTML=`
     <div class="streak-fire">${isToday?'🔥':'🌙'}</div>
     <div>
@@ -1225,6 +1433,7 @@ function renderStreak(){
         <div class="streak-label">日連続！</div>
       </div>
       <div class="streak-best">🏆 最高記録 ${streak.best}日</div>
+      ${startLabel?`<div style="font-size:11px;color:rgba(255,255,255,.75);margin-top:2px">${startLabel}</div>`:''}
     </div>
     <div style="margin-left:auto;text-align:right">
       <div style="font-size:11px;color:rgba(255,255,255,.7)">${isToday?'✅ 今日達成':'今日まだ！'}</div>
@@ -1234,7 +1443,7 @@ function renderStreak(){
 // ===== 聴く機能 =====
 let listenPool=[], listenIdx=0, listenScore={correct:0,wrong:0}, listenWrong=[];
 let listenCatFilter='all', listenPhase='question';
-let flowPool=[], flowIdx=0, flowTimer=null, flowCatFilter='all';
+let flowPool=[], flowIdx=0, flowTimer=null, flowCatFilter='all', flowMode='study';
 
 function renderListen(){
   renderListenCatFilter();
@@ -1298,8 +1507,13 @@ function showListenAnswer(){
   document.getElementById('listenActionBtn').style.display='none';
   const banner=document.getElementById('listenResultBanner');
   banner.style.display='flex'; banner.className='result-banner';
-  banner.style.background='#f5ede6'; banner.style.color='#7a4030';
-  banner.textContent='📖 '+cur.japanese;
+  banner.style.background='#f5ede6';
+  banner.style.flexDirection='column'; banner.style.gap='4px';
+  banner.innerHTML=`
+    <div style="font-size:22px;font-weight:800;color:#c4724a">${cur.korean}</div>
+    <div style="font-size:15px;color:#7a4030">📖 ${cur.japanese}</div>
+    ${cur.example?`<div style="font-size:13px;color:#5a8a9a;margin-top:6px;font-style:italic">💬 ${esc(cur.example)}</div>`:''}
+  `;
   document.getElementById('listenSelfJudge').style.display='flex';
   listenPhase='result';
 }
@@ -1355,6 +1569,23 @@ function renderFlowCatFilter(){
 }
 
 function setFlowCat(cat){ flowCatFilter=cat; renderFlowCatFilter(); }
+
+function setFlowMode(mode){
+  flowMode=mode;
+  const studyBtn=document.getElementById('flowModeStudy');
+  const reviewBtn=document.getElementById('flowModeReview');
+  if(mode==='study'){
+    studyBtn.style.background='#fff'; studyBtn.style.color='#c4724a'; studyBtn.style.fontWeight='900';
+    studyBtn.style.boxShadow='0 2px 6px rgba(196,114,74,.2)';
+    reviewBtn.style.background='transparent'; reviewBtn.style.color='#b09080'; reviewBtn.style.fontWeight='700';
+    reviewBtn.style.boxShadow='none';
+  } else {
+    reviewBtn.style.background='#fff'; reviewBtn.style.color='#c4724a'; reviewBtn.style.fontWeight='900';
+    reviewBtn.style.boxShadow='0 2px 6px rgba(196,114,74,.2)';
+    studyBtn.style.background='transparent'; studyBtn.style.color='#b09080'; studyBtn.style.fontWeight='700';
+    studyBtn.style.boxShadow='none';
+  }
+}
 function getFlowPool(){ return words.filter(w=>flowCatFilter==='all'||(w.category||categories[0]||'マイ単語')===flowCatFilter); }
 
 function startFlow(){
@@ -1377,21 +1608,32 @@ function playFlowWord(){
   document.getElementById('flowKorean').textContent=cur.korean;
   document.getElementById('flowJapanese').textContent='';
   document.getElementById('flowStatus').textContent='▶ 再生中…';
-  // 韓国語を読み上げ
-  speakKorean(cur.korean,()=>{
-    document.getElementById('flowStatus').textContent='…';
-    flowTimer=setTimeout(()=>{
-      // 日本語訳を表示＋読み上げ
-      if(!document.getElementById('flowMain').style.display==='none') return;
-      document.getElementById('flowJapanese').textContent=cur.japanese;
-      document.getElementById('flowStatus').textContent='🇯🇵 '+cur.japanese;
-      // 次の単語へ
+
+  if(flowMode==='study'){
+    // 勉強モード：韓国語のみ読み上げ→日本語は表示しない
+    speakKorean(cur.korean,()=>{
+      document.getElementById('flowStatus').textContent='';
       flowTimer=setTimeout(()=>{
-        flowIdx++;
-        playFlowWord();
+        flowIdx++; playFlowWord();
       }, interval*1000);
-    }, 800);
-  });
+    });
+  } else {
+    // 復習モード：韓国語→日本語両方
+    speakKorean(cur.korean,()=>{
+      document.getElementById('flowStatus').textContent='…';
+      flowTimer=setTimeout(()=>{
+        document.getElementById('flowJapanese').textContent=cur.japanese;
+        document.getElementById('flowStatus').textContent='🇯🇵 '+cur.japanese;
+        // 日本語も読み上げ
+        const u=new SpeechSynthesisUtterance(cur.japanese);
+        u.lang='ja-JP'; u.rate=0.9;
+        u.onend=()=>{
+          flowTimer=setTimeout(()=>{ flowIdx++; playFlowWord(); }, interval*1000);
+        };
+        window.speechSynthesis.speak(u);
+      }, 800);
+    });
+  }
 }
 
 function stopFlow(){
@@ -1406,6 +1648,197 @@ function resetFlow(){
   document.getElementById('flowMain').style.display='none';
   document.getElementById('flowSetup').style.display='';
   renderFlowCatFilter();
+}
+
+
+// ===== 数字クイズ =====
+const NUM_QUESTIONS = [
+  // 하나 타입
+  {contexts:['コーヒーを__杯ください','ビールを__杯ください','水を__杯ください'],unit:'잔',type:'hana',rule:'杯（잔）は 하나 타입'},
+  {contexts:['りんごを__個ください','みかんを__個ください','たまごを__個ください'],unit:'개',type:'hana',rule:'個（개）は 하나 타입'},
+  {contexts:['友達が__人います','学生が__人います','子供が__人います'],unit:'명',type:'hana',rule:'人（명）は 하나 타입'},
+  {contexts:['犬が__匹います','猫が__匹います','魚が__匹います'],unit:'마리',type:'hana',rule:'匹（마리）は 하나 타입'},
+  {contexts:['__時間かかります','__時間勉強しました','__時間待ちました'],unit:'시간',type:'hana',rule:'時間（시간）は 하나 타입'},
+  {contexts:['本が__冊あります','ノートが__冊あります','雑誌が__冊あります'],unit:'권',type:'hana',rule:'冊（권）は 하나 타입'},
+  {contexts:['服を__着買いました','シャツを__着持っています','コートが__着あります'],unit:'벌',type:'hana',rule:'着（벌）は 하나 타입'},
+  {contexts:['今__歳です','__歳に見えます','__歳のとき'],unit:'살',type:'hana',rule:'歳（살）は 하나 타입'},
+  {contexts:['焼肉を__人前ください','ラーメンを__人前ください','チゲを__人前ください'],unit:'인분',type:'hana',rule:'人前（인분）は 하나 타입'},
+  {contexts:['車が__台あります','バスが__台来ました','自転車が__台あります'],unit:'대',type:'hana',rule:'台（대）は 하나 타입'},
+  {contexts:['ビールを__本ください','ワインを__本ください','ジュースを__本ください'],unit:'병',type:'hana',rule:'本・瓶（병）は 하나 타입'},
+  {contexts:['バラを__本ください','チューリップを__本ください','花を__本ください'],unit:'송이',type:'hana',rule:'本・輪（송이）は 하나 타입'},
+  // 일 타입
+  {contexts:['__分待ちました','あと__分です','__分かかります'],unit:'분',type:'il',rule:'分（분）は 일 타입'},
+  {contexts:['__階に住んでいます','エレベーターで__階へ','__階のお部屋です'],unit:'층',type:'il',rule:'階（층）は 일 타입'},
+  {contexts:['今日は零下__度です','体温が__度あります','気温が__度です'],unit:'도',type:'il',rule:'度（도）は 일 타입'},
+  {contexts:['__メートル走ります','__メートル先です','__メートルの距離'],unit:'미터',type:'il',rule:'メートル（미터）は 일 타입'},
+  {contexts:['__グラムください','体重が__グラム増えました','__グラム入りです'],unit:'그램',type:'il',rule:'グラム（그램）は 일 타입'},
+  {contexts:['評価が__点です','テストが__点でした','__点満点です'],unit:'점',type:'il',rule:'点（점）は 일 타입'},
+  {contexts:['__秒待ってください','あと__秒です','__秒でできます'],unit:'초',type:'il',rule:'秒（초）は 일 타입'},
+  {contexts:['__センチです','身長が__センチです','__センチ伸びました'],unit:'센티',type:'il',rule:'センチ（센티）は 일 타입'},
+  {contexts:['バス__番に乗ります','__番出口から出ます','__番テーブルです'],unit:'번',type:'il',rule:'番号（번）は 일 타입'},
+];
+
+// 하나 타입の数字（助数詞の前の形）
+const HANA = [{jp:1,kr:'한'},{jp:2,kr:'두'},{jp:3,kr:'세'},{jp:4,kr:'네'},{jp:5,kr:'다섯'},{jp:6,kr:'여섯'},{jp:7,kr:'일곱'},{jp:8,kr:'여덟'},{jp:9,kr:'아홉'},{jp:10,kr:'열'}];
+// 일 타입の数字
+const IL = [{jp:1,kr:'일'},{jp:2,kr:'이'},{jp:3,kr:'삼'},{jp:4,kr:'사'},{jp:5,kr:'오'},{jp:10,kr:'십'},{jp:20,kr:'이십'},{jp:30,kr:'삼십'},{jp:100,kr:'백'}];
+
+
+let numPool=[], numIdx=0, numScore={correct:0,wrong:0}, numWrong=[];
+
+function startNumQuiz(){
+  const count=Math.min(parseInt(document.getElementById('numCount').value)||10, NUM_QUESTIONS.length);
+  numPool=[...NUM_QUESTIONS].sort(()=>Math.random()-.5).slice(0,count);
+  numIdx=0; numScore={correct:0,wrong:0}; numWrong=[];
+  document.getElementById('numQuizSetup').style.display='none';
+  document.getElementById('numQuizDone').style.display='none';
+  document.getElementById('numQuizMain').style.display='';
+  showNumQuestion();
+}
+
+function showNumQuestion(){
+  const q=numPool[numIdx];
+  document.getElementById('numProgress').style.width=(numIdx/numPool.length*100)+'%';
+  document.getElementById('numCounter').textContent=(numIdx+1)+' / '+numPool.length;
+  // 数字部分をハイライト
+  const qEl=document.getElementById('numQuestion');
+  qEl.innerHTML=q.jp.replace(/\d+/g, n=>`<span style="font-size:32px;color:#d4826a;font-weight:900">${n}</span>`);
+  document.getElementById('numHint').innerHTML=`👆 <b style="color:#c4724a">${q.blank}</b> を韓国語で入力してください`;
+  document.getElementById('numInput').value='';
+  document.getElementById('numInput').disabled=false;
+  document.getElementById('numResult').style.display='none';
+  document.getElementById('numNextRow').style.display='none';
+  setTimeout(()=>document.getElementById('numInput').focus(),100);
+}
+function checkNumAnswer(){
+  const q=numPool[numIdx];
+  const ans=document.getElementById('numInput').value.trim();
+  const norm=s=>s.replace(/\s/g,'').toLowerCase();
+  const correctAnswer=q._currentAnswer||q.answer||'';
+  const isOk=norm(ans)===norm(correctAnswer);
+  numScore.correct+=isOk?1:0; numScore.wrong+=isOk?0:1;
+  if(!isOk) numWrong.push(q);
+  document.getElementById('numInput').disabled=true;
+  const result=document.getElementById('numResult');
+  result.style.display='block';
+  if(isOk){
+    result.style.background='#eef8f0'; result.style.color='#3a8050';
+    result.innerHTML=`<div style="font-size:18px;font-weight:800">⭕ 正解！</div><div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px"><span style="font-size:14px;font-weight:700">${correctAnswer}</span><button onclick="speakKorean('${q.answer}',null)" style="background:transparent;border:none;font-size:18px;cursor:pointer">🔈</button></div><div style="font-size:13px;margin-top:4px">${q.rule}</div>`;
+  } else {
+    result.style.background='#fef0ee'; result.style.color='#c05040';
+    result.innerHTML=`<div style="font-size:18px;font-weight:800">❌ 不正解</div><div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px"><span style="font-size:14px;font-weight:700;color:#3a8050">正解：${correctAnswer}</span><button onclick="speakKorean('${q.answer}',null)" style="background:transparent;border:none;font-size:18px;cursor:pointer">🔈</button></div><div style="font-size:13px;margin-top:4px">${q.rule}</div>`;
+  }
+  document.getElementById('numNextRow').style.display='';
+}
+
+function nextNumQuestion(){
+  if(numIdx+1>=numPool.length){ showNumDone(); return; }
+  numIdx++; showNumQuestion();
+}
+
+function showNumDone(){
+  document.getElementById('numQuizMain').style.display='none';
+  document.getElementById('numQuizDone').style.display='';
+  const pct=Math.round(numScore.correct/numPool.length*100);
+  document.getElementById('numScorePct').textContent=pct+'%';
+  document.getElementById('numScoreDetail').innerHTML=`<span style="color:#3a8050">正解 ${numScore.correct}</span>　<span style="color:#c05040">不正解 ${numScore.wrong}</span>`;
+  const ws=document.getElementById('numWrongList');
+  if(numWrong.length===0){ ws.innerHTML=''; return; }
+  ws.innerHTML='<div class="wrong-title">❌ 間違えた問題</div>'+
+    numWrong.map(q=>`<div class="wrong-item"><div><b>${q.jp}</b></div><div style="font-size:13px;color:#5a9e6a;margin-top:2px">正解：${q.answer}</div><div style="font-size:13px;color:#a08070;margin-top:2px">${q.rule}</div></div>`).join('');
+}
+
+function resetNumQuiz(){
+  document.getElementById('numQuizDone').style.display='none';
+  document.getElementById('numQuizMain').style.display='none';
+  document.getElementById('numQuizSetup').style.display='';
+}
+
+
+// ===== 例文テスト =====
+let exPool=[], exIdx=0, exScore={correct:0,wrong:0}, exWrong=[], exCurrent=null;
+
+function renderExQuiz(){
+  const pool=words.filter(w=>w.example&&w.example.trim());
+  const el=document.getElementById('exQuizCount');
+  if(el) el.textContent=`例文登録済み：${pool.length}語`;
+}
+
+function startExQuiz(){
+  const pool=words.filter(w=>w.example&&w.example.trim());
+  if(pool.length===0){ showToast('例文が登録された単語がありません','err'); return; }
+  exPool=[...pool].sort(()=>Math.random()-.5);
+  exIdx=0; exScore={correct:0,wrong:0}; exWrong=[];
+  document.getElementById('exQuizSetup').style.display='none';
+  document.getElementById('exQuizDone').style.display='none';
+  document.getElementById('exQuizMain').style.display='';
+  showExQuestion();
+}
+
+function showExQuestion(){
+  const cur=exPool[exIdx];
+  exCurrent=cur;
+  document.getElementById('exProgress').style.width=(exIdx/exPool.length*100)+'%';
+  document.getElementById('exCounter').textContent=(exIdx+1)+' / '+exPool.length;
+  document.getElementById('exQuestion').textContent=cur.example;
+  document.getElementById('exAnswerBanner').style.display='none';
+  document.getElementById('exSelfJudge').style.display='none';
+  document.getElementById('exNextRow').style.display='none';
+  document.getElementById('exActionBtn').style.display='';
+  document.getElementById('exActionBtn').textContent='訳を見る';
+  // 自動再生
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  setTimeout(()=>speakEx(), 500);
+}
+
+function speakEx(){
+  if(!exCurrent||!exCurrent.example) return;
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  speakKorean(exCurrent.example, null);
+}
+
+function showExAnswer(){
+  const cur=exCurrent;
+  document.getElementById('exActionBtn').style.display='none';
+  document.getElementById('exWord').textContent=cur.korean+' / '+cur.japanese;
+  document.getElementById('exAnswer').textContent=cur.exampleJp||cur.japanese;
+  document.getElementById('exAnswerBanner').style.display='block';
+  document.getElementById('exSelfJudge').style.display='flex';
+}
+
+function exJudge(isOk){
+  exScore.correct+=isOk?1:0; exScore.wrong+=isOk?0:1;
+  if(!isOk) exWrong.push(exCurrent);
+  document.getElementById('exSelfJudge').style.display='none';
+  document.getElementById('exNextRow').style.display='';
+}
+
+function nextExQuestion(){
+  if(exIdx+1>=exPool.length){ showExDone(); return; }
+  exIdx++; showExQuestion();
+}
+
+function showExDone(){
+  document.getElementById('exQuizMain').style.display='none';
+  document.getElementById('exQuizDone').style.display='';
+  const pct=Math.round(exScore.correct/exPool.length*100);
+  document.getElementById('exScorePct').textContent=pct+'%';
+  document.getElementById('exScoreDetail').innerHTML=
+    `<span style="color:#5a9e6a">わかった ${exScore.correct}</span>　<span style="color:#c04040">わからなかった ${exScore.wrong}</span>`;
+  const ws=document.getElementById('exWrongList');
+  if(exWrong.length===0){ ws.innerHTML=''; return; }
+  ws.innerHTML='<div class="wrong-title">❌ もう一度確認</div>'+
+    exWrong.map(w=>`<div class="wrong-item">
+      <div style="color:#5a8a9a;font-weight:700">💬 ${esc(w.example)}</div>
+      <div style="margin-top:4px"><b>${esc(w.korean)}</b> → ${esc(w.japanese)}</div>
+    </div>`).join('');
+}
+
+function resetExQuiz(){
+  document.getElementById('exQuizDone').style.display='none';
+  document.getElementById('exQuizMain').style.display='none';
+  document.getElementById('exQuizSetup').style.display='';
+  renderExQuiz();
 }
 
 </script>
