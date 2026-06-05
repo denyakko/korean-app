@@ -1698,12 +1698,17 @@ function startNumQuiz(){
 
 function showNumQuestion(){
   const q=numPool[numIdx];
+  const ctx=q.contexts[Math.floor(Math.random()*q.contexts.length)];
+  const nums=q.type==='hana'?HANA:IL;
+  const picked=nums[Math.floor(Math.random()*Math.min(5,nums.length))];
+  const jpText=ctx.replace('__', picked.jp);
+  const krAnswer=picked.kr+' '+q.unit;
+  q._currentAnswer=krAnswer;
   document.getElementById('numProgress').style.width=(numIdx/numPool.length*100)+'%';
   document.getElementById('numCounter').textContent=(numIdx+1)+' / '+numPool.length;
-  // 数字部分をハイライト
   const qEl=document.getElementById('numQuestion');
-  qEl.innerHTML=q.jp.replace(/\d+/g, n=>`<span style="font-size:32px;color:#d4826a;font-weight:900">${n}</span>`);
-  document.getElementById('numHint').innerHTML=`👆 <b style="color:#c4724a">${q.blank}</b> を韓国語で入力してください`;
+  qEl.innerHTML=jpText.replace(new RegExp(String(picked.jp),'g'),`<span style="font-size:28px;color:#d4826a;font-weight:900">${picked.jp}</span>`);
+  document.getElementById('numHint').innerHTML=`👆 <b style="color:#c4724a">${picked.jp} ${q.unit}</b> を韓国語で入力`;
   document.getElementById('numInput').value='';
   document.getElementById('numInput').disabled=false;
   document.getElementById('numResult').style.display='none';
