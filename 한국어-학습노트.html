@@ -550,7 +550,7 @@ window.addEventListener('load',()=>{
   renderAll();
 });
 
-function today(){ return new Date().toISOString().slice(0,10); }
+function today(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 
 // ===== Tabs =====
 function switchTab(id){
@@ -1411,7 +1411,7 @@ function recordActivity(){
   saveActivity(activity);
   if(streak.lastDate===t) return; // 今日すでに記録済み
   const yesterday=new Date(); yesterday.setDate(yesterday.getDate()-1);
-  const yStr=yesterday.toISOString().slice(0,10);
+  const yStr=yesterday.getFullYear()+'-'+String(yesterday.getMonth()+1).padStart(2,'0')+'-'+String(yesterday.getDate()).padStart(2,'0');
   if(streak.lastDate===yStr){
     streak.current+=1;
   } else if(streak.lastDate!==t){
