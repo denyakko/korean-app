@@ -378,15 +378,15 @@ textarea{background:#f7f3ef;border:1.5px solid #e0d8d0;border-radius:12px;paddin
   </div>
 </div>
 
-<!-- ===== レッスンノート ===== -->
+<!-- ===== ノート ===== -->
 <div id="sec-notes" class="section">
   <div class="card">
-    <div class="card-title" id="noteFormTitle">📝 レッスンノートを追加</div>
+    <div class="card-title" id="noteFormTitle">📝 ノートを追加</div>
     <div class="form-group"><label class="field-label">レッスン日</label><input type="date" id="nDate"></div>
-    <div class="form-group"><label class="field-label">テーマ・トピック</label><input type="text" id="nTheme" placeholder="例：敬語、買い物の表現、発音練習"></div>
+    <div class="form-group"><label class="field-label">テーマ・トピック</label><input type="text" id="nTheme" placeholder="例：敬語、買い物表現、今日の気づき"></div>
     <div class="form-group">
       <label class="field-label">気づいたこと・メモ</label>
-      <textarea id="nBody" placeholder="レッスンで気づいたこと、難しかった表現、次回やりたいことなど…"></textarea>
+      <textarea id="nBody" placeholder="レッスンの気づき、今日覚えたこと、日記など…"></textarea>
     </div>
     <div class="btn-row">
       <button class="btn-primary" onclick="saveNote()" id="noteSaveBtn">保存する</button>
@@ -1287,7 +1287,7 @@ function saveNote(){
   if(editNoteId!==null){
     notes_data = notes_data.map(n=>n.id===editNoteId?{...n,date,theme,body,linkedWords}:n);
     showToast('更新しました ✓'); editNoteId=null;
-    document.getElementById('noteFormTitle').textContent='📝 レッスンノートを追加';
+    document.getElementById('noteFormTitle').textContent='📝 ノートを追加';
     document.getElementById('noteSaveBtn').textContent='保存する';
     document.getElementById('noteCancelBtn').style.display='none';
   } else {
@@ -1302,7 +1302,7 @@ function saveNote(){
 
 function cancelNote(){
   editNoteId=null;
-  document.getElementById('noteFormTitle').textContent='📝 レッスンノートを追加';
+  document.getElementById('noteFormTitle').textContent='📝 ノートを追加';
   document.getElementById('noteSaveBtn').textContent='保存する';
   document.getElementById('noteCancelBtn').style.display='none';
   document.getElementById('nTheme').value='';
@@ -1331,7 +1331,7 @@ function deleteNote(id){
 function renderNotes(){
   const el=document.getElementById('noteList');
   if(notes_data.length===0){
-    el.innerHTML='<div class="empty">レッスンノートがありません。<br>レッスン後に気づきを記録しましょう！</div>';
+    el.innerHTML='<div class="empty">ノートがありません。<br>気づきや学習メモを記録しましょう！</div>';
     return;
   }
   const sorted=[...notes_data].sort((a,b)=>b.date.localeCompare(a.date));
@@ -1870,25 +1870,20 @@ function releaseWakeLock(){
 
 
 // ===== バックアップリマインダー =====
-const BACKUP_KEY = 'korean_last_backup';
 function checkBackupReminder(){
-  const last = localStorage.getItem(BACKUP_KEY);
-  if(!last){
-    // 初回：今日をセットしてスキップ
-    localStorage.setItem(BACKUP_KEY, today());
-    return;
-  }
+  const BKEY = 'korean_last_backup';
+  const last = localStorage.getItem(BKEY);
+  if(!last){ localStorage.setItem(BKEY, today()); return; }
   const diffDays = Math.floor((new Date() - new Date(last)) / (1000*60*60*24));
   if(diffDays >= 7){
     setTimeout(()=>{
-      showToast('💾 ' + diffDays + '日バックアップしていません！単語帳からバックアップをおすすめします', 'warn');
+      showToast('💾 ' + diffDays + '日バックアップしていません！バックアップをおすすめします');
     }, 2000);
   }
 }
 function markBackupDone(){
-  localStorage.setItem(BACKUP_KEY, today());
+  localStorage.setItem('korean_last_backup', today());
 }
-
 </script>
 </body>
 </html>
