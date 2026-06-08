@@ -1432,6 +1432,7 @@ function recordActivity(){
   streak.best=Math.max(streak.best,streak.current);
   streak.lastDate=t;
   saveStreak(streak);
+  renderStreak();
 }
 
 function renderStreak(){
