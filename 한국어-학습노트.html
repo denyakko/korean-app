@@ -189,7 +189,8 @@ textarea{background:#f7f3ef;border:1.5px solid #e0d8d0;border-radius:12px;paddin
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button class="btn-sm" onclick="exportData()">書き出し（JSON）</button>
         <button class="btn-sm" onclick="exportCSV()">書き出し（CSV）</button>
-        <label class="btn-sm" style="cursor:pointer">読み込み<input type="file" accept=".json" style="display:none" onchange="importData(event)"></label>
+        <label class="btn-sm" style="cursor:pointer">追加読み込み<input type="file" accept=".json" style="display:none" onchange="importData(event)"></label>
+      <label class="btn-sm" style="cursor:pointer;color:#c04040;border-color:#e0b0b0" onclick="if(!confirm('現在の単語を全て削除してから読み込みます。\nこの操作は元に戻せません。よろしいですか？'))event.preventDefault();">リセット読み込み<input type="file" accept=".json" style="display:none" onchange="importDataReset(event)"></label>
       </div>
     </div>
     <div style="font-size:11px;color:#c0a898;margin-top:5px;opacity:.8">機種変前に「書き出し」→ 新スマホで「読み込み」でデータ移行できます</div>
@@ -1884,6 +1885,25 @@ function checkBackupReminder(){
 function markBackupDone(){
   localStorage.setItem('korean_last_backup', today());
 }
+
+function importDataReset(e){
+  const file=e.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const data=JSON.parse(ev.target.result);
+      const imported=data.words||data;
+      if(!Array.isArray(imported)) throw new Error();
+      // 全削除してから読み込む
+      words=imported;
+      categories=data.categories||['マイ単語'];
+      saveCats(); saveWords(); renderAll();
+      showToast(`${words.length}語を読み込みました（リセット） ✓`);
+    }catch{ showToast('ファイルが読み込めませんでした','err'); }
+  };
+  reader.readAsText(file); e.target.value='';
+}
+
 </script>
 </body>
 </html>
