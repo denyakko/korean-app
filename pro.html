@@ -156,13 +156,14 @@ function updateAuthUI(user) {
   const logoutBtn = document.getElementById('fbLogoutBtn');
   const userInfo  = document.getElementById('fbUserInfo');
   if (!loginBtn) return;
+  const logoutArea = document.getElementById('fbLogoutArea');
   if (user) {
     loginBtn.style.display  = 'none';
-    logoutBtn.style.display = '';
+    logoutArea.style.display = 'flex';
     userInfo.textContent    = user.displayName || user.email;
   } else {
     loginBtn.style.display  = '';
-    logoutBtn.style.display = 'none';
+    logoutArea.style.display = 'none';
     userInfo.textContent    = '';
   }
 }
@@ -331,18 +332,18 @@ window.fbLogout = async function() {
     </div>
     <span style="font-size:26px;line-height:1">🌱</span>
   </div>
-  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px">
     <div class="word-count" id="wordCount">0語</div>
-    <div id="fbAuthArea" style="display:flex;align-items:center;gap:6px">
-      <span id="fbUserInfo" style="font-size:10px;color:#a08070;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
-      <button id="fbLoginBtn"
-        onclick="fbLogin()"
-        style="font-size:10px;padding:4px 10px;background:#4285f4;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-family:inherit;white-space:nowrap">
-        🔑 ログイン
-      </button>
+    <button id="fbLoginBtn"
+      onclick="fbLogin()"
+      style="font-size:10px;padding:4px 10px;background:#4285f4;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-family:inherit;white-space:nowrap">
+      🔑 ログイン
+    </button>
+    <div id="fbLogoutArea" style="display:none;flex-direction:column;align-items:flex-end;gap:2px">
+      <span id="fbUserInfo" style="font-size:10px;color:#a08070;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
       <button id="fbLogoutBtn"
         onclick="fbLogout()"
-        style="display:none;font-size:10px;padding:4px 10px;background:#e8e0d8;color:#7a6050;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-family:inherit;white-space:nowrap">
+        style="font-size:10px;padding:4px 10px;background:#e8e0d8;color:#7a6050;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-family:inherit;white-space:nowrap">
         ログアウト
       </button>
     </div>
