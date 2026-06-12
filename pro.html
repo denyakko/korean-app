@@ -178,7 +178,8 @@ async function loadFromFirestore(uid) {
     if (!wordsSnap.empty) {
       const cloudWords = wordsSnap.docs.map(d => d.data());
       if (cloudWords.length > 0) {
-        words = cloudWords;
+        // IDの昇順（追加順）に並べ直す
+        words = cloudWords.sort((a, b) => String(a.id || 0).localeCompare(String(b.id || 0), undefined, {numeric: true}));
         saveWords(); // ローカルにも同期
       }
     }
