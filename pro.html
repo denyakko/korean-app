@@ -152,7 +152,7 @@ function showNotAllowed(user) {
   const guide = document.getElementById('loginGuide');
   if (guide) guide.style.display = 'none';
   // 語数・名前を隠す
-  document.getElementById('wordCount').textContent = '';
+  document.getElementById('wordCount').style.display = 'none';
   const userInfo = document.getElementById('fbUserInfo');
   if (userInfo) userInfo.textContent = '';
   const msg = document.createElement('div');
@@ -213,6 +213,7 @@ onAuthStateChanged(auth, async (user) => {
     if (guide) guide.style.display = 'none';
     document.querySelector('nav').style.display = '';
     document.querySelector('main').style.display = '';
+    document.getElementById('wordCount').style.display = '';
     // ログイン済み
     window._fbUser = user;
     updateAuthUI(user);
