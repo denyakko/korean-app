@@ -126,6 +126,59 @@ const provider = new GoogleAuthProvider();
 window._fb = { auth, db, provider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged,
   doc, getDoc, setDoc, collection, getDocs, writeBatch, deleteDoc };
 
+// ===== 許可リストチェック（管理者フラグはFirestoreで管理）=====
+async function checkAllowed(user) {
+  try {
+    const snap = await getDoc(doc(db, 'allowedUsers', user.email));
+    if (!snap.exists()) return false;
+    const data = snap.data();
+    // active: true なら許可（isAdmin: true でも同じ）
+    return data.active === true;
+  } catch(e) {
+    console.error('許可リストチェックエラー:', e);
+    return false;
+  }
+}
+
+// ===== 非許可画面を表示 =====
+function showNotAllowed(user) {
+  // ローカルデータをクリアして表示しない
+  words = [];
+  categories = [];
+  notes_data = [];
+  document.querySelector('nav').style.display = 'none';
+  document.querySelector('main').style.display = 'none';
+  const msg = document.createElement('div');
+  msg.id = 'notAllowedMsg';
+  msg.style.cssText = 'text-align:center;padding:48px 24px;font-family:inherit';
+  msg.innerHTML = `
+    <div style="font-size:48px;margin-bottom:16px">🔒</div>
+    <div style="font-size:18px;font-weight:900;color:#c4724a;margin-bottom:12px">ご購入者のみ使用できます</div>
+    <div style="font-size:13px;color:#a08070;line-height:1.7;margin-bottom:24px">
+      このアプリはnoteにて販売中です。<br>
+      ご購入後、使用するGoogleアカウントのメールアドレスをお知らせください。
+    </div>
+    <a href="https://note.com/" target="_blank"
+      style="display:inline-block;padding:12px 28px;background:linear-gradient(135deg,#d4826a,#c4956a);color:#fff;border-radius:12px;font-weight:700;font-size:14px;text-decoration:none;margin-bottom:16px">
+      noteで購入する →
+    </a>
+    <br>
+    <button onclick="fbLogout()"
+      style="margin-top:12px;font-size:12px;padding:8px 20px;background:#e8e0d8;color:#7a6050;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-family:inherit">
+      別のアカウントでログイン
+    </button>
+  `;
+  document.body.appendChild(msg);
+}
+
+// ===== 非許可画面を非表示 =====
+function hideNotAllowed() {
+  const msg = document.getElementById('notAllowedMsg');
+  if (msg) msg.remove();
+  document.querySelector('nav').style.display = '';
+  document.querySelector('main').style.display = '';
+}
+
 // ===== リダイレクト結果を取得（リダイレクト方式のログイン後）=====
 try {
   const result = await getRedirectResult(auth);
@@ -139,6 +192,15 @@ try {
 // ===== ログイン状態を監視 =====
 onAuthStateChanged(auth, async (user) => {
   if (user) {
+    // 許可リストチェック
+    const allowed = await checkAllowed(user);
+    if (!allowed) {
+      window._fbUser = null;
+      updateAuthUI(user); // ログアウトボタンは表示
+      showNotAllowed(user);
+      return;
+    }
+    hideNotAllowed();
     // ログイン済み
     window._fbUser = user;
     updateAuthUI(user);
