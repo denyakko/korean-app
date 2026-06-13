@@ -201,14 +201,41 @@ onAuthStateChanged(auth, async (user) => {
       return;
     }
     hideNotAllowed();
+    // ログイン案内を隠す
+    const guide = document.getElementById('loginGuide');
+    if (guide) guide.style.display = 'none';
+    document.querySelector('nav').style.display = '';
+    document.querySelector('main').style.display = '';
     // ログイン済み
     window._fbUser = user;
     updateAuthUI(user);
     await loadFromFirestore(user.uid);
   } else {
-    // 未ログイン
+    // 未ログイン：データを隠す
     window._fbUser = null;
+    words = [];
+    categories = [];
+    notes_data = [];
     updateAuthUI(null);
+    renderAll();
+    document.querySelector('nav').style.display = 'none';
+    document.querySelector('main').style.display = 'none';
+    // ログイン案内を表示
+    let guide = document.getElementById('loginGuide');
+    if (!guide) {
+      guide = document.createElement('div');
+      guide.id = 'loginGuide';
+      guide.style.cssText = 'text-align:center;padding:48px 24px;font-family:inherit';
+      guide.innerHTML = `
+        <div style="font-size:48px;margin-bottom:16px">🔑</div>
+        <div style="font-size:16px;font-weight:900;color:#c4724a;margin-bottom:12px">ログインして使いはじめよう</div>
+        <div style="font-size:13px;color:#a08070;line-height:1.7">
+          Googleアカウントでログインすると<br>どの端末からでも同じデータが使えます。
+        </div>
+      `;
+      document.body.appendChild(guide);
+    }
+    guide.style.display = '';
   }
 });
 
