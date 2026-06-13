@@ -182,6 +182,10 @@ async function loadFromFirestore(uid) {
         words = cloudWords.sort((a, b) => String(a.id || 0).localeCompare(String(b.id || 0), undefined, {numeric: true}));
         saveWords(); // ローカルにも同期
       }
+    } else if (words.length > 0) {
+      // Firestoreにデータがなく、ローカルにデータがある場合→全件アップ
+      showToast('☁️ ローカルデータをクラウドに保存中…');
+      await window.saveWordsToFirestore(true);
     }
 
     // categories
@@ -214,20 +218,61 @@ async function loadFromFirestore(uid) {
   }
 }
 
-// ===== Firestoreへ保存（words） =====
-window.saveWordsToFirestore = async function() {
+// ===== Firestoreへ保存（words）差分保存方式 =====
+// 変更・追加された単語IDを追跡
+window._dirtyWordIds = new Set();
+window._deletedWordIds = new Set();
+
+window.markWordDirty = function(id) {
+  if (id) window._dirtyWordIds.add(String(id));
+};
+window.markWordDeleted = function(id) {
+  if (id) {
+    window._deletedWordIds.add(String(id));
+    window._dirtyWordIds.delete(String(id));
+  }
+};
+
+window.saveWordsToFirestore = async function(forceAll) {
   const user = window._fbUser;
-  if (!user) return; // 未ログインはスキップ
+  if (!user) return;
   try {
     const batch = writeBatch(db);
-    // 既存を全削除してから書き直す（シンプルな方式）
-    const snap = await getDocs(collection(db, 'users', user.uid, 'words'));
-    snap.docs.forEach(d => batch.delete(d.ref));
-    words.forEach(w => {
-      const ref = doc(collection(db, 'users', user.uid, 'words'), String(w.id));
-      batch.set(ref, w);
-    });
+    let opCount = 0;
+
+    if (forceAll) {
+      // 初回ログイン時など全件保存（既存削除→全書き）
+      const snap = await getDocs(collection(db, 'users', user.uid, 'words'));
+      snap.docs.forEach(d => batch.delete(d.ref));
+      words.forEach(w => {
+        const ref = doc(collection(db, 'users', user.uid, 'words'), String(w.id));
+        batch.set(ref, w);
+        opCount++;
+      });
+    } else {
+      // 差分のみ保存
+      // 削除された単語
+      window._deletedWordIds.forEach(id => {
+        const ref = doc(db, 'users', user.uid, 'words', id);
+        batch.delete(ref);
+        opCount++;
+      });
+      // 追加・変更された単語
+      window._dirtyWordIds.forEach(id => {
+        const w = words.find(w => String(w.id) === id);
+        if (w) {
+          const ref = doc(db, 'users', user.uid, 'words', id);
+          batch.set(ref, w);
+          opCount++;
+        }
+      });
+    }
+
+    if (opCount === 0) return; // 変更なし
     await batch.commit();
+    // 保存済みのIDをクリア
+    window._dirtyWordIds.clear();
+    window._deletedWordIds.clear();
   } catch(e) {
     console.error('words保存エラー:', e);
   }
@@ -1013,12 +1058,15 @@ function handleSave(){
   if(duplicate){ showToast(`「${korean}」はすでに登録されています！`,'err'); return; }
   if(editId!==null){
     words=words.map(w=>w.id===editId?{...w,korean,japanese,memo,example,exampleJp,category,date}:w);
+    if(window.markWordDirty) window.markWordDirty(editId);
     showToast('更新しました ✓'); editId=null;
     document.getElementById('formTitle').textContent='＋ 単語を追加';
     document.getElementById('saveBtn').textContent='追加する';
     document.getElementById('cancelBtn').style.display='none';
   } else {
-    words.push({id:Date.now(),korean,japanese,memo,example,exampleJp,category,date,level:'unset',addedAt:new Date().toISOString()});
+    const newId = Date.now();
+    words.push({id:newId,korean,japanese,memo,example,exampleJp,category,date,level:'unset',addedAt:new Date().toISOString()});
+    if(window.markWordDirty) window.markWordDirty(newId);
     showToast('追加しました ✓');
     recordActivity();
   }
@@ -1060,6 +1108,7 @@ function cancelEdit(){
 
 function deleteWord(id){
   words=words.filter(w=>w.id!==id);
+  if(window.markWordDeleted) window.markWordDeleted(id);
   saveWords(); renderAll(); showToast('削除しました','err');
 }
 
@@ -1067,10 +1116,10 @@ function toggleLevel(id,key){
   words=words.map(w=>{
     if(w.id!==id) return w;
     const newLevel=(w.level||'unset')===key?'unset':key;
-    // unsetに戻すときはフラグもリセット
     if(newLevel==='unset') return {...w,level:'unset',ok_ja2ko:false,ok_ko2ja:false};
     return {...w,level:newLevel};
   });
+  if(window.markWordDirty) window.markWordDirty(id);
   saveWords(); renderAll();
 }
 
