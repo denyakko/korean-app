@@ -1000,6 +1000,7 @@ function renderCatList(){
       <span style="font-size:13px;flex:1">${esc(c)}</span>
       <button onclick="moveCat(${i},-1)" style="background:transparent;border:none;color:#b09080;cursor:pointer;font-size:14px;padding:0 4px" ${i===0?'disabled':''}>▲</button>
       <button onclick="moveCat(${i},1)" style="background:transparent;border:none;color:#b09080;cursor:pointer;font-size:14px;padding:0 4px" ${i===categories.length-1?'disabled':''}>▼</button>
+      <button onclick="renameCategoryPrompt('${esc(c)}')" style="background:transparent;border:none;color:#b09080;cursor:pointer;font-size:13px;padding:0 4px;line-height:1">✏️</button>
       <button onclick="deleteCategory('${esc(c)}')" style="background:transparent;border:none;color:#c0a898;cursor:pointer;font-size:16px;padding:0 4px;line-height:1">×</button>
     </div>`).join('');
 }
@@ -1023,6 +1024,23 @@ function dragDrop(e,idx){
 }
 function dragEnd(){ dragIdx=null; }
 
+
+function renameCategoryPrompt(oldName){
+  const newName = prompt(`「${oldName}」の新しい名前を入力してください`, oldName);
+  if(!newName || newName.trim() === '') return;
+  const trimmed = newName.trim();
+  if(trimmed === oldName) return;
+  if(categories.includes(trimmed)){ showToast('同じ名前のカテゴリがすでにあります','err'); return; }
+  // カテゴリ名を変更
+  categories = categories.map(c => c === oldName ? trimmed : c);
+  // そのカテゴリの単語を全部更新
+  words = words.map(w => w.category === oldName ? {...w, category: trimmed} : w);
+  if(filterCat === oldName) filterCat = trimmed;
+  saveCats();
+  saveWords();
+  renderAll();
+  showToast(`「${oldName}」→「${trimmed}」に変更しました ✓`);
+}
 
 function addCategory(){
   const input=document.getElementById('newCatInput');
