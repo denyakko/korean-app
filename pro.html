@@ -312,6 +312,7 @@ async function loadFromFirestore(uid) {
     if (document.getElementById('sec-record').classList.contains('active')) renderRecord();
     if (document.getElementById('sec-notes').classList.contains('active')) renderNotes();
     showToast('☁️ 読み込み完了 ✓');
+    checkBackupReminder();
   } catch(e) {
     console.error('Firestore読み込みエラー:', e);
     showToast('⚠️ クラウド読み込みに失敗（ローカルデータを使用）', 'err');
@@ -916,7 +917,6 @@ function saveCats(){ try{ localStorage.setItem(CAT_KEY,JSON.stringify(categories
 
 window.addEventListener('load',()=>{
   words=loadWords(); categories=loadCats();
-  checkBackupReminder();
   document.getElementById('fDate').value=today();
   if(window.speechSynthesis){
     window.speechSynthesis.getVoices();
@@ -1052,9 +1052,45 @@ function addCategory(){
 }
 
 function deleteCategory(name){
-  if(!confirm(`「${name}」を削除しますか？\n（このカテゴリの単語は「マイ単語」に移動します）`)) return;
-  categories=categories.filter(c=>c!==name);
-  words=words.map(w=>w.category===name?{...w,category:categories[0]||'マイ単語'}:w);
+  const wordCount = words.filter(w => w.category === name).length;
+  const otherCats = categories.filter(c => c !== name);
+
+  if(wordCount === 0){
+    // 単語がなければそのまま削除
+    if(!confirm(`「${name}」を削除しますか？`)) return;
+    categories = otherCats;
+    if(filterCat===name) filterCat='all';
+    if(testCatFilter===name) testCatFilter='all';
+    saveCats(); renderAll(); showToast(`「${name}」を削除しました`,'err');
+    return;
+  }
+
+  // 単語がある場合：移動先を選ぶ
+  let msg = `「${name}」を削除します。\nこのカテゴリには${wordCount}語あります。\n\n`;
+  if(otherCats.length > 0){
+    msg += `移動先のカテゴリを選ぶか、単語ごと削除できます。\n\n`;
+    msg += otherCats.map((c,i) => `${i+1}: ${c}`).join('\n');
+    msg += `\n0: 単語ごと全部削除する\n\n番号を入力してください：`;
+    const input = prompt(msg);
+    if(input === null) return; // キャンセル
+    const num = parseInt(input);
+    if(num === 0){
+      if(!confirm(`「${name}」の単語${wordCount}語を全部削除します。よろしいですか？`)) return;
+      words = words.filter(w => w.category !== name);
+    } else if(num >= 1 && num <= otherCats.length){
+      const moveTo = otherCats[num - 1];
+      words = words.map(w => w.category === name ? {...w, category: moveTo} : w);
+      showToast(`${wordCount}語を「${moveTo}」に移動しました ✓`);
+    } else {
+      showToast('正しい番号を入力してください','err'); return;
+    }
+  } else {
+    // 他にカテゴリがない場合
+    if(!confirm(`「${name}」を削除すると、${wordCount}語も全部削除されます。\nよろしいですか？`)) return;
+    words = words.filter(w => w.category !== name);
+  }
+
+  categories = otherCats;
   if(filterCat===name) filterCat='all';
   if(testCatFilter===name) testCatFilter='all';
   saveCats(); saveWords(); renderAll(); showToast(`「${name}」を削除しました`,'err');
