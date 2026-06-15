@@ -2277,6 +2277,8 @@ function releaseWakeLock(){
 
 // ===== バックアップリマインダー =====
 function checkBackupReminder(){
+  // ログイン済み（PRO版）はFirestoreに自動保存されるので表示しない
+  if(window._fbUser) return;
   const BKEY = 'korean_last_backup';
   const last = localStorage.getItem(BKEY);
   if(!last){ localStorage.setItem(BKEY, today()); return; }
