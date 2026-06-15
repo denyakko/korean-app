@@ -94,6 +94,11 @@ textarea{background:#f7f3ef;border:1.5px solid #e0d8d0;border-radius:12px;paddin
 .graph-label{display:flex;gap:4px;justify-content:space-between}
 .graph-label span{flex:1;text-align:center;font-size:10px;color:#a08070}
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);color:#fff;padding:10px 24px;border-radius:12px;font-weight:700;font-size:14px;z-index:999;box-shadow:0 8px 24px rgba(0,0,0,.4);white-space:nowrap;display:none;transition:opacity .3s}
+#reviewReminder{margin:0 0 12px 0;background:linear-gradient(135deg,#fff8f4,#fff0e8);border:1.5px solid #f0d0b8;border-radius:16px;padding:14px 16px;display:none}
+#reviewReminder .rem-title{font-size:13px;font-weight:900;color:#c4724a;margin-bottom:8px}
+#reviewReminder .rem-items{display:flex;flex-direction:column;gap:6px}
+#reviewReminder .rem-item{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:#7a5a4a}
+#reviewReminder .rem-btn{font-size:11px;padding:4px 12px;background:#c4724a;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-family:inherit;white-space:nowrap}
 </style>
 
 <!-- Firebase SDK -->
@@ -313,6 +318,7 @@ async function loadFromFirestore(uid) {
     if (document.getElementById('sec-notes').classList.contains('active')) renderNotes();
     showToast('☁️ 読み込み完了 ✓');
     checkBackupReminder();
+    checkReviewReminder();
   } catch(e) {
     console.error('Firestore読み込みエラー:', e);
     showToast('⚠️ クラウド読み込みに失敗（ローカルデータを使用）', 'err');
@@ -508,6 +514,12 @@ window.fbLogout = async function() {
 <main>
 <!-- ===== 単語帳 ===== -->
 <div id="sec-vocab" class="section active">
+
+  <!-- 復習リマインダー -->
+  <div id="reviewReminder">
+    <div class="rem-title">📚 復習しませんか？</div>
+    <div class="rem-items" id="reminderItems"></div>
+  </div>
 
   <!-- カテゴリ横スクロール -->
   <div class="cat-scroll" id="catScroll"></div>
@@ -2310,6 +2322,68 @@ function releaseWakeLock(){
   if(wakeLock){ wakeLock.release(); wakeLock=null; }
 }
 
+
+// ===== 復習リマインダー =====
+function checkReviewReminder(){
+  if(!window._fbUser) return; // ログイン済みのみ
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  const items = [];
+
+  // 未学習（仕分け前）で3日以上経過
+  const unreviewed = words.filter(w => {
+    if((w.level||'unset') !== 'unset') return false;
+    if(w.addedManually === false) return false; // インポートは除外
+    if(!w.addedAt) return false;
+    const added = new Date(w.addedAt);
+    added.setHours(0,0,0,0);
+    const diff = Math.floor((today - added) / (1000*60*60*24));
+    return diff >= 3;
+  });
+  if(unreviewed.length > 0){
+    items.push({ label: `⬜ まだ練習していない単語が ${unreviewed.length}語あります`, level: 'unset' });
+  }
+
+  // むり（hard）
+  const hard = words.filter(w => (w.level||'unset') === 'hard');
+  if(hard.length > 0){
+    items.push({ label: `❌ むり の単語が ${hard.length}語あります`, level: 'hard' });
+  }
+
+  // あとすこし（unsure）
+  const unsure = words.filter(w => (w.level||'unset') === 'unsure');
+  if(unsure.length > 0){
+    items.push({ label: `⚠️ あとすこし の単語が ${unsure.length}語あります`, level: 'unsure' });
+  }
+
+  const el = document.getElementById('reviewReminder');
+  const itemsEl = document.getElementById('reminderItems');
+  if(items.length === 0){ el.style.display = 'none'; return; }
+
+  itemsEl.innerHTML = items.map(item => `
+    <div class="rem-item">
+      <span>${item.label}</span>
+      <button class="rem-btn" onclick="startReviewTest('${item.level}')">復習する</button>
+    </div>
+  `).join('');
+  el.style.display = '';
+}
+
+function startReviewTest(level){
+  // テストタブに切り替えてフィルターをセット
+  switchTab('test');
+  if(level === 'unset'){
+    filterLevel = 'unset';
+  } else {
+    filterLevel = level;
+  }
+  // テスト開始
+  setTimeout(() => {
+    const startBtn = document.querySelector('#sec-test button');
+    if(startBtn) startBtn.click();
+  }, 100);
+}
 
 // ===== バックアップリマインダー =====
 function checkBackupReminder(){
