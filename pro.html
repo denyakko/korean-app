@@ -318,7 +318,7 @@ async function loadFromFirestore(uid) {
     if (document.getElementById('sec-notes').classList.contains('active')) renderNotes();
     showToast('☁️ 読み込み完了 ✓');
     checkBackupReminder();
-    checkReviewReminder();
+    // checkReviewReminder(); // 復習リマインダーは非表示に（チップで代用）
   } catch(e) {
     console.error('Firestore読み込みエラー:', e);
     showToast('⚠️ クラウド読み込みに失敗（ローカルデータを使用）', 'err');
