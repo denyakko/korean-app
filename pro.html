@@ -1864,8 +1864,16 @@ function getOldestWordDate(){
 function recordActivity(){
   const t=today();
   const streak=loadStreak();
-  // 初回使用日を記録（一番古い単語の追加日があればそれを優先、なければ今日）
-  if(!streak.startDate){ streak.startDate=getOldestWordDate()||t; saveStreak(streak); }
+  // 初回使用日を記録（一番古い単語の追加日があればそれを優先）
+  // 既にstartDateがある場合も、それより古い単語があれば更新する
+  const oldest=getOldestWordDate();
+  if(!streak.startDate){
+    streak.startDate=oldest||t;
+    saveStreak(streak);
+  } else if(oldest && oldest<streak.startDate){
+    streak.startDate=oldest;
+    saveStreak(streak);
+  }
   const activity=loadActivity();
   activity[t]=(activity[t]||0)+1;
   saveActivity(activity);
@@ -2374,7 +2382,7 @@ function checkReviewReminder(){
       <button class="rem-btn" onclick="startReviewTest('${item.level}')">復習する</button>
     </div>
   `).join('');
-  el.style.display = '';
+  el.style.display = 'block';
 }
 
 function startReviewTest(level){
