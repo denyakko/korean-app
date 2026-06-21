@@ -528,6 +528,9 @@ window.fbLogout = async function() {
   <div class="level-summary" id="levelSummary"></div>
 
   <!-- 入力フォーム -->
+  <div style="display:flex;justify-content:flex-end;margin-bottom:8px">
+    <button onclick="showPasteImport()" style="background:#fff;border:1.5px solid #e0d4c8;border-radius:10px;padding:7px 14px;font-size:12px;color:#c4724a;font-weight:700;cursor:pointer;font-family:inherit">📋 ペーストして一括追加</button>
+  </div>
   <div class="card">
     <div class="card-title" id="formTitle">＋ 単語を追加</div>
     <div class="form-group">
@@ -651,52 +654,7 @@ window.fbLogout = async function() {
 
   
 
-  <!-- 例文テスト -->
-  <div class="card" id="exampleQuizCard">
-    <div class="card-title">💬 例文テスト</div>
-    <p style="font-size:13px;color:#a08070;margin-bottom:6px">例文を聞いて日本語訳を考えましょう。例文が登録された単語のみ出題されます。</p>
-    <p style="font-size:12px;color:#c0a898;margin-bottom:14px">※ 習熟度には反映されません</p>
-    <div id="exQuizSetup">
-      <div id="exQuizCount" style="font-size:13px;color:#a08070;margin-bottom:10px"></div>
-      <div class="btn-row">
-        <button class="btn-primary" onclick="startExQuiz()">テスト開始</button>
-      </div>
-    </div>
-    <div id="exQuizMain" style="display:none">
-      <div class="progress-bar"><div class="progress-fill" id="exProgress" style="width:0%"></div></div>
-      <div class="test-counter" id="exCounter"></div>
-      <div style="text-align:center;padding:24px 0 16px">
-        <div id="exQuestion" style="font-size:20px;font-weight:700;color:#2d2420;line-height:1.6;margin-bottom:12px"></div>
-        <button onclick="speakEx()" style="background:linear-gradient(135deg,#d4826a,#c4956a);border:none;border-radius:50%;width:56px;height:56px;font-size:24px;cursor:pointer;box-shadow:0 4px 12px rgba(212,130,106,.3)">🔈</button>
-        <div style="font-size:12px;color:#a08070;margin-top:6px">タップして再生</div>
-      </div>
-      <div class="btn-row">
-        <button class="btn-primary" id="exActionBtn" onclick="showExAnswer()" style="width:100%">訳を見る</button>
-      </div>
-      <div id="exAnswerBanner" style="display:none;margin-top:12px;background:#f5ede6;border-radius:12px;padding:14px;text-align:center">
-        <div style="font-size:12px;color:#a08070;margin-bottom:4px">単語：<b style="color:#c4724a" id="exWord"></b></div>
-        <div style="font-size:16px;font-weight:700;color:#7a4030" id="exAnswer"></div>
-      </div>
-      <div id="exSelfJudge" style="display:none;gap:8px;margin-top:10px">
-        <button onclick="exJudge(true)" style="flex:1;padding:12px;border-radius:10px;border:none;background:#5a9e6a;color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:'M PLUS Rounded 1c',sans-serif">⭕ わかった</button>
-        <button onclick="exJudge(false)" style="flex:1;padding:12px;border-radius:10px;border:none;background:#c04040;color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:'M PLUS Rounded 1c',sans-serif">❌ わからなかった</button>
-      </div>
-      <div class="btn-row" id="exNextRow" style="display:none">
-        <button class="btn-primary" onclick="nextExQuestion()" style="width:100%">次へ →</button>
-      </div>
-    </div>
-    <div id="exQuizDone" style="display:none">
-      <div class="score-box">
-        <div class="score-pct" id="exScorePct"></div>
-        <div class="score-detail" id="exScoreDetail"></div>
-      </div>
-      <div id="exWrongList" class="wrong-list"></div>
-      <div class="btn-row">
-        <button class="btn-primary" onclick="resetExQuiz()">もう一度</button>
-        <button class="btn-ghost" onclick="switchTab('vocab')">単語帳へ</button>
-      </div>
-    </div>
-  </div>
+
 
   <!-- 数字クイズ -->
   <div class="card">
@@ -832,6 +790,53 @@ window.fbLogout = async function() {
       <div id="listenWrongList" class="wrong-list"></div>
       <div class="btn-row">
         <button class="btn-primary" onclick="resetListenQuiz()">もう一度</button>
+        <button class="btn-ghost" onclick="switchTab('vocab')">単語帳へ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 例文テスト -->
+  <div class="card" id="exampleQuizCard">
+    <div class="card-title">💬 例文テスト</div>
+    <p style="font-size:13px;color:#a08070;margin-bottom:6px">例文を聞いて日本語訳を考えましょう。例文が登録された単語のみ出題されます。</p>
+    <p style="font-size:12px;color:#c0a898;margin-bottom:14px">※ 習熟度には反映されません</p>
+    <div id="exQuizSetup">
+      <div id="exQuizCount" style="font-size:13px;color:#a08070;margin-bottom:10px"></div>
+      <div class="btn-row">
+        <button class="btn-primary" onclick="startExQuiz()">テスト開始</button>
+      </div>
+    </div>
+    <div id="exQuizMain" style="display:none">
+      <div class="progress-bar"><div class="progress-fill" id="exProgress" style="width:0%"></div></div>
+      <div class="test-counter" id="exCounter"></div>
+      <div style="text-align:center;padding:24px 0 16px">
+        <div id="exQuestion" style="font-size:20px;font-weight:700;color:#2d2420;line-height:1.6;margin-bottom:12px"></div>
+        <button onclick="speakEx()" style="background:linear-gradient(135deg,#d4826a,#c4956a);border:none;border-radius:50%;width:56px;height:56px;font-size:24px;cursor:pointer;box-shadow:0 4px 12px rgba(212,130,106,.3)">🔈</button>
+        <div style="font-size:12px;color:#a08070;margin-top:6px">タップして再生</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-primary" id="exActionBtn" onclick="showExAnswer()" style="width:100%">訳を見る</button>
+      </div>
+      <div id="exAnswerBanner" style="display:none;margin-top:12px;background:#f5ede6;border-radius:12px;padding:14px;text-align:center">
+        <div style="font-size:12px;color:#a08070;margin-bottom:4px">単語：<b style="color:#c4724a" id="exWord"></b></div>
+        <div style="font-size:16px;font-weight:700;color:#7a4030" id="exAnswer"></div>
+      </div>
+      <div id="exSelfJudge" style="display:none;gap:8px;margin-top:10px">
+        <button onclick="exJudge(true)" style="flex:1;padding:12px;border-radius:10px;border:none;background:#5a9e6a;color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:'M PLUS Rounded 1c',sans-serif">⭕ わかった</button>
+        <button onclick="exJudge(false)" style="flex:1;padding:12px;border-radius:10px;border:none;background:#c04040;color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:'M PLUS Rounded 1c',sans-serif">❌ わからなかった</button>
+      </div>
+      <div class="btn-row" id="exNextRow" style="display:none">
+        <button class="btn-primary" onclick="nextExQuestion()" style="width:100%">次へ →</button>
+      </div>
+    </div>
+    <div id="exQuizDone" style="display:none">
+      <div class="score-box">
+        <div class="score-pct" id="exScorePct"></div>
+        <div class="score-detail" id="exScoreDetail"></div>
+      </div>
+      <div id="exWrongList" class="wrong-list"></div>
+      <div class="btn-row">
+        <button class="btn-primary" onclick="resetExQuiz()">もう一度</button>
         <button class="btn-ghost" onclick="switchTab('vocab')">単語帳へ</button>
       </div>
     </div>
@@ -1002,7 +1007,7 @@ function switchTab(id){
     }
     renderRecord();
   }
-  if(id==='test'){ renderTestCatFilters(); renderLevelFilters(); renderExQuiz(); }
+  if(id==='test'){ renderTestCatFilters(); renderLevelFilters(); }
   if(id==='listen') renderListen();
   if(id==='notes'){
     if(openMonths.size===0 && notes_data.length>0){
@@ -2003,6 +2008,7 @@ let flowPool=[], flowIdx=0, flowTimer=null, flowCatFilter='all', flowMode='study
 
 function renderListen(){
   renderListenCatFilter();
+  renderExQuiz();
   renderDictCatFilter();
   renderFlowCatFilter();
 }
@@ -2618,6 +2624,114 @@ function importDataReset(e){
   reader.readAsText(file); e.target.value='';
 }
 
+// ===== ペーストして一括追加 =====
+let pasteCandidates = [];
+const HANGUL_RE = /[\uAC00-\uD7A3\u1100-\u11FF\u3130-\u318F]/;
+
+function showPasteImport(){
+  document.getElementById('pasteStep1').style.display='';
+  document.getElementById('pasteStep2').style.display='none';
+  document.getElementById('pasteInput').value='';
+  const sel=document.getElementById('pasteCategory');
+  sel.innerHTML=categories.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  sel.value=(filterCat!=='all'&&categories.includes(filterCat))?filterCat:(categories[0]||'マイ単語');
+  document.getElementById('pasteDate').value=today();
+  document.getElementById('pasteImportModal').style.display='flex';
+}
+function hidePasteImport(){
+  document.getElementById('pasteImportModal').style.display='none';
+}
+function backToPasteStep1(){
+  document.getElementById('pasteStep1').style.display='';
+  document.getElementById('pasteStep2').style.display='none';
+}
+
+function parsePasteImport(){
+  const raw=document.getElementById('pasteInput').value;
+  const lines=raw.split('\n').map(l=>l.trim()).filter(l=>l.length>0);
+  const delimiters=[/\t+/,/\s*[-―ー‐]\s*/,/\s*[:：]\s*/,/\s*→\s*/,/\s{2,}/];
+  const out=[];
+  let pendingKo=null, pendingJa=null;
+  const pushPair=(ko,ja)=>{ out.push({korean:(ko||'').trim(),japanese:(ja||'').trim()}); };
+
+  for(let i=0;i<lines.length;i++){
+    const line=lines[i];
+    let matched=false;
+    for(const d of delimiters){
+      if(d.test(line)){
+        const parts=line.split(d);
+        if(parts.length>=2){
+          const a=parts[0].trim(), b=parts.slice(1).join(' ').trim();
+          const aHasKo=HANGUL_RE.test(a), bHasKo=HANGUL_RE.test(b);
+          if(aHasKo && !bHasKo){ pushPair(a,b); }
+          else if(!aHasKo && bHasKo){ pushPair(b,a); }
+          else { pushPair(a,b); } // 判定できない場合は左=韓国語・右=日本語とみなす
+          matched=true;
+          break;
+        }
+      }
+    }
+    if(matched) continue;
+
+    // 区切り記号なし → 韓国語のみ／日本語のみの行として、前後の行とペアリングを試みる
+    const hasKo=HANGUL_RE.test(line);
+    if(hasKo){
+      if(pendingJa){ pushPair(line,pendingJa); pendingJa=null; }
+      else { if(pendingKo) pushPair(pendingKo,''); pendingKo=line; }
+    } else {
+      if(pendingKo){ pushPair(pendingKo,line); pendingKo=null; }
+      else { if(pendingJa) pushPair('',pendingJa); pendingJa=line; }
+    }
+  }
+  if(pendingKo) pushPair(pendingKo,'');
+  if(pendingJa) pushPair('',pendingJa);
+
+  if(out.length===0){ showToast('読み取れる行がありませんでした','err'); return; }
+
+  pasteCandidates=out;
+  renderPasteRows();
+  document.getElementById('pasteStep1').style.display='none';
+  document.getElementById('pasteStep2').style.display='';
+}
+
+function renderPasteRows(){
+  document.getElementById('pasteStep2Count').textContent=`${pasteCandidates.length}件見つかりました。内容を確認・修正してください（✕で除外）`;
+  const el=document.getElementById('pasteRows');
+  el.innerHTML=pasteCandidates.map((c,i)=>`
+    <div style="display:flex;gap:6px;align-items:center;background:#fff;border:1.5px solid #ede8e2;border-radius:10px;padding:8px">
+      <div style="flex:1;display:flex;flex-direction:column;gap:4px">
+        <input type="text" value="${esc(c.korean)}" oninput="updatePasteRow(${i},'korean',this.value)" placeholder="韓国語" style="font-size:13px;padding:6px 8px;border:1px solid #ede8e2;border-radius:6px;font-family:inherit;box-sizing:border-box">
+        <input type="text" value="${esc(c.japanese)}" oninput="updatePasteRow(${i},'japanese',this.value)" placeholder="日本語訳" style="font-size:13px;padding:6px 8px;border:1px solid #ede8e2;border-radius:6px;font-family:inherit;box-sizing:border-box">
+      </div>
+      <button onclick="removePasteRow(${i})" style="background:none;border:none;color:#c04040;font-size:18px;cursor:pointer;padding:4px 8px">✕</button>
+    </div>
+  `).join('');
+}
+function updatePasteRow(i,field,val){ if(pasteCandidates[i]) pasteCandidates[i][field]=val; }
+function removePasteRow(i){ pasteCandidates.splice(i,1); renderPasteRows(); }
+
+function confirmPasteImport(){
+  const cat=document.getElementById('pasteCategory').value || categories[0] || 'マイ単語';
+  const date=document.getElementById('pasteDate').value || today();
+  const valid=pasteCandidates.filter(c=>c.korean.trim() && c.japanese.trim());
+  if(valid.length===0){ showToast('韓国語・日本語訳の両方が入っている行がありません','err'); return; }
+  const existing=new Set(words.map(w=>w.korean));
+  const newW=[]; let dup=0;
+  valid.forEach((c,i)=>{
+    const ko=c.korean.trim();
+    if(existing.has(ko)){ dup++; return; }
+    existing.add(ko);
+    newW.push({id:Date.now()+i,korean:ko,japanese:c.japanese.trim(),memo:'',example:'',exampleJp:'',category:cat,date,level:'unset',addedAt:new Date().toISOString()});
+  });
+  if(newW.length===0){ showToast('すべて登録済みの単語でした','err'); return; }
+  words=[...words,...newW];
+  if(window.markWordDirty) newW.forEach(w=>window.markWordDirty(w.id));
+  saveWords(); renderAll(); recordActivity();
+  hidePasteImport();
+  showToast(`${newW.length}語を追加しました ✓`+(dup>0?`（重複${dup}語はスキップ）`:''));
+}
+
+
 
 function resetStreak(){
   const streak=loadStreak();
@@ -2683,6 +2797,37 @@ async function doUrlImport(reset){
       <button onclick="doUrlImport(true)" style="flex:1;padding:10px;background:#c04040;color:white;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">リセットして読み込む</button>
     </div>
     <button onclick="hideUrlImport()" style="width:100%;margin-top:8px;padding:8px;background:none;border:1.5px solid #ede8e2;border-radius:10px;font-size:12px;color:#a08070;cursor:pointer;font-family:inherit">キャンセル</button>
+  </div>
+</div>
+
+<div id="pasteImportModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;padding:24px;overflow-y:auto">
+  <div style="background:#faf6f1;border-radius:20px;padding:24px 20px;width:100%;max-width:420px;max-height:85vh;overflow-y:auto">
+
+    <div id="pasteStep1">
+      <div style="font-size:16px;font-weight:800;color:#2d2420;margin-bottom:6px">📋 ペーストして一括追加</div>
+      <div style="font-size:12px;color:#a08070;margin-bottom:12px;line-height:1.6">本などをLive Text（写真の文字を長押しでコピー）でコピーした単語リストを貼り付けてください。「韓国語＋日本語」が同じ行でも、別々の行でもOKです。</div>
+      <textarea id="pasteInput" placeholder="여기에 붙여넣기...&#10;안녕하세요 こんにちは&#10;감사합니다 ありがとうございます" style="width:100%;height:140px;padding:10px 12px;border:1.5px solid #ede8e2;border-radius:10px;font-size:13px;outline:none;font-family:inherit;resize:vertical;box-sizing:border-box"></textarea>
+      <div class="form-group" style="margin-top:10px"><label class="field-label">カテゴリ</label><select id="pasteCategory"></select></div>
+      <div class="form-group"><label class="field-label">学習日</label><input type="date" id="pasteDate"></div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button onclick="parsePasteImport()" style="flex:1;padding:10px;background:#c4724a;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">解析する</button>
+        <button onclick="hidePasteImport()" style="flex:1;padding:10px;background:none;border:1.5px solid #ede8e2;border-radius:10px;font-size:13px;color:#a08070;cursor:pointer;font-family:inherit">キャンセル</button>
+      </div>
+    </div>
+
+    <div id="pasteStep2" style="display:none">
+      <div style="font-size:16px;font-weight:800;color:#2d2420;margin-bottom:4px">✏️ 内容を確認</div>
+      <div style="font-size:12px;color:#a08070;margin-bottom:12px" id="pasteStep2Count"></div>
+      <div id="pasteRows" style="display:flex;flex-direction:column;gap:8px;max-height:340px;overflow-y:auto"></div>
+      <div style="display:flex;gap:8px;margin-top:14px">
+        <button onclick="confirmPasteImport()" style="flex:1;padding:10px;background:#5a9e6a;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">この内容で追加する</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button onclick="backToPasteStep1()" style="flex:1;padding:8px;background:none;border:1.5px solid #ede8e2;border-radius:10px;font-size:12px;color:#a08070;cursor:pointer;font-family:inherit">戻る</button>
+        <button onclick="hidePasteImport()" style="flex:1;padding:8px;background:none;border:1.5px solid #ede8e2;border-radius:10px;font-size:12px;color:#a08070;cursor:pointer;font-family:inherit">キャンセル</button>
+      </div>
+    </div>
+
   </div>
 </div>
 </body>
