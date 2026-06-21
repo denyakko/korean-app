@@ -1429,21 +1429,37 @@ function updateTestCount(){
   el.value=Math.min(parseInt(el.value)||10,avail||1);
 }
 
-function getQuestionMode(w){
-  if(!reviewMixedMode) return testMode;
-  const needJK=!w.ok_ja2ko; // 日→韓がまだ未達成
-  const needKJ=!w.ok_ko2ja; // 韓→日がまだ未達成
-  if(needJK && !needKJ) return 'ja2ko';
-  if(needKJ && !needJK) return 'ko2ja';
-  return Math.random()<0.5?'ja2ko':'ko2ja'; // 両方未達成 or 両方達成→ランダム
+function buildReviewPool(pool){
+  // 復習用：両方未達成の単語は両方向を出題、片方のみ未達成の単語は不足分だけ出題
+  const out=[];
+  pool.forEach(w=>{
+    const needJK=!w.ok_ja2ko;
+    const needKJ=!w.ok_ko2ja;
+    if(needJK && needKJ){
+      out.push({...w,_mode:'ja2ko'});
+      out.push({...w,_mode:'ko2ja'});
+    } else if(needJK){
+      out.push({...w,_mode:'ja2ko'});
+    } else if(needKJ){
+      out.push({...w,_mode:'ko2ja'});
+    } else {
+      out.push({...w,_mode:Math.random()<0.5?'ja2ko':'ko2ja'});
+    }
+  });
+  return out;
 }
 
 function startTest(mixed){
   reviewMixedMode=!!mixed;
-  const pool=getTestPool();
+  let pool=getTestPool();
   if(pool.length===0){ showToast('対象の単語がありません','err'); return; }
-  const count=Math.min(parseInt(document.getElementById('testCount').value)||10,pool.length);
-  testPool=[...pool].sort(()=>Math.random()-.5).slice(0,count);
+  if(reviewMixedMode){
+    // 復習は出題数指定を使わず、足りない方向を漏れなく全部出題する
+    testPool=[...buildReviewPool(pool)].sort(()=>Math.random()-.5);
+  } else {
+    const count=Math.min(parseInt(document.getElementById('testCount').value)||10,pool.length);
+    testPool=[...pool].sort(()=>Math.random()-.5).slice(0,count);
+  }
   testIdx=0; testScore={correct:0,wrong:0}; wrongList=[]; testPhase='question';
   document.getElementById('testSetup').style.display='none';
   document.getElementById('testDone').style.display='none';
@@ -1454,9 +1470,10 @@ function startTest(mixed){
 function showQuestion(){
   testPhase='question';
   const cur=testPool[testIdx];
-  curQMode=getQuestionMode(cur);
+  curQMode=reviewMixedMode?(cur._mode||testMode):testMode;
   document.getElementById('progressFill').style.width=(testIdx/testPool.length*100)+'%';
-  document.getElementById('testCounter').textContent=(testIdx+1)+' / '+testPool.length;
+  const dirLabel=curQMode==='ja2ko'?'🇯🇵→🇰🇷':'🇰🇷→🇯🇵';
+  document.getElementById('testCounter').textContent=(testIdx+1)+' / '+testPool.length+(reviewMixedMode?'　'+dirLabel:'');
   document.getElementById('testQuestion').textContent=curQMode==='ja2ko'?cur.japanese:cur.korean;
   document.getElementById('testMemo').textContent='';
   document.getElementById('resultBanner').style.display='none';
