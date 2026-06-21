@@ -1854,11 +1854,18 @@ function saveStreak(s){ try{ localStorage.setItem(STREAK_KEY,JSON.stringify(s));
 function loadActivity(){ try{ return JSON.parse(localStorage.getItem(ACTIVITY_KEY)||'{}'); }catch{return{}; } }
 function saveActivity(a){ try{ localStorage.setItem(ACTIVITY_KEY,JSON.stringify(a)); }catch{} }
 
+function getOldestWordDate(){
+  // addedAt(追加日時)を持つ単語の中で一番古い日付を返す
+  const dates=words.filter(w=>w.addedAt).map(w=>w.addedAt.slice(0,10));
+  if(dates.length===0) return null;
+  return dates.sort()[0];
+}
+
 function recordActivity(){
   const t=today();
   const streak=loadStreak();
-  // 初回使用日を記録
-  if(!streak.startDate){ streak.startDate=t; saveStreak(streak); }
+  // 初回使用日を記録（一番古い単語の追加日があればそれを優先、なければ今日）
+  if(!streak.startDate){ streak.startDate=getOldestWordDate()||t; saveStreak(streak); }
   const activity=loadActivity();
   activity[t]=(activity[t]||0)+1;
   saveActivity(activity);
@@ -2373,16 +2380,11 @@ function checkReviewReminder(){
 function startReviewTest(level){
   // テストタブに切り替えてフィルターをセット
   switchTab('test');
-  if(level === 'unset'){
-    filterLevel = 'unset';
-  } else {
-    filterLevel = level;
-  }
-  // テスト開始
-  setTimeout(() => {
-    const startBtn = document.querySelector('#sec-test button');
-    if(startBtn) startBtn.click();
-  }, 100);
+  testCatFilter='all';
+  testLevelFilter=level;
+  renderTestCatFilters();
+  renderLevelFilters();
+  startTest();
 }
 
 // ===== バックアップリマインダー =====
