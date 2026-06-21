@@ -1049,6 +1049,7 @@ function renameCategoryPrompt(oldName){
   categories = categories.map(c => c === oldName ? trimmed : c);
   // そのカテゴリの単語を全部更新
   words = words.map(w => w.category === oldName ? {...w, category: trimmed} : w);
+  if(window.markWordDirty) words.filter(w=>w.category===trimmed).forEach(w=>window.markWordDirty(w.id));
   if(filterCat === oldName) filterCat = trimmed;
   saveCats();
   saveWords();
@@ -1090,10 +1091,12 @@ function deleteCategory(name){
     const num = parseInt(input);
     if(num === 0){
       if(!confirm(`「${name}」の単語${wordCount}語を全部削除します。よろしいですか？`)) return;
+      if(window.markWordDeleted) words.filter(w=>w.category===name).forEach(w=>window.markWordDeleted(w.id));
       words = words.filter(w => w.category !== name);
     } else if(num >= 1 && num <= otherCats.length){
       const moveTo = otherCats[num - 1];
       words = words.map(w => w.category === name ? {...w, category: moveTo} : w);
+      if(window.markWordDirty) words.filter(w=>w.category===moveTo).forEach(w=>window.markWordDirty(w.id));
       showToast(`${wordCount}語を「${moveTo}」に移動しました ✓`);
     } else {
       showToast('正しい番号を入力してください','err'); return;
@@ -1101,6 +1104,7 @@ function deleteCategory(name){
   } else {
     // 他にカテゴリがない場合
     if(!confirm(`「${name}」を削除すると、${wordCount}語も全部削除されます。\nよろしいですか？`)) return;
+    if(window.markWordDeleted) words.filter(w=>w.category===name).forEach(w=>window.markWordDeleted(w.id));
     words = words.filter(w => w.category !== name);
   }
 
@@ -1337,6 +1341,7 @@ function importData(e){
       const ids=new Set(words.map(w=>w.id));
       const newW=imported.filter(w=>!ids.has(w.id));
       words=[...words,...newW];
+      if(window.markWordDirty) newW.forEach(w=>window.markWordDirty(w.id));
       saveCats(); saveWords(); renderAll(); showToast(`${newW.length}語をインポートしました ✓`);
     }catch{ showToast('ファイルが読み込めませんでした','err'); }
   };
@@ -1544,6 +1549,7 @@ function selfJudge(isOk){
   } else {
     words=words.map(w=>w.id===cur.id?{...w,level:'hard',ok_ja2ko:false,ok_ko2ja:false}:w);
   }
+  if(window.markWordDirty) window.markWordDirty(cur.id);
   saveWords();
   const banner=document.getElementById('resultBanner');
   banner.className='result-banner '+(isOk?'correct':'wrong');
@@ -1582,6 +1588,7 @@ function checkAnswer(){
   } else {
     words=words.map(w=>w.id===cur.id?{...w,level:'hard',ok_ja2ko:false,ok_ko2ja:false}:w);
   }
+  if(window.markWordDirty) window.markWordDirty(cur.id);
   saveWords();
   document.getElementById('testInput').disabled=true;
   const banner=document.getElementById('resultBanner');
@@ -2454,7 +2461,9 @@ function importDataReset(e){
       words=imported;
       // カテゴリは既存を残しつつ、JSONのカテゴリを追加
       if(data.categories) data.categories.forEach(c=>{ if(!categories.includes(c)) categories.push(c); });
-      saveCats(); saveWords(); renderAll();
+      saveCats(); saveWords();
+      if(window.saveWordsToFirestore) window.saveWordsToFirestore(true); // 全件入れ替えなので強制フル同期
+      renderAll();
       showToast(`${words.length}語を読み込みました（リセット） ✓`);
     }catch{ showToast('ファイルが読み込めませんでした','err'); }
   };
@@ -2496,13 +2505,17 @@ async function doUrlImport(reset){
       words=imported;
       categories=data.categories||['マイ単語'];
       if(data.categories) data.categories.forEach(c=>{ if(!categories.includes(c)) categories.push(c); });
+      saveCats(); saveWords();
+      if(window.saveWordsToFirestore) window.saveWordsToFirestore(true); // 全件入れ替えなので強制フル同期
     } else {
       if(data.categories) data.categories.forEach(c=>{ if(!categories.includes(c)) categories.push(c); });
       const ids=new Set(words.map(w=>w.id));
       const newW=imported.filter(w=>!ids.has(w.id));
       words=[...words,...newW];
+      if(window.markWordDirty) newW.forEach(w=>window.markWordDirty(w.id));
+      saveCats(); saveWords();
     }
-    saveCats(); saveWords(); renderAll();
+    renderAll();
     hideUrlImport();
     showToast('読み込みました ✓');
   } catch(e){
