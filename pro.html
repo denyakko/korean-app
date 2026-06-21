@@ -913,6 +913,8 @@ const PAGE_SIZE = 30;
 let filterLevel = 'all';
 let filterCat = 'all';
 let testMode = 'ja2ko';
+let reviewMixedMode = false; // 復習リマインダー経由の時、設問ごとに足りない方向を狙って出題する
+let curQMode = 'ja2ko'; // 現在の設問の出題方向（reviewMixedMode時はtestModeと別に管理）
 let testLevelFilter = 'all';
 let testCatFilter = 'all';
 let testPool = [];
@@ -1427,7 +1429,17 @@ function updateTestCount(){
   el.value=Math.min(parseInt(el.value)||10,avail||1);
 }
 
-function startTest(){
+function getQuestionMode(w){
+  if(!reviewMixedMode) return testMode;
+  const needJK=!w.ok_ja2ko; // 日→韓がまだ未達成
+  const needKJ=!w.ok_ko2ja; // 韓→日がまだ未達成
+  if(needJK && !needKJ) return 'ja2ko';
+  if(needKJ && !needJK) return 'ko2ja';
+  return Math.random()<0.5?'ja2ko':'ko2ja'; // 両方未達成 or 両方達成→ランダム
+}
+
+function startTest(mixed){
+  reviewMixedMode=!!mixed;
   const pool=getTestPool();
   if(pool.length===0){ showToast('対象の単語がありません','err'); return; }
   const count=Math.min(parseInt(document.getElementById('testCount').value)||10,pool.length);
@@ -1442,15 +1454,16 @@ function startTest(){
 function showQuestion(){
   testPhase='question';
   const cur=testPool[testIdx];
+  curQMode=getQuestionMode(cur);
   document.getElementById('progressFill').style.width=(testIdx/testPool.length*100)+'%';
   document.getElementById('testCounter').textContent=(testIdx+1)+' / '+testPool.length;
-  document.getElementById('testQuestion').textContent=testMode==='ja2ko'?cur.japanese:cur.korean;
+  document.getElementById('testQuestion').textContent=curQMode==='ja2ko'?cur.japanese:cur.korean;
   document.getElementById('testMemo').textContent='';
   document.getElementById('resultBanner').style.display='none';
   document.getElementById('nextBtnRow').style.display='none';
   const spk=document.getElementById('testSpeakBtn');
-  spk.style.display=testMode==='ko2ja'?'':'none'; spk.textContent='🔈';
-  if(testMode==='ko2ja'){
+  spk.style.display=curQMode==='ko2ja'?'':'none'; spk.textContent='🔈';
+  if(curQMode==='ko2ja'){
     // 自己採点モード：入力欄を隠して「答えを見る」ボタン
     document.getElementById('testInput').style.display='none';
     document.getElementById('testActionBtn').textContent='答えを見る';
@@ -1473,7 +1486,7 @@ function testKeydown(e){
 }
 function testAction(){
   if(testPhase==='question'){
-    if(testMode==='ko2ja') showAnswer();
+    if(curQMode==='ko2ja') showAnswer();
     else checkAnswer();
   }
 }
@@ -1502,7 +1515,7 @@ function selfJudge(isOk){
   if(isOk){
     words=words.map(w=>{
       if(w.id!==cur.id) return w;
-      const modeKey=testMode==='ja2ko'?'ok_ja2ko':'ok_ko2ja';
+      const modeKey=curQMode==='ja2ko'?'ok_ja2ko':'ok_ko2ja';
       const updated={...w,[modeKey]:true};
       if(updated.ok_ja2ko===true && updated.ok_ko2ja===true){
         updated.level='ok';
@@ -1526,7 +1539,7 @@ function selfJudge(isOk){
 function checkAnswer(){
   const cur=testPool[testIdx];
   const ans=document.getElementById('testInput').value.trim();
-  const correct=(testMode==='ja2ko'?cur.korean:cur.japanese).trim();
+  const correct=(curQMode==='ja2ko'?cur.korean:cur.japanese).trim();
   testAnswer=correct;
   // 漢字→ひらがな変換（カタカナもひらがなに統一して比較）
   const toHira=s=>s.replace(/[\u30A1-\u30F6]/g,c=>String.fromCharCode(c.charCodeAt(0)-0x60));
@@ -1540,7 +1553,7 @@ function checkAnswer(){
   if(isOk){
     words=words.map(w=>{
       if(w.id!==cur.id) return w;
-      const modeKey=testMode==='ja2ko'?'ok_ja2ko':'ok_ko2ja';
+      const modeKey=curQMode==='ja2ko'?'ok_ja2ko':'ok_ko2ja';
       const updated={...w,[modeKey]:true};
       if(updated.ok_ja2ko===true && updated.ok_ko2ja===true){
         updated.level='ok';
@@ -1855,8 +1868,8 @@ function loadActivity(){ try{ return JSON.parse(localStorage.getItem(ACTIVITY_KE
 function saveActivity(a){ try{ localStorage.setItem(ACTIVITY_KEY,JSON.stringify(a)); }catch{} }
 
 function getOldestWordDate(){
-  // addedAt(追加日時)を持つ単語の中で一番古い日付を返す
-  const dates=words.filter(w=>w.addedAt).map(w=>w.addedAt.slice(0,10));
+  // 学習日(date)を基準に一番古い日付を返す（addedAtはインポート単語にないため使わない）
+  const dates=words.map(w=>w.date).filter(Boolean);
   if(dates.length===0) return null;
   return dates.sort()[0];
 }
@@ -2346,13 +2359,12 @@ function checkReviewReminder(){
 
   const items = [];
 
-  // 未学習（仕分け前）で3日以上経過
+  // 未学習（仕分け前）で3日以上経過（学習日 date を基準。addedAtはインポート単語にないため使わない）
   const unreviewed = words.filter(w => {
     if((w.level||'unset') !== 'unset') return false;
-    if(w.addedManually === false) return false; // インポートは除外
-    if(!w.addedAt) return false;
-    const added = new Date(w.addedAt);
-    added.setHours(0,0,0,0);
+    const d = w.date || (w.addedAt ? w.addedAt.slice(0,10) : null);
+    if(!d) return false;
+    const added = new Date(d+'T00:00:00');
     const diff = Math.floor((today - added) / (1000*60*60*24));
     return diff >= 3;
   });
@@ -2392,7 +2404,7 @@ function startReviewTest(level){
   testLevelFilter=level;
   renderTestCatFilters();
   renderLevelFilters();
-  startTest();
+  startTest(true); // 復習は方向ミックス（あとすこしの単語は足りない方向を狙って出題）
 }
 
 // ===== バックアップリマインダー =====
