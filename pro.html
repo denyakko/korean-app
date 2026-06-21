@@ -835,11 +835,58 @@ window.fbLogout = async function() {
         <button class="btn-ghost" onclick="switchTab('vocab')">単語帳へ</button>
       </div>
     </div>
+  </div>
+
+  <!-- ディクテーション -->
+  <div class="card" id="dictQuizCard">
+    <div class="card-title">✍️ ディクテーション</div>
+    <p style="font-size:13px;color:#a08070;margin-bottom:6px">🔈 韓国語の音声を聞いて、聞こえた通りに入力しましょう。</p>
+    <p style="font-size:12px;color:#c0a898;margin-bottom:14px">※ 習熟度には反映されません</p>
+    <div id="dictQuizSetup">
+      <div class="form-group">
+        <label class="field-label">カテゴリ</label>
+        <div class="lf-scroll" id="dictCatFilter"></div>
+      </div>
+      <div class="form-group" style="margin-top:10px">
+        <label class="field-label">出題数</label>
+        <input type="number" id="dictCount" value="10" min="1" style="width:80px">
+      </div>
+      <div class="btn-row">
+        <button class="btn-primary" onclick="startDictQuiz()">クイズ開始</button>
+      </div>
+    </div>
+    <div id="dictQuizMain" style="display:none">
+      <div class="progress-bar"><div class="progress-fill" id="dictProgress" style="width:0%"></div></div>
+      <div class="test-counter" id="dictCounter"></div>
+      <div style="text-align:center;margin:24px 0">
+        <button id="dictPlayBtn" onclick="playDictWord()" style="background:linear-gradient(135deg,#d4826a,#c4956a);border:none;border-radius:50%;width:80px;height:80px;font-size:32px;cursor:pointer;box-shadow:0 4px 16px rgba(212,130,106,.4)">🔈</button>
+        <div style="font-size:13px;color:#a08070;margin-top:8px">タップして再生</div>
+      </div>
+      <input type="text" class="test-input" id="dictInput" placeholder="聞こえた韓国語を入力…" onkeydown="dictKeydown(event)">
+      <div class="btn-row"><button class="btn-primary" id="dictActionBtn" onclick="checkDictAnswer()" style="width:100%">答え合わせ</button></div>
+      <div id="dictResultBanner" style="display:none" class="result-banner"></div>
+      <div class="btn-row" id="dictNextRow" style="display:none">
+        <button class="btn-primary" onclick="nextDictQuestion()" style="width:100%">次へ →</button>
+      </div>
+    </div>
+    <div id="dictQuizDone" style="display:none">
+      <div class="score-box">
+        <div class="score-pct" id="dictScorePct"></div>
+        <div class="score-detail" id="dictScoreDetail"></div>
+      </div>
+      <div id="dictWrongList" class="wrong-list"></div>
+      <div class="btn-row">
+        <button class="btn-primary" onclick="resetDictQuiz()">もう一度</button>
+        <button class="btn-ghost" onclick="switchTab('vocab')">単語帳へ</button>
+      </div>
+    </div>
+  </div>
   
 
   <!-- 聞き流し -->
   <div class="card">
     <div class="card-title">▶️ 聞き流し</div>
+
     <p style="font-size:12px;color:#c0a898;margin-bottom:8px">💡 画面が暗くなると音声が止まります。ご利用中は端末の画面消灯を「しない」に設定してください。</p>
     <p style="font-size:13px;color:#a08070;margin-bottom:14px">韓国語→日本語訳の順で自動再生します。ながら勉強に！</p>
     <div id="flowSetup">
@@ -1956,6 +2003,7 @@ let flowPool=[], flowIdx=0, flowTimer=null, flowCatFilter='all', flowMode='study
 
 function renderListen(){
   renderListenCatFilter();
+  renderDictCatFilter();
   renderFlowCatFilter();
 }
 
@@ -2063,6 +2111,106 @@ function resetListenQuiz(){
   document.getElementById('listenQuizMain').style.display='none';
   document.getElementById('listenQuizSetup').style.display='';
   renderListenCatFilter();
+}
+
+// ===== ディクテーション =====
+let dictPool=[], dictIdx=0, dictScore={correct:0,wrong:0}, dictWrong=[];
+let dictCatFilter='all', dictPhase='question';
+
+function renderDictCatFilter(){
+  const el=document.getElementById('dictCatFilter');
+  if(!el) return;
+  let html=`<button class="lf-btn${dictCatFilter==='all'?' active':''}" onclick="setDictCat('all')">すべて（${words.length}）</button>`;
+  categories.forEach(c=>{
+    const cnt=words.filter(w=>(w.category||categories[0]||'マイ単語')===c).length;
+    html+=`<button class="lf-btn${dictCatFilter===c?' active':''}" onclick="setDictCat('${esc(c)}')">${esc(c)}（${cnt}）</button>`;
+  });
+  el.innerHTML=html;
+  const avail=getDictPool().length;
+  document.getElementById('dictCount').max=Math.max(1,avail);
+  document.getElementById('dictCount').value=Math.min(parseInt(document.getElementById('dictCount').value)||10,avail||1);
+}
+function setDictCat(cat){ dictCatFilter=cat; renderDictCatFilter(); }
+function getDictPool(){ return words.filter(w=>dictCatFilter==='all'||(w.category||categories[0]||'マイ単語')===dictCatFilter); }
+
+function startDictQuiz(){
+  const pool=getDictPool();
+  if(pool.length===0){ showToast('対象の単語がありません','err'); return; }
+  const count=Math.min(parseInt(document.getElementById('dictCount').value)||10,pool.length);
+  dictPool=[...pool].sort(()=>Math.random()-.5).slice(0,count);
+  dictIdx=0; dictScore={correct:0,wrong:0}; dictWrong=[]; dictPhase='question';
+  document.getElementById('dictQuizSetup').style.display='none';
+  document.getElementById('dictQuizDone').style.display='none';
+  document.getElementById('dictQuizMain').style.display='';
+  showDictQuestion();
+}
+
+function showDictQuestion(){
+  dictPhase='question';
+  document.getElementById('dictProgress').style.width=(dictIdx/dictPool.length*100)+'%';
+  document.getElementById('dictCounter').textContent=(dictIdx+1)+' / '+dictPool.length;
+  document.getElementById('dictResultBanner').style.display='none';
+  document.getElementById('dictNextRow').style.display='none';
+  document.getElementById('dictActionBtn').style.display='';
+  document.getElementById('dictPlayBtn').textContent='🔈';
+  const inp=document.getElementById('dictInput');
+  inp.value=''; inp.disabled=false;
+  setTimeout(()=>{ playDictWord(); inp.focus(); },400);
+}
+
+function playDictWord(){
+  const cur=dictPool[dictIdx]; if(!cur) return;
+  const btn=document.getElementById('dictPlayBtn');
+  btn.textContent='🔊';
+  speakKorean(cur.korean,()=>btn.textContent='🔈');
+}
+
+function dictKeydown(e){
+  if(e.key==='Enter'){ if(dictPhase==='question') checkDictAnswer(); else nextDictQuestion(); }
+}
+
+function checkDictAnswer(){
+  const cur=dictPool[dictIdx];
+  const ans=document.getElementById('dictInput').value.trim();
+  const correct=cur.korean.trim();
+  const norm=s=>s.replace(/\s/g,'').toLowerCase();
+  const variants=correct.split(/[・\/、]/).map(s=>s.trim()).filter(s=>s.length>0);
+  const isOk=variants.some(v=>norm(ans)===norm(v))||norm(ans)===norm(correct);
+  dictScore.correct+=isOk?1:0; dictScore.wrong+=isOk?0:1;
+  if(!isOk) dictWrong.push({...cur,yourAnswer:ans});
+  document.getElementById('dictInput').disabled=true;
+  const banner=document.getElementById('dictResultBanner');
+  banner.className='result-banner '+(isOk?'correct':'wrong');
+  banner.style.display='flex';
+  banner.textContent=(isOk?'⭕ 正解！　':'❌ 不正解 → '+correct+'　')+'📖 '+cur.japanese;
+  document.getElementById('dictNextRow').style.display='';
+  document.getElementById('dictActionBtn').style.display='none';
+  dictPhase='result';
+}
+
+function nextDictQuestion(){
+  if(dictIdx+1>=dictPool.length){ showDictDone(); return; }
+  dictIdx++; showDictQuestion();
+}
+
+function showDictDone(){
+  recordActivity();
+  document.getElementById('dictQuizMain').style.display='none';
+  document.getElementById('dictQuizDone').style.display='';
+  const pct=Math.round(dictScore.correct/dictPool.length*100);
+  document.getElementById('dictScorePct').textContent=pct+'%';
+  document.getElementById('dictScoreDetail').innerHTML=`<span style="color:#5a9e6a">正解 ${dictScore.correct}</span>　<span style="color:#c04040">不正解 ${dictScore.wrong}</span>`;
+  const ws=document.getElementById('dictWrongList');
+  if(dictWrong.length===0){ ws.innerHTML=''; return; }
+  ws.innerHTML='<div class="wrong-title">❌ 間違えた単語</div>'+
+    dictWrong.map(w=>`<div class="wrong-item"><div><b>${esc(w.japanese)}</b> → 正解：<span style="color:#5a9e6a">${esc(w.korean)}</span></div>${w.yourAnswer?`<div class="your-ans">あなた：${esc(w.yourAnswer)}</div>`:''}</div>`).join('');
+}
+
+function resetDictQuiz(){
+  document.getElementById('dictQuizDone').style.display='none';
+  document.getElementById('dictQuizMain').style.display='none';
+  document.getElementById('dictQuizSetup').style.display='';
+  renderDictCatFilter();
 }
 
 // ===== 聞き流し =====
