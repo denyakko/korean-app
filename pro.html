@@ -2650,7 +2650,7 @@ function parsePasteImport(){
   const raw=document.getElementById('pasteInput').value;
   const lines=raw.split('\n').map(l=>l.trim()).filter(l=>l.length>0);
   // 明示的な区切り記号（タブ・複数スペース・ハイフン・コロン・矢印）
-  const delimiters=[/\t+/,/\s*[-―ー‐]\s*/,/\s*[:：]\s*/,/\s*→\s*/,/\s{2,}/];
+  const delimiters=[/\t+/,/\s*[-―‐]\s*/,/\s*[:：]\s*/,/\s*→\s*/,/\s{2,}/];
   const out=[];
   let pendingKo=null, pendingJa=null;
   const pushPair=(ko,ja)=>{ out.push({korean:(ko||'').trim(),japanese:(ja||'').trim()}); };
