@@ -2649,6 +2649,7 @@ function backToPasteStep1(){
 function parsePasteImport(){
   const raw=document.getElementById('pasteInput').value;
   const lines=raw.split('\n').map(l=>l.trim()).filter(l=>l.length>0);
+  // 明示的な区切り記号（タブ・複数スペース・ハイフン・コロン・矢印）
   const delimiters=[/\t+/,/\s*[-―ー‐]\s*/,/\s*[:：]\s*/,/\s*→\s*/,/\s{2,}/];
   const out=[];
   let pendingKo=null, pendingJa=null;
@@ -2657,6 +2658,8 @@ function parsePasteImport(){
   for(let i=0;i<lines.length;i++){
     const line=lines[i];
     let matched=false;
+
+    // ① 明示的な区切り記号で分割
     for(const d of delimiters){
       if(d.test(line)){
         const parts=line.split(d);
@@ -2665,15 +2668,23 @@ function parsePasteImport(){
           const aHasKo=HANGUL_RE.test(a), bHasKo=HANGUL_RE.test(b);
           if(aHasKo && !bHasKo){ pushPair(a,b); }
           else if(!aHasKo && bHasKo){ pushPair(b,a); }
-          else { pushPair(a,b); } // 判定できない場合は左=韓国語・右=日本語とみなす
-          matched=true;
-          break;
+          else { pushPair(a,b); }
+          matched=true; break;
         }
       }
     }
     if(matched) continue;
 
-    // 区切り記号なし → 韓国語のみ／日本語のみの行として、前後の行とペアリングを試みる
+    // ② 韓国語と日本語が混在している行 → 最初の日本語文字（ひらがな・カタカナ・漢字）の位置で分割
+    // 例: "단골 行きつけの店" "시킬까요? 注文しましょうか" "잠시 후 しばらくした後"
+    const JP_RE = /[\u3040-\u30FF\u4E00-\u9FFF]/;
+    const jpIdx = line.search(JP_RE);
+    if(jpIdx > 0 && HANGUL_RE.test(line.slice(0, jpIdx))){
+      pushPair(line.slice(0, jpIdx).trim(), line.slice(jpIdx).trim());
+      continue;
+    }
+
+    // ③ 区切りなし → 韓国語行・日本語行として前後の行とペアリング
     const hasKo=HANGUL_RE.test(line);
     if(hasKo){
       if(pendingJa){ pushPair(line,pendingJa); pendingJa=null; }
