@@ -2654,6 +2654,10 @@ function parsePasteImport(){
     if(/^\d+$/.test(l)) return true; // 数字のみ（ページ番号）
     if(/^[A-Za-z]$/.test(l)) return true; // アルファベット1文字
     if(/^[。、・…\.\,\!\?\s]+$/.test(l)) return true; // 記号のみ
+    // 韓国語も日本語（ひらがな・カタカナ・漢字）も含まない行は除外
+    const hasKorean=HANGUL_RE.test(l);
+    const hasJapanese=/[\u3040-\u30FF\u4E00-\u9FFF]/.test(l);
+    if(!hasKorean && !hasJapanese) return true;
     return false;
   };
   const lines=raw.split('\n').map(l=>l.trim()).filter(l=>l.length>0).filter(l=>!isNoiseLine(l));
@@ -2705,13 +2709,20 @@ function parsePasteImport(){
     }
     if(matched) continue;
 
-    // ② 韓国語と日本語が混在している行 → 最初の日本語文字（ひらがな・カタカナ・漢字）の位置で分割
-    // 例: "단골 行きつけの店" "시킬까요? 注文しましょうか" "잠시 후 しばらくした後"
-    const JP_RE = /[\u3040-\u30FF\u4E00-\u9FFF]/;
-    const jpIdx = line.search(JP_RE);
-    if(jpIdx > 0 && HANGUL_RE.test(line.slice(0, jpIdx))){
-      pushPair(line.slice(0, jpIdx).trim(), line.slice(jpIdx).trim());
-      continue;
+    // ② 韓国語と日本語が混在している行 → 「最後の韓国語文字」の位置で分割
+    // 例: "단골 行きつけの店" "영상 0℃以上" "잠시 후 しばらくした後"
+    const lastKoIdx=(()=>{
+      let last=-1;
+      for(let j=0;j<line.length;j++){ if(HANGUL_RE.test(line[j])) last=j; }
+      return last;
+    })();
+    if(lastKoIdx>=0 && lastKoIdx<line.length-1){
+      const ko=line.slice(0,lastKoIdx+1).trim();
+      const ja=line.slice(lastKoIdx+1).trim();
+      if(ja.length>0){
+        pushPair(ko,ja);
+        continue;
+      }
     }
 
     // ③ 区切りなし → 韓国語行・日本語行として前後の行とペアリング
