@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>나만의 단어장 PRO｜完全マニュアル</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    color: #2d2416;
+    background: #fffdf8;
+    padding: 40px 24px 60px;
+    max-width: 720px;
+    margin: 0 auto;
+    line-height: 1.8;
+  }
+  header {
+    text-align: center;
+    padding: 32px 0 28px;
+    border-bottom: 2px solid #f0ebe0;
+    margin-bottom: 36px;
+  }
+  .bear { margin-bottom: 8px; }
+  .h1-line1 { font-size: 26px; font-weight: 900; color: #2d2416; line-height: 1.3; }
+  .h1-line2 { font-size: 22px; font-weight: 900; color: #c4724a; line-height: 1.3; }
+  .subtitle { font-size: 13px; color: #6b5f4a; margin-top: 8px; }
+  .version { font-size: 11px; color: #c4724a; margin-top: 4px; }
+
+  h2 {
+    font-size: 17px; font-weight: 900;
+    color: #c4724a;
+    border-left: 4px solid #c4724a;
+    padding-left: 10px;
+    margin: 32px 0 14px;
+  }
+  h3 { font-size: 14px; font-weight: 700; color: #2d2416; margin: 20px 0 8px; }
+  p { font-size: 13px; color: #3d3020; margin-bottom: 10px; }
+  ul, ol { padding-left: 20px; margin-bottom: 10px; }
+  li { font-size: 13px; color: #3d3020; margin-bottom: 6px; }
+
+  .card {
+    background: #f5f0e8;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 14px;
+    border-left: 4px solid #c4956c;
+  }
+  .card-title { font-size: 13px; font-weight: 700; color: #8b6f3a; margin-bottom: 6px; }
+
+  .pro-card {
+    background: #f0f5ff;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 14px;
+    border-left: 4px solid #5a7ab5;
+  }
+  .pro-card .card-title { color: #3a5a95; }
+
+  .warning {
+    background: #fff0e8;
+    border: 1.5px solid #c4724a;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin: 14px 0;
+  }
+  .warning-title { font-size: 13px; font-weight: 700; color: #c4724a; margin-bottom: 6px; }
+
+  .step {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    margin-bottom: 14px;
+  }
+  .step-num {
+    width: 28px; height: 28px;
+    background: #c4724a;
+    color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 900;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .step-body { flex: 1; }
+  .step-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .step-desc { font-size: 12px; color: #6b5f4a; line-height: 1.7; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin-bottom: 14px;
+  }
+  th {
+    background: #f0ebe0;
+    padding: 8px 10px;
+    text-align: left;
+    font-weight: 700;
+    border-bottom: 2px solid #d4c9b0;
+  }
+  td { padding: 8px 10px; border-bottom: 1px solid #f0ebe0; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+
+  .badge {
+    display: inline-block;
+    font-size: 10px; font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 10px;
+    background: #c4724a; color: white;
+    margin-left: 4px; vertical-align: middle;
+  }
+  .badge.pro { background: #5a7ab5; }
+
+  footer {
+    text-align: center;
+    margin-top: 48px; padding-top: 24px;
+    border-top: 1px solid #f0ebe0;
+    font-size: 12px; color: #6b5f4a;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="bear">
+    <svg width="56" height="56" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="10" cy="13" r="8" fill="#c8905a"/>
+      <circle cx="38" cy="13" r="8" fill="#c8905a"/>
+      <circle cx="10" cy="13" r="5" fill="#d4a870"/>
+      <circle cx="38" cy="13" r="5" fill="#d4a870"/>
+      <circle cx="24" cy="26" r="18" fill="#d4a870"/>
+      <ellipse cx="24" cy="31" rx="8" ry="5.5" fill="#e0c090"/>
+      <ellipse cx="15" cy="29" rx="4" ry="3" fill="#f4a0a0" opacity="0.6"/>
+      <ellipse cx="33" cy="29" rx="4" ry="3" fill="#f4a0a0" opacity="0.6"/>
+      <circle cx="19" cy="24" r="3" fill="#1a0a00"/>
+      <circle cx="20.1" cy="22.9" r="1" fill="white"/>
+      <circle cx="29" cy="24" r="3" fill="#1a0a00"/>
+      <circle cx="30.1" cy="22.9" r="1" fill="white"/>
+      <ellipse cx="24" cy="29" rx="3" ry="1.5" fill="#c07050"/>
+      <path d="M21 32 Q24 35 27 32" stroke="#c07050" stroke-width="1.5" fill="none"/>
+    </svg>🌱
+  </div>
+  <div class="h1-line1">나만의 단어장 PRO</div>
+  <div class="h1-line2">完全マニュアル</div>
+  <div class="subtitle">自分色に育てよう｜韓国語学習単語帳アプリ</div>
+  <div class="version">2026.06</div>
+</header>
+
+<!-- ===== このアプリについて ===== -->
+<h2>🌐 このアプリについて</h2>
+
+<div class="card">
+  <div class="card-title">💡 Webアプリって何？</div>
+  <p style="margin:0;font-size:12px;line-height:1.8">
+    「나만의 단어장 PRO」はインストール不要の<b>Webアプリ</b>です。URLをブラウザで開くだけで使えます。アプリストアからダウンロードする必要はなく、アップデートも自動で反映されます。<br><br>
+    <b>データの保存：</b>PRO版はGoogleアカウントでログインすることで、データがクラウドに自動保存されます。ブラウザのキャッシュを消してもデータは消えません。スマホ・PC・タブレットなど、どの端末からでも同じデータを使えます。
+  </p>
+</div>
+
+<div class="card">
+  <div class="card-title">📱 対応環境</div>
+  <ul style="margin:0;font-size:12px;line-height:1.8">
+    <li><b>スマホ：</b>iOS Safari・Android Chrome対応</li>
+    <li><b>タブレット：</b>iPad・Androidタブレット対応</li>
+    <li><b>PC：</b>Chrome・Edge・Safari対応（聞き流し機能はPCが特におすすめ）</li>
+    <li><b>音声機能：</b>ブラウザのWeb Speech APIを使用。端末や環境により読み上げ品質が異なる場合があります</li>
+  </ul>
+</div>
+
+<!-- ===== はじめ方 ===== -->
+<h2>🚀 はじめ方</h2>
+
+<div class="warning" style="border-color:#5a7ab5;background:#f0f5ff">
+  <div class="warning-title" style="color:#5a7ab5">🔑 まずGoogleアカウントの登録が必要です</div>
+  <p style="font-size:12px;margin:0;line-height:1.8">
+    PRO版はGoogleアカウントで認証した方のみ使用できます。初回ご利用前に、<b>ご使用のGoogleアカウントのメールアドレス</b>を作成者にお知らせください。登録が完了すると、そのアカウントでのみログインしてご利用いただけます。<br><br>
+    📌 お知らせいただいたメールアドレスはPRO版の利用認証のみに使用します。それ以外の目的には一切使用しません。
+  </p>
+</div>
+
+<div class="step">
+  <div class="step-num">1</div>
+  <div class="step-body">
+    <div class="step-title">URLをブラウザで開く</div>
+    <div class="step-desc">お知らせしたURLをコピーして、スマホやPCのブラウザ（Chrome・Safari）で開きます。</div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">2</div>
+  <div class="step-body">
+    <div class="step-title">Googleでログインする</div>
+    <div class="step-desc">画面右上の「Googleでログイン」をタップし、登録済みのGoogleアカウントでログインします。これでデータのクラウド自動保存が有効になります。</div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">3</div>
+  <div class="step-body">
+    <div class="step-title">ホーム画面に追加する（おすすめ）</div>
+    <div class="step-desc">
+      <b>iPhone（Safari）：</b>画面下の共有ボタン（□↑）→「ホーム画面に追加」→「追加」<br>
+      <b>Android（Chrome）：</b>右上メニュー（⋮）→「ホーム画面に追加」<br>
+      追加するとブラウザのバーが消えて、アプリのように全画面で使えます。🐻アイコンがホーム画面に表示されます。
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">4</div>
+  <div class="step-body">
+    <div class="step-title">単語を登録してテストを始める</div>
+    <div class="step-desc">単語帳タブから単語を登録し、テストタブでテストを始めましょう。</div>
+  </div>
+</div>
+
+<!-- ===== 基本の使い方 ===== -->
+<h2>📱 基本の使い方（タブの説明）</h2>
+
+<table>
+  <tr><th>タブ</th><th>できること</th></tr>
+  <tr><td>📚 単語帳</td><td>単語の登録・編集・削除・絞り込み。カメラで撮った単語をペーストして一括登録も可能</td></tr>
+  <tr><td>✅ テスト</td><td>日→韓・韓→日のテストで習熟度を上げる。数字クイズも</td></tr>
+  <tr><td>📊 記録</td><td>連続学習日数・週間グラフ・習熟度まとめ・日付別登録数を確認</td></tr>
+  <tr><td>📝 ノート</td><td>学習日記・レッスンメモを日付別に記録</td></tr>
+  <tr><td>🎧 聴く</td><td>リスニングクイズ・例文テスト・ディクテーション・聞き流し</td></tr>
+</table>
+
+<!-- ===== 単語帳タブ ===== -->
+<h2>📚 単語帳タブ</h2>
+
+<h3>単語の登録</h3>
+<table>
+  <tr><th>項目</th><th>説明</th></tr>
+  <tr><td>韓国語 <span class="badge">必須</span></td><td>覚えたい韓国語を入力します</td></tr>
+  <tr><td>日本語訳 <span class="badge">必須</span></td><td>日本語の意味を入力します</td></tr>
+  <tr><td>メモ</td><td>覚え方・用法・気づきなど自由に入力できます</td></tr>
+  <tr><td>例文</td><td>韓国語の例文を入力します。例文テストやリスニングで使われます</td></tr>
+  <tr><td>例文の訳</td><td>例文の日本語訳。例文テストの正解として表示されます（未入力の場合は単語の日本語訳が表示されます）</td></tr>
+  <tr><td>カテゴリ</td><td>自由に作成・整理できます。テストや聴くタブでカテゴリ別に絞り込めます</td></tr>
+  <tr><td>学習日</td><td>単語を学んだ日付。学習記録の日付別まとめに使われます</td></tr>
+</table>
+
+<div class="card">
+  <div class="card-title">💡 重複チェック機能</div>
+  <p style="margin:0;font-size:12px;line-height:1.8">すでに登録済みの韓国語と同じ単語を追加しようとすると「すでに登録されています！」と表示されて登録がブロックされます。一括追加の場合も、重複する単語は自動でスキップされます。</p>
+</div>
+
+<h3>📋 ペーストして一括追加</h3>
+
+<div class="pro-card">
+  <div class="card-title">📋 カメラで撮った教材から単語を一気に登録</div>
+  <p style="margin:0 0 12px;font-size:12px;line-height:1.8">
+    単語帳・テキスト・プリントなど、韓国語と日本語が並んでいるものをカメラで撮影し、アプリに貼り付けるだけで一気に登録できます。
+  </p>
+
+  <svg viewBox="0 0 320 72" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:360px;display:block;margin:0 auto 16px;font-family:sans-serif">
+    <rect x="0" y="8" width="66" height="56" rx="10" fill="#3a5a95"/>
+    <text x="33" y="30" text-anchor="middle" fill="white" font-size="18">📷</text>
+    <text x="33" y="48" text-anchor="middle" fill="white" font-size="9" font-weight="bold">カメラ撮影</text>
+    <text x="33" y="58" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="8">教材を撮る</text>
+    <text x="77" y="38" text-anchor="middle" fill="#5a7ab5" font-size="16">→</text>
+    <rect x="88" y="8" width="66" height="56" rx="10" fill="#3a5a95"/>
+    <text x="121" y="30" text-anchor="middle" fill="white" font-size="18">🔍</text>
+    <text x="121" y="48" text-anchor="middle" fill="white" font-size="9" font-weight="bold">文字認識</text>
+    <text x="121" y="58" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="8">選択・コピー</text>
+    <text x="165" y="38" text-anchor="middle" fill="#5a7ab5" font-size="16">→</text>
+    <rect x="176" y="8" width="66" height="56" rx="10" fill="#3a5a95"/>
+    <text x="209" y="30" text-anchor="middle" fill="white" font-size="18">📋</text>
+    <text x="209" y="48" text-anchor="middle" fill="white" font-size="9" font-weight="bold">アプリに貼付</text>
+    <text x="209" y="58" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="8">→解析する</text>
+    <text x="253" y="38" text-anchor="middle" fill="#5a7ab5" font-size="16">→</text>
+    <rect x="264" y="8" width="56" height="56" rx="10" fill="#3a7d5a"/>
+    <text x="292" y="30" text-anchor="middle" fill="white" font-size="18">✅</text>
+    <text x="292" y="48" text-anchor="middle" fill="white" font-size="9" font-weight="bold">確認して</text>
+    <text x="292" y="58" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="8">一括登録！</text>
+  </svg>
+
+  <p style="margin:0 0 10px;font-size:12px;font-weight:700;color:#2d2416">📱 コピーの手順</p>
+
+  <div style="background:rgba(255,255,255,0.6);border-radius:10px;padding:12px;margin-bottom:8px;font-size:12px;line-height:1.8">
+    <b>🍎 iPhone（iOS 15以降）— Live Text</b><br>
+    ① 教材をカメラで撮影して写真アプリで開く<br>
+    ② 文字部分を<b>長押し</b>すると自動で文字認識される<br>
+    ③ 範囲を選択 →「コピー」<br>
+    ④ アプリの「📋 ペーストして一括追加」に貼り付け
+  </div>
+
+  <div style="background:rgba(255,255,255,0.6);border-radius:10px;padding:12px;margin-bottom:14px;font-size:12px;line-height:1.8">
+    <b>🤖 Android — Googleレンズ</b><br>
+    ① 教材をカメラで撮影してGoogleフォトで開く<br>
+    ② 右上の「⋮（3点メニュー）」をタップ →「レンズ」を選択<br>
+    ③「テキストを選択」→ 範囲を選択 →「コピー」<br>
+    ④ アプリの「📋 ペーストして一括追加」に貼り付け<br>
+    <span style="font-size:11px;color:#8b6f3a">※ レンズの場所は機種によって異なる場合があります</span>
+  </div>
+
+  <p style="margin:0 0 4px;font-size:12px;font-weight:700;color:#3a5a95">✅ うまく認識されやすい条件</p>
+  <ul style="margin:0 0 12px;font-size:12px;line-height:1.8">
+    <li>韓国語と日本語訳が<b>同じ行</b>に並んでいる（例：단골　行きつけの店）</li>
+    <li>韓国語と日本語が<b>交互の行</b>になっている</li>
+    <li>印刷されたテキスト・教材・プリントなど</li>
+    <li>反対語ペアが「⇔」でつながっている場合は2単語に自動分割されます</li>
+  </ul>
+
+  <p style="margin:0 0 4px;font-size:12px;font-weight:700;color:#c04040">⚠️ 認識が難しい場合</p>
+  <ul style="margin:0 0 10px;font-size:12px;line-height:1.8">
+    <li><b>手書き文字</b>：Googleレンズが誤認識することがあります</li>
+    <li><b>斜めに撮影</b>した場合：正面から撮ると精度が上がります</li>
+    <li><b>解説文など長い文</b>：単語とその訳のペアだけ選択してコピーするのがおすすめ</li>
+    <li><b>2段組・改行のあるレイアウト</b>：本のページ構成によって、意図した枠に入らないことがあります</li>
+  </ul>
+  <p style="margin:0 0 6px;font-size:11px;color:#6b5f4a">💡 うまく分割されなかった行は、確認画面で修正・除外できます。</p>
+  <p style="margin:0 0 6px;font-size:11px;color:#6b5f4a">📊 単語＋訳がきれいに並んだ教材で試したところ、90%程度の精度で正しく取り込めました。完璧でなくても大丈夫。数件の修正で大量登録できます！</p>
+  <p style="margin:0;font-size:11px;color:#c04040;line-height:1.7">⚠️ 本・教材からの取り込みは、ご自身の学習目的のみにご使用ください。取り込んだ内容の第三者への配布・販売は著作権法に抵触する場合があります。</p>
+</div>
+
+<h3>カテゴリ管理</h3>
+
+<div class="pro-card">
+  <div class="card-title">✏️ カテゴリ名の変更</div>
+  <p style="margin:0;font-size:12px;line-height:1.8">カテゴリ一覧の「✏️」アイコンをタップして新しい名前を入力するだけ。そのカテゴリのすべての単語に自動で反映されます。</p>
+</div>
+
+<div class="pro-card">
+  <div class="card-title">🗑️ カテゴリ削除時に単語を別カテゴリへ移動</div>
+  <p style="margin:0;font-size:12px;line-height:1.8">単語が登録されているカテゴリを削除する際、「削除する」か「別のカテゴリへ移動する」かを選べます。単語を消さずにカテゴリだけ整理できます。</p>
+</div>
+
+<!-- ===== 習熟度 ===== -->
+<h2>📊 習熟度について</h2>
+
+<table>
+  <tr><th>マーク</th><th>意味</th><th>なる条件</th></tr>
+  <tr><td>⬜ 未設定</td><td>まだテストしていない</td><td>初期状態</td></tr>
+  <tr><td>❌ むり</td><td>まだ覚えられていない</td><td>テストで不正解</td></tr>
+  <tr><td>⚠️ あとすこし</td><td>どちらか一方の方向のみ正解</td><td>日→韓・韓→日どちらか片方正解</td></tr>
+  <tr><td>🟢 けんちゃな</td><td>完全に覚えた</td><td>日→韓・韓→日の<b>両方</b>正解</td></tr>
+</table>
+
+<div class="card">
+  <div class="card-title">💡 ⚠️あとすこしから🟢にするには</div>
+  <p style="margin:0;font-size:12px;line-height:1.8">⚠️は片方の方向しか正解していない状態です。テスト画面のカウンター部分に「🇯🇵→🇰🇷」「🇰🇷→🇯🇵」と出題方向が表示されます。もう一方の方向でも正解すると🟢になります。<br><br>
+  単語カードのスタンプをタップして手動で変更することもできます。⬜（未設定）に戻すことも可能です。</p>
+</div>
+
+<!-- ===== テストタブ ===== -->
+<h2>✅ テストタブ</h2>
+
+<table>
+  <tr><th>モード</th><th>説明</th></tr>
+  <tr><td>🇯🇵 日本語 → 韓国語</td><td>日本語が表示され、韓国語をタイピングして答えます。正解・不正解が自動判定されます</td></tr>
+  <tr><td>🇰🇷 韓国語 → 日本語</td><td>韓国語が表示され、日本語訳を頭の中で考えてから答えを見て自己採点します</td></tr>
+  <tr><td>🔢 数字クイズ</td><td>韓国語の数字2種類の使い分けを練習します。習熟度には反映されません</td></tr>
+</table>
+
+<div class="card">
+  <div class="card-title">💡 カテゴリ・習熟度で絞り込み</div>
+  <p style="margin:0;font-size:12px;line-height:1.8">テストのセットアップ画面でカテゴリと習熟度を選んでからスタートできます。「❌むりだけ」「あるカテゴリだけ」のような絞り込みが可能です。スペースの有無は正解判定に影響しません（「세마리」と「세 마리」は同じ正解として扱われます）。</p>
+</div>
+
+<h3>数字クイズについて</h3>
+<table>
+  <tr><th>タイプ</th><th>読み方</th><th>使う場面（例）</th></tr>
+  <tr><td>하나タイプ</td><td>하나 둘 셋 넷…</td><td>時間（시간）・個（개）・人（명）・匹（마리）・歳（살）など</td></tr>
+  <tr><td>일タイプ</td><td>일 이 삼 사…</td><td>分（분）・月日（월/일）・階（층）・金額（원）・度（도）など</td></tr>
+</table>
+
+<!-- ===== 聴くタブ ===== -->
+<h2>🎧 聴くタブ</h2>
+
+<table>
+  <tr><th>機能</th><th>説明</th></tr>
+  <tr><td>🎧 リスニングクイズ</td><td>音声を聞いて意味を考え、答えを見て自己採点します</td></tr>
+  <tr><td>💬 例文テスト</td><td>例文の音声を聞いて日本語訳を考えます。例文が登録された単語のみ出題されます</td></tr>
+  <tr><td>✍️ ディクテーション</td><td>韓国語の音声を聞いて、聞こえた通りにタイピングして答えます。リスニング力とスペル両方を鍛えられます</td></tr>
+  <tr><td>▶️ 聞き流し（勉強モード）</td><td>韓国語のみを自動で読み上げます。意味を考える練習に</td></tr>
+  <tr><td>▶️ 聞き流し（復習モード）</td><td>韓国語→日本語訳の順で読み上げます。ながら勉強に</td></tr>
+</table>
+
+<p style="font-size:12px;color:#a08070">※ リスニングクイズ・例文テスト・ディクテーションはすべて習熟度に反映されません</p>
+
+<div class="warning" style="border-color:#8b6f3a;background:#fdf8f0">
+  <div class="warning-title" style="color:#8b6f3a">📱 聞き流しご利用の注意</div>
+  <p style="font-size:12px;margin:0;line-height:1.8">他のアプリに切り替えたり画面がオフになると音声が止まります。ご利用中は端末の画面消灯を「しない」に設定してください。PCのブラウザで別タブを開きながら聞き流すのが最もおすすめです。</p>
+</div>
+
+<!-- ===== 記録タブ ===== -->
+<h2>📊 記録タブ</h2>
+
+<ul>
+  <li><b>連続学習日数：</b>連続学習日数・最高記録・学習スタート日（登録単語の中で一番古い学習日）が確認できます</li>
+  <li><b>週間学習グラフ：</b>今週月〜日曜の学習操作数をグラフで確認できます</li>
+  <li><b>習熟度まとめ：</b>❌・⚠️・🟢それぞれの単語数が確認できます</li>
+  <li><b>日付別まとめ：</b>月別・日付別にいつ何語登録したかを確認できます</li>
+</ul>
+
+<div class="card">
+  <div class="card-title">💡 学習記録のカウントについて</div>
+  <p style="margin:0;font-size:12px;line-height:1.8">
+    以下のアクションを行った日が「学習した日」としてカウントされます：<br>
+    ・単語を追加したとき<br>
+    ・テスト（日→韓・韓→日）を完了したとき<br>
+    ・リスニングクイズ・ディクテーションを完了したとき<br><br>
+    アプリを開いただけではカウントされません。
+  </p>
+</div>
+
+<!-- ===== ノートタブ ===== -->
+<h2>📝 ノートタブ</h2>
+<p>レッスンがあった日のメモや、日々の学習日記を残せます。日付・テーマ・気づきを自由に記録できます。月別に折りたたんで表示され、最新月は自動で開きます。</p>
+
+<!-- ===== データ管理 ===== -->
+<h2>💾 データ管理</h2>
+
+<div class="pro-card">
+  <div class="card-title">☁️ クラウド自動保存（基本的にバックアップ不要）</div>
+  <p style="margin:0;font-size:12px;line-height:1.8">Googleログイン中は、単語の追加・編集・削除・テスト結果がすべて自動的にクラウドに保存されます。ブラウザのキャッシュを消してもデータは守られます。スマホ・PC・タブレット、同じGoogleアカウントでログインすれば同じデータがどこでも使えます。<br><br>
+  万一に備えて定期的なJSONバックアップ（単語帳タブ下部「書き出し」）もおすすめします。</p>
+</div>
+
+<h3>バックアップ（JSON）と読み込み</h3>
+<table>
+  <tr><th>ボタン</th><th>動作</th><th>使う場面</th></tr>
+  <tr><td>書き出し（JSON）</td><td>全単語・カテゴリ・習熟度をファイルに書き出します</td><td>定期バックアップ</td></tr>
+  <tr><td>追加読み込み</td><td>既存の単語を残したまま新しい単語を追加します</td><td>バックアップの復元・単語パックの追加</td></tr>
+  <tr><td>リセット読み込み</td><td>現在の単語を全て削除してから読み込みます。元に戻せません</td><td>ゼロから入れ直したいとき</td></tr>
+  <tr><td>URLから読み込み</td><td>単語パックのURLを貼り付けるだけで直接読み込めます</td><td>単語パックを追加したいとき</td></tr>
+  <tr><td>書き出し（CSV）</td><td>ExcelやGoogleスプレッドシートで開けるCSV形式</td><td>データの確認・加工用（バックアップにはJSONを推奨）</td></tr>
+</table>
+
+<!-- ===== よくある質問 ===== -->
+<h2>❓ よくある質問</h2>
+
+<h3>Q. 別の端末でも使いたい</h3>
+<p>同じGoogleアカウントでログインするだけで、同じデータが使えます。追加の操作は不要です。</p>
+
+<h3>Q. ログアウトしたらデータはどうなる？</h3>
+<p>クラウドにデータは残ります。再度ログインすれば同じデータが表示されます。</p>
+
+<h3>Q. 音声が出ない・おかしい</h3>
+<p>スマホの音量をご確認ください。ページを再読み込みすると改善することがあります。ブラウザのWeb Speech APIを使用しているため、端末や設定によって音声の品質が異なります。</p>
+
+<h3>Q. ⚠️あとすこしが🟢にならない</h3>
+<p>⚠️は日→韓・韓→日のどちらか片方しか正解していない状態です。テスト画面のカウンターに出題方向が表示されますので、もう一方の方向でも正解すると🟢になります。</p>
+
+<h3>Q. 習熟度をリセットしたい</h3>
+<p>単語カードの習熟度スタンプをタップして手動で変更できます。⬜（未設定）に戻すことも可能です。</p>
+
+<h3>Q. カテゴリはあとから変更できる？</h3>
+<p>単語カードの編集ボタンから個別に変更できます。また、カテゴリ一覧の「✏️」アイコンからカテゴリ名を一括変更することもできます。</p>
+
+<h3>Q. ディクテーションの正解判定はどのくらい厳密？</h3>
+<p>スペースの有無は無視されます。登録された正解と文字として一致すれば正解です。</p>
+
+<!-- ===== 免責事項 ===== -->
+<h2>📋 免責事項</h2>
+<p>本アプリはGoogleアカウントを利用したクラウド保存機能を使用しています。Googleサービスの仕様変更・障害などにより、データへのアクセスが影響を受ける場合があります。定期的なJSONバックアップを推奨します。</p>
+<p>音声機能はブラウザのWeb Speech APIを使用しており、読み上げの正確性・品質については保証できません。学習の参考としてご利用ください。</p>
+
+<div class="warning" style="margin-top:32px">
+  <div class="warning-title">🔒 URLの取り扱いについてお願い</div>
+  <p style="font-size:12px;margin:0;line-height:1.8">本アプリのURLはnoteにて購入された方のみご利用いただけます。URLの第三者への転載・共有はご遠慮ください。</p>
+</div>
+
+<footer>
+  🐻🌱 나만의 단어장 PRO｜自分色に育てよう 韓国語学習単語帳アプリ<br>
+  <span style="color:#c4724a">ご不明な点はお気軽にお問い合わせください</span>
+</footer>
+
+</body>
+</html>
