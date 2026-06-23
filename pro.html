@@ -2648,7 +2648,15 @@ function backToPasteStep1(){
 
 function parsePasteImport(){
   const raw=document.getElementById('pasteInput').value;
-  const lines=raw.split('\n').map(l=>l.trim()).filter(l=>l.length>0);
+  // ノイズ行を除去：数字のみ・記号のみ・1文字アルファベット・ページ番号など
+  const isNoiseLine=(l)=>{
+    if(!l) return true;
+    if(/^\d+$/.test(l)) return true; // 数字のみ（ページ番号）
+    if(/^[A-Za-z]$/.test(l)) return true; // アルファベット1文字
+    if(/^[。、・…\.\,\!\?\s]+$/.test(l)) return true; // 記号のみ
+    return false;
+  };
+  const lines=raw.split('\n').map(l=>l.trim()).filter(l=>l.length>0).filter(l=>!isNoiseLine(l));
   // 明示的な区切り記号（タブ・複数スペース・ハイフン・コロン・矢印）
   const delimiters=[/\t+/,/\s*[-―‐]\s*/,/\s*[⇔↔]\s*/,/\s*[:：]\s*/,/\s*→\s*/,/\s{2,}/];
   const out=[];
@@ -2660,8 +2668,8 @@ function parsePasteImport(){
     out.push({korean:cleanKo,japanese:cleanJa});
   };
   // 括弧パターンを前処理: 「흐리다 (曇る)」→「흐리다 曇る」に変換
+  // ただし「語彙の補足 (2)」のような日本語タイトル行は変換しない（韓国語がない場合はスキップ）
   const preprocessBracket=(line)=>{
-    // 「韓国語 (日本語)」または「韓国語（日本語）」のパターン
     return line.replace(/（([^）]+)）/g,' $1').replace(/\(([^)]+)\)/g,' $1');
   };
 
