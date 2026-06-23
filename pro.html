@@ -2655,12 +2655,18 @@ function parsePasteImport(){
   let pendingKo=null, pendingJa=null;
   const pushPair=(ko,ja)=>{
     const cleanKo=(ko||'').trim().replace(/[,،、\/]$/,'').trim();
-    const cleanJa=(ja||'').trim().replace(/[,،、\/]$/,'').trim();
+    // 日本語欄の末尾の ) や 。を除去
+    const cleanJa=(ja||'').trim().replace(/[,،、\/]$/,'').replace(/[）)]\s*$/,'').replace(/。\s*$/,'').trim();
     out.push({korean:cleanKo,japanese:cleanJa});
+  };
+  // 括弧パターンを前処理: 「흐리다 (曇る)」→「흐리다 曇る」に変換
+  const preprocessBracket=(line)=>{
+    // 「韓国語 (日本語)」または「韓国語（日本語）」のパターン
+    return line.replace(/（([^）]+)）/g,' $1').replace(/\(([^)]+)\)/g,' $1');
   };
 
   for(let i=0;i<lines.length;i++){
-    const line=lines[i];
+    const line=preprocessBracket(lines[i]);
     let matched=false;
 
     // ① 明示的な区切り記号で分割
