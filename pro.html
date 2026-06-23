@@ -2650,10 +2650,14 @@ function parsePasteImport(){
   const raw=document.getElementById('pasteInput').value;
   const lines=raw.split('\n').map(l=>l.trim()).filter(l=>l.length>0);
   // 明示的な区切り記号（タブ・複数スペース・ハイフン・コロン・矢印）
-  const delimiters=[/\t+/,/\s*[-―‐]\s*/,/\s*[:：]\s*/,/\s*→\s*/,/\s{2,}/];
+  const delimiters=[/\t+/,/\s*[-―‐]\s*/,/\s*[⇔↔]\s*/,/\s*[:：]\s*/,/\s*→\s*/,/\s{2,}/];
   const out=[];
   let pendingKo=null, pendingJa=null;
-  const pushPair=(ko,ja)=>{ out.push({korean:(ko||'').trim(),japanese:(ja||'').trim()}); };
+  const pushPair=(ko,ja)=>{
+    const cleanKo=(ko||'').trim().replace(/[,،、\/]$/,'').trim();
+    const cleanJa=(ja||'').trim().replace(/[,،、\/]$/,'').trim();
+    out.push({korean:cleanKo,japanese:cleanJa});
+  };
 
   for(let i=0;i<lines.length;i++){
     const line=lines[i];
@@ -2662,13 +2666,25 @@ function parsePasteImport(){
     // ① 明示的な区切り記号で分割
     for(const d of delimiters){
       if(d.test(line)){
-        const parts=line.split(d);
+        const parts=line.split(d).map(s=>s.trim()).filter(s=>s);
         if(parts.length>=2){
-          const a=parts[0].trim(), b=parts.slice(1).join(' ').trim();
-          const aHasKo=HANGUL_RE.test(a), bHasKo=HANGUL_RE.test(b);
-          if(aHasKo && !bHasKo){ pushPair(a,b); }
-          else if(!aHasKo && bHasKo){ pushPair(b,a); }
-          else { pushPair(a,b); }
+          // ⇔/↔で分割した場合、各パーツが「韓国語+日本語」のペアになっている可能性がある
+          // → 各パーツをJP境界で再分割して2単語として登録
+          const JP_RE2 = /[\u3040-\u30FF\u4E00-\u9FFF]/;
+          const allBothKo = parts.every(p=>HANGUL_RE.test(p));
+          if(allBothKo && /[⇔↔]/.test(line)){
+            parts.forEach(p=>{
+              const ji=p.search(JP_RE2);
+              if(ji>0 && HANGUL_RE.test(p.slice(0,ji))){ pushPair(p.slice(0,ji).trim(), p.slice(ji).trim()); }
+              else { pushPair(p,''); }
+            });
+          } else {
+            const a=parts[0], b=parts.slice(1).join(' ');
+            const aHasKo=HANGUL_RE.test(a), bHasKo=HANGUL_RE.test(b);
+            if(aHasKo && !bHasKo){ pushPair(a,b); }
+            else if(!aHasKo && bHasKo){ pushPair(b,a); }
+            else { pushPair(a,b); }
+          }
           matched=true; break;
         }
       }
