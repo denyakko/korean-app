@@ -302,6 +302,13 @@ async function loadFromFirestore(uid) {
     if (catsDoc.exists() && catsDoc.data().list) {
       categories = catsDoc.data().list;
       saveCats();
+    } else {
+      // Firestoreにカテゴリがない→ローカルから移行
+      const localCats = loadCats();
+      if (localCats.length > 0) {
+        categories = localCats;
+        if(window.saveCatsToFirestore) window.saveCatsToFirestore();
+      }
     }
 
     // notes
@@ -309,12 +316,27 @@ async function loadFromFirestore(uid) {
     if (!notesSnap.empty) {
       notes_data = notesSnap.docs.map(d => d.data());
       saveNotes();
+    } else {
+      // Firestoreにノートがない→ローカルから移行
+      const localNotes = loadNotes();
+      if (localNotes.length > 0) {
+        notes_data = localNotes;
+        if(window.saveNotesToFirestore) await window.saveNotesToFirestore();
+      }
     }
 
-    // streak
+    // streak & activity（学習記録）
     const streakDoc = await getDoc(doc(db, 'users', uid, 'settings', 'streak'));
     if (streakDoc.exists()) {
       saveStreak(streakDoc.data());
+    } else {
+      // Firestoreにstreakがない→ローカルから移行
+      const localStreak = loadStreak();
+      const localActivity = loadActivity();
+      if (localStreak.current > 0 || Object.keys(localActivity).length > 0) {
+        saveStreak(localStreak);
+        saveActivity(localActivity);
+      }
     }
 
     renderAll();
