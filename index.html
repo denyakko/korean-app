@@ -664,9 +664,31 @@ function addCategory(){
 }
 
 function deleteCategory(name){
-  if(!confirm(`「${name}」を削除しますか？\n（このカテゴリの単語は「マイ単語」に移動します）`)) return;
+  const otherCats=categories.filter(c=>c!==name);
+  const wordCount=words.filter(w=>(w.category||categories[0]||'マイ単語')===name).length;
+
+  if(otherCats.length===0){
+    // カテゴリが1つだけ→単語ごと削除
+    if(!confirm(`「${name}」を削除すると、${wordCount}語も全て削除されます。\nよろしいですか？`)) return;
+    words=words.filter(w=>(w.category||categories[0]||'マイ単語')!==name);
+  } else {
+    // 移動先を選ぶ
+    const choices=otherCats.map((c,i)=>`${i+1}. ${c}`).join('\n');
+    const input=prompt(`「${name}」を削除します。\n単語${wordCount}語の移動先を番号で選んでください：\n${choices}\n\n0を入力すると単語も削除`);
+    if(input===null) return; // キャンセル
+    const num=parseInt(input);
+    if(num===0){
+      if(!confirm(`「${name}」の単語${wordCount}語を全て削除します。よろしいですか？`)) return;
+      words=words.filter(w=>(w.category||categories[0]||'マイ単語')!==name);
+    } else if(num>=1 && num<=otherCats.length){
+      const moveTo=otherCats[num-1];
+      words=words.map(w=>(w.category||categories[0]||'マイ単語')===name?{...w,category:moveTo}:w);
+      showToast(`${wordCount}語を「${moveTo}」に移動しました ✓`);
+    } else {
+      showToast('正しい番号を入力してください','err'); return;
+    }
+  }
   categories=categories.filter(c=>c!==name);
-  words=words.map(w=>w.category===name?{...w,category:categories[0]||'マイ単語'}:w);
   if(filterCat===name) filterCat='all';
   if(testCatFilter===name) testCatFilter='all';
   saveCats(); saveWords(); renderAll(); showToast(`「${name}」を削除しました`,'err');
