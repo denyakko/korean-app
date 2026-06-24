@@ -287,10 +287,14 @@ async function loadFromFirestore(uid) {
         words = cloudWords.sort((a, b) => String(a.id || 0).localeCompare(String(b.id || 0), undefined, {numeric: true}));
         saveWords(); // ローカルにも同期
       }
-    } else if (words.length > 0) {
-      // Firestoreにデータがなく、ローカルにデータがある場合→全件アップ
-      showToast('☁️ ローカルデータをクラウドに保存中…');
-      await window.saveWordsToFirestore(true);
+    } else {
+      // Firestoreにデータがない→ローカルから読み直してアップロード
+      const localWords = loadWords();
+      if (localWords.length > 0) {
+        words = localWords;
+        showToast('☁️ ローカルデータをクラウドに保存中…');
+        await window.saveWordsToFirestore(true);
+      }
     }
 
     // categories
@@ -571,19 +575,6 @@ window.fbLogout = async function() {
     <div class="cat-list" id="catList"></div>
   </div>
 
-  <!-- 音声速度設定 -->
-  <div class="card-sm" style="margin-top:8px">
-    <div class="backup-row">
-      <span style="font-size:13px;color:#94a3b8;font-weight:700">🔈 音声速度</span>
-      <span id="globalSpeedLabel" style="font-size:12px;color:#c4724a;font-weight:700">普通</span>
-    </div>
-    <input type="range" id="globalSpeed" min="0.5" max="1.5" step="0.25" value="1" style="width:100%;margin-top:8px;accent-color:#c4724a" oninput="updateGlobalSpeed()">
-    <div style="display:flex;justify-content:space-between;font-size:10px;color:#c0a898;margin-top:2px">
-      <span>とても遅い</span><span>遅い</span><span>普通</span><span>速い</span><span>とても速い</span>
-    </div>
-    <div style="font-size:11px;color:#c0a898;margin-top:5px;opacity:.8">リスニング・ディクテーション・聞き流しの音声速度に反映されます</div>
-  </div>
-
   <!-- バックアップ -->
   <div class="card-sm" style="margin-top:8px">
     <div class="backup-row">
@@ -758,6 +749,18 @@ window.fbLogout = async function() {
 
 <!-- ===== 聴く ===== -->
 <div id="sec-listen" class="section">
+
+  <!-- 音声速度設定 -->
+  <div class="card-sm" style="margin-bottom:12px">
+    <div class="backup-row">
+      <span style="font-size:13px;color:#94a3b8;font-weight:700">🔈 音声速度</span>
+      <span id="globalSpeedLabel" style="font-size:12px;color:#c4724a;font-weight:700">普通</span>
+    </div>
+    <input type="range" id="globalSpeed" min="0.5" max="1.5" step="0.25" value="1" style="width:100%;margin-top:8px;accent-color:#c4724a" oninput="updateGlobalSpeed()">
+    <div style="display:flex;justify-content:space-between;font-size:10px;color:#c0a898;margin-top:2px">
+      <span>とても遅い</span><span>遅い</span><span>普通</span><span>速い</span><span>とても速い</span>
+    </div>
+  </div>
 
   <!-- リスニングクイズ -->
   <div class="card" id="listenQuizCard">
