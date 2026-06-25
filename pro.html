@@ -53,7 +53,7 @@ select option{background:#fff;color:#2d2420}
 .cat-chip{flex-shrink:0;padding:7px 16px;border-radius:20px;border:1.5px solid #e0d8d0;background:#f7f3ef;color:#7a5848;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s}
 .cat-chip.active{background:linear-gradient(135deg,#d4826a,#c4956a);color:#fff;border-color:transparent;box-shadow:0 2px 8px rgba(212,130,106,.25)}
 /* Level summary */
-.level-summary{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.level-summary{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;justify-content:space-between}
 .level-chip{display:flex;align-items:center;gap:5px;background:#f7f3ef;border:1.5px solid #e0d8d0;border-radius:20px;padding:6px 12px;cursor:pointer;transition:all .2s;font-size:14px;font-weight:700}
 .search-wrap{display:flex;align-items:center;gap:8px;background:#fff;border-radius:14px;padding:11px 16px;margin-bottom:12px;border:1.5px solid #e0d8d0;box-shadow:0 2px 8px rgba(180,140,120,.06)}
 .search-wrap input{background:transparent;border:none;outline:none;color:#2d2420;font-size:15px;flex:1;font-weight:600}
@@ -344,6 +344,8 @@ async function loadFromFirestore(uid) {
     if (document.getElementById('sec-notes').classList.contains('active')) renderNotes();
     showToast('☁️ 読み込み完了 ✓');
     checkBackupReminder();
+    // PRO版はクラウド自動保存のためバックアップリマインダー不要
+    // checkBackupReminder();
     initGlobalSpeed();
     // checkReviewReminder(); // 復習リマインダーは非表示に（チップで代用）
   } catch(e) {
@@ -548,14 +550,22 @@ window.fbLogout = async function() {
     <div class="rem-items" id="reminderItems"></div>
   </div>
 
-  <!-- カテゴリ横スクロール -->
-  <div class="cat-scroll" id="catScroll"></div>
+  <!-- カテゴリ ドロップダウン -->
+  <div style="position:relative;margin-bottom:12px" id="catDropdownWrap">
+    <button onclick="toggleCatDropdown()" id="catDropdownBtn" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#fff;border:1.5px solid #e0d4c8;border-radius:12px;font-size:13px;font-weight:700;color:#2d2420;cursor:pointer;font-family:inherit">
+      <span id="catDropdownLabel">すべて</span>
+      <span id="catDropdownArrow" style="font-size:12px;color:#a08070">▼</span>
+    </button>
+    <div id="catDropdownPanel" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1.5px solid #e0d4c8;border-radius:12px;z-index:100;padding:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);max-height:240px;overflow-y:auto" id="catScroll">
+    </div>
+  </div>
 
   <!-- 習熟度フィルター -->
   <div class="level-summary" id="levelSummary"></div>
 
   <!-- 入力フォーム -->
-  <div style="display:flex;justify-content:flex-end;margin-bottom:8px">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+    <button id="hideJpBtn" onclick="toggleHideJapanese()" style="background:#fff;border:1.5px solid #e0d4c8;border-radius:10px;padding:7px 14px;font-size:12px;color:#a08070;font-weight:700;cursor:pointer;font-family:inherit">👁️ 日本語を隠す</button>
     <button onclick="showPasteImport()" style="background:#fff;border:1.5px solid #e0d4c8;border-radius:10px;padding:7px 14px;font-size:12px;color:#c4724a;font-weight:700;cursor:pointer;font-family:inherit">📋 ペーストして一括追加</button>
   </div>
   <div class="card">
@@ -1004,6 +1014,27 @@ const PAGE_SIZE = 30;
 let filterLevel = 'all';
 let filterCat = 'all';
 let testMode = 'ja2ko';
+let hideJapanese = false;
+let revealedIds = new Set(); // 個別に表示した単語のID
+function toggleHideJapanese(){
+  hideJapanese = !hideJapanese;
+  revealedIds.clear(); // 隠す/表示切り替え時はリセット
+  const btn = document.getElementById('hideJpBtn');
+  if(btn){
+    btn.textContent = hideJapanese ? '👁️ 日本語を表示' : '👁️ 日本語を隠す';
+    btn.style.color = hideJapanese ? '#c4724a' : '#a08070';
+    btn.style.borderColor = hideJapanese ? '#c4724a' : '#e0d4c8';
+  }
+  renderWords();
+}
+function revealWord(id){
+  revealedIds.add(id);
+  renderWords();
+}
+function hideWord(id){
+  revealedIds.delete(id);
+  renderWords();
+}
 let reviewMixedMode = false; // 復習リマインダー経由の時、設問ごとに足りない方向を狙って出題する
 let curQMode = 'ja2ko'; // 現在の設問の出題方向（reviewMixedMode時はtestModeと別に管理）
 let testLevelFilter = 'all';
@@ -1076,16 +1107,34 @@ function renderAll(){
   renderWords();
 }
 
+function toggleCatDropdown(){
+  const panel=document.getElementById('catDropdownPanel');
+  const arrow=document.getElementById('catDropdownArrow');
+  const open=panel.style.display==='none';
+  panel.style.display=open?'block':'none';
+  arrow.textContent=open?'▲':'▼';
+}
+function closeCatDropdown(){
+  const panel=document.getElementById('catDropdownPanel');
+  const arrow=document.getElementById('catDropdownArrow');
+  if(panel) panel.style.display='none';
+  if(arrow) arrow.textContent='▼';
+}
+
 // ===== Categories =====
 function renderCatScroll(){
-  const el=document.getElementById('catScroll');
+  const el=document.getElementById('catDropdownPanel');
+  if(!el) return;
   const allActive=filterCat==='all';
-  let html=`<button class="cat-chip${allActive?' active':''}" onclick="setCatFilter('all')">すべて</button>`;
+  let html=`<button class="cat-chip${allActive?' active':''}" style="display:block;width:100%;text-align:left;margin-bottom:4px" onclick="setCatFilter('all');closeCatDropdown()">すべて</button>`;
   categories.forEach(c=>{
     const active=filterCat===c;
-    html+=`<button class="cat-chip${active?' active':''}" onclick="setCatFilter('${esc(c)}')">${esc(c)}</button>`;
+    html+=`<button class="cat-chip${active?' active':''}" style="display:block;width:100%;text-align:left;margin-bottom:4px" onclick="setCatFilter('${esc(c)}');closeCatDropdown()">${esc(c)}</button>`;
   });
   el.innerHTML=html;
+  // ラベル更新
+  const label=document.getElementById('catDropdownLabel');
+  if(label) label.textContent=filterCat==='all'?'すべて':filterCat;
 }
 
 function renderCatSelect(){
@@ -1266,14 +1315,14 @@ function renderWords(resetPage){
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
         <span style="font-size:24px;font-weight:800;color:#c4724a;letter-spacing:-.01em">${esc(w.korean)}</span>
         <button class="speak-btn" onclick="speakWord('${esc(w.korean)}',${w.id})" id="spk-${w.id}">🔈</button>
-        <span style="font-size:13px;color:#7a6050;font-weight:600">${esc(w.japanese)}</span>
+        <span style="font-size:13px;color:#7a6050;font-weight:600">${hideJapanese && !revealedIds.has(w.id) ? `<button onclick="revealWord(${w.id})" style="font-size:11px;padding:3px 10px;background:#f5ede6;border:1.5px solid #e0c8b0;border-radius:8px;color:#c4724a;font-weight:700;cursor:pointer;font-family:inherit">答えを見る</button>` : hideJapanese && revealedIds.has(w.id) ? `${esc(w.japanese)}&nbsp;<button onclick="hideWord(${w.id})" style="font-size:11px;padding:3px 8px;background:#f0ebe0;border:1.5px solid #d4c9b0;border-radius:8px;color:#a08070;font-weight:700;cursor:pointer;font-family:inherit">隠す</button>` : esc(w.japanese)}</span>
       </div>
       <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap">
         <span style="font-size:11px;font-weight:700;padding:2px 10px;border-radius:10px;background:rgba(196,114,74,.15);color:#c4724a;border:1px solid rgba(196,114,74,.25)">${esc(cat)}</span>
         <span style="font-size:11px;color:#a08070;background:rgba(0,0,0,.05);padding:3px 8px;border-radius:6px;border:1px solid rgba(0,0,0,.08);font-weight:600">${w.date||'—'}</span>
       </div>
       ${w.memo?`<div style="font-size:13px;color:#a08070;margin-bottom:4px;font-weight:600">📝 ${esc(w.memo)}</div>`:''}
-      ${w.example?`<div style="font-size:13px;color:#5a8a9a;margin-bottom:2px;font-weight:600">💬 ${esc(w.example)}</div>`:''}${w.exampleJp?`<div style="font-size:12px;color:#a08070;margin-bottom:8px">　→ ${esc(w.exampleJp)}</div>`:''}
+      ${w.example?`<div style="font-size:13px;color:#5a8a9a;margin-bottom:2px;font-weight:600">💬 ${esc(w.example)}</div>`:''}${w.exampleJp?`<div style="font-size:12px;color:#a08070;margin-bottom:8px">　→ ${hideJapanese && !revealedIds.has(w.id) ? '' : esc(w.exampleJp)}</div>`:''}
       <div style="display:flex;align-items:center;gap:4px;padding-top:8px;border-top:1px solid rgba(0,0,0,.08)">
         ${stamps}
         <div style="flex:1"></div>
@@ -1878,6 +1927,12 @@ const _origLoad = window.onload;
 window.addEventListener('load',()=>{
   notes_data = loadNotes();
   document.getElementById('nDate').value = today();
+});
+
+// カテゴリドロップダウン：外側クリックで閉じる
+document.addEventListener('click', (e)=>{
+  const wrap = document.getElementById('catDropdownWrap');
+  if(wrap && !wrap.contains(e.target)) closeCatDropdown();
 });
 
 function saveNote(){
@@ -2715,8 +2770,16 @@ function parsePasteImport(){
   const out=[];
   let pendingKo=null, pendingJa=null;
   const pushPair=(ko,ja)=>{
-    const cleanKo=(ko||'').trim().replace(/^[,\/]+/,'').replace(/[,\/]+$/,'').trim();
-    const cleanJa=(ja||'').trim().replace(/^[,\/]+/,'').replace(/[,\/]+$/,'').trim();
+    // 韓国語欄：先頭の記号・読み仮名(カタカナのみの括弧)を除去
+    let cleanKo=(ko||'').trim()
+      .replace(/^[・•\-\s]+/,'') // 行頭の・や•や-を除去
+      .replace(/\([ァ-ヴー・]+\)/g,'') // (カタカナのみ)を除去
+      .replace(/（[ァ-ヴー・]+）/g,'') // （カタカナのみ）を除去
+      .replace(/^[,\/]+/,'').replace(/[,\/]+$/,'').trim();
+    // 日本語欄：行頭の・を除去（訳中の・は残す）
+    let cleanJa=(ja||'').trim()
+      .replace(/^[・•\s]+/,'') // 行頭の・や•を除去
+      .replace(/^[,\/]+/,'').replace(/[,\/]+$/,'').trim();
     out.push({korean:cleanKo,japanese:cleanJa});
   };
 
