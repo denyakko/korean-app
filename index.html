@@ -669,8 +669,15 @@ function deleteCategory(name){
 
   if(otherCats.length===0){
     // カテゴリが1つだけ→単語ごと削除
-    if(!confirm(`「${name}」を削除すると、${wordCount}語も全て削除されます。\nよろしいですか？`)) return;
+    if(wordCount>0){
+      if(!confirm(`「${name}」を削除すると、${wordCount}語も全て削除されます。\nよろしいですか？`)) return;
+    } else {
+      if(!confirm(`「${name}」を削除しますか？`)) return;
+    }
     words=words.filter(w=>(w.category||categories[0]||'マイ単語')!==name);
+  } else if(wordCount===0){
+    // 単語が0語→確認だけして削除
+    if(!confirm(`「${name}」を削除しますか？`)) return;
   } else {
     // 移動先を選ぶ
     const choices=otherCats.map((c,i)=>`${i+1}. ${c}`).join('\n');
@@ -1913,7 +1920,7 @@ function checkBackupReminder(){
   const diffDays = Math.floor((new Date() - new Date(last)) / (1000*60*60*24));
   if(diffDays >= 7){
     setTimeout(()=>{
-      showToast('💾 ' + diffDays + '日バックアップしていません！バックアップをおすすめします');
+      showToast('💾 ' + diffDays + '日間バックアップなし！書き出しをおすすめします');
     }, 2000);
   }
 }
