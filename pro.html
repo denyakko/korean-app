@@ -379,7 +379,7 @@ window.saveWordsToFirestore = async function(forceAll) {
     if (forceAll) {
       // 初回ログイン時など全件保存（既存削除→全書き）
       const snap = await getDocs(collection(db, 'users', user.uid, 'words'));
-      snap.docs.forEach(d => batch.delete(d.ref));
+      snap.docs.forEach(d => { batch.delete(d.ref); opCount++; });
       words.forEach(w => {
         const ref = doc(collection(db, 'users', user.uid, 'words'), String(w.id));
         batch.set(ref, w);
