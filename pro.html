@@ -617,6 +617,7 @@ window.fbLogout = async function() {
         <label class="btn-sm" style="cursor:pointer">追加読み込み<input type="file" accept=".json" style="display:none" onchange="importData(event)"></label>
       <label class="btn-sm" style="cursor:pointer;color:#c04040;border-color:#e0b0b0" onclick="if(!confirm('現在の単語を全て削除してから読み込みます。この操作は元に戻せません。よろしいですか？'))event.preventDefault();">リセット読み込み<input type="file" accept=".json" style="display:none" onchange="importDataReset(event)"></label>
       <button class="btn-sm" onclick="showUrlImport()" style="color:#5a7ab5;border-color:#b0c4de">URLから読み込み</button>
+      <button class="btn-sm" style="color:#c04040;border-color:#e0b0b0" onclick="deleteAllWords()">全単語を削除</button>
       </div>
     </div>
     <div style="font-size:11px;color:#c0a898;margin-top:5px;opacity:.8">機種変前に「書き出し」→ 新スマホで「読み込み」でデータ移行できます</div>
@@ -1439,6 +1440,15 @@ function toggleLevel(id,key){
 }
 
 // ===== Backup =====
+function deleteAllWords(){
+  if(!confirm(`全単語（${words.length}語）を削除します。この操作は元に戻せません。\nよろしいですか？`)) return;
+  if(!confirm('本当に削除しますか？')) return;
+  words=[];
+  saveWords();
+  renderAll();
+  showToast('全単語を削除しました','err');
+}
+
 function exportData(){
   const json=JSON.stringify({version:2,exportedAt:new Date().toISOString(),categories,words},null,2);
   const a=document.createElement('a');
