@@ -1440,11 +1440,12 @@ function toggleLevel(id,key){
 }
 
 // ===== Backup =====
-function deleteAllWords(){
+async function deleteAllWords(){
   if(!confirm(`全単語（${words.length}語）を削除します。この操作は元に戻せません。\nよろしいですか？`)) return;
   if(!confirm('本当に削除しますか？')) return;
   words=[];
   saveWords();
+  if(window.saveWordsToFirestore) await window.saveWordsToFirestore(true);
   renderAll();
   showToast('全単語を削除しました','err');
 }
