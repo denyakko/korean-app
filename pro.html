@@ -953,7 +953,7 @@ window.fbLogout = async function() {
         <label class="field-label">習熟度</label>
         <div style="display:flex;gap:6px;flex-wrap:wrap" id="flowLevelFilter">
           <button class="cat-chip active" onclick="setFlowLevel('all',this)">すべて</button>
-          <button class="cat-chip" onclick="setFlowLevel('none',this)">⬜ 未設定</button>
+          <button class="cat-chip" onclick="setFlowLevel('unset',this)">⬜ 未設定</button>
           <button class="cat-chip" onclick="setFlowLevel('bad',this)">❌ むり</button>
           <button class="cat-chip" onclick="setFlowLevel('ok',this)">⚠️ あとすこし</button>
           <button class="cat-chip" onclick="setFlowLevel('good',this)">🟢 けんちゃな</button>
@@ -2396,7 +2396,7 @@ function setFlowLevel(level, btn){
 function getFlowPool(){
   return words.filter(w=>{
     const catOk=flowCatFilter==='all'||(w.category||categories[0]||'マイ単語')===flowCatFilter;
-    const lv=w.level||'none';
+    const lv=w.level||'unset';
     const lvOk=flowLevelFilter==='all'||lv===flowLevelFilter;
     return catOk&&lvOk;
   });
