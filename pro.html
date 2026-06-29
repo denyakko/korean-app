@@ -1501,6 +1501,9 @@ function importData(e){
       const data=JSON.parse(ev.target.result);
       const imported=data.words||data;
       if(!Array.isArray(imported)) throw new Error();
+      // dateが空の単語に今日の日付をセット
+      const todayStr=today();
+      imported.forEach(w=>{ if(!w.date) w.date=todayStr; });
       // merge categories
       if(data.categories) data.categories.forEach(c=>{ if(!categories.includes(c)) categories.push(c); });
       const ids=new Set(words.map(w=>w.id));
@@ -2948,13 +2951,16 @@ async function doUrlImport(reset){
     const data = await res.json();
     const imported = data.words||data;
     if(!Array.isArray(imported)) throw new Error();
+    // dateが空の単語に今日の日付をセット
+    const todayStr=today();
+    imported.forEach(w=>{ if(!w.date) w.date=todayStr; });
     if(reset){
       if(!confirm('現在の単語を全て削除してから読み込みます。この操作は元に戻せません。よろしいですか？')){ return; }
       words=imported;
       categories=data.categories||['マイ単語'];
       if(data.categories) data.categories.forEach(c=>{ if(!categories.includes(c)) categories.push(c); });
       saveCats(); saveWords();
-      if(window.saveWordsToFirestore) window.saveWordsToFirestore(true); // 全件入れ替えなので強制フル同期
+      if(window.saveWordsToFirestore) window.saveWordsToFirestore(true);
     } else {
       if(data.categories) data.categories.forEach(c=>{ if(!categories.includes(c)) categories.push(c); });
       const ids=new Set(words.map(w=>w.id));
