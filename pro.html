@@ -2891,10 +2891,21 @@ function renderPasteRows(){
       <div style="flex:1;display:flex;flex-direction:column;gap:4px">
         <input type="text" value="${esc(c.korean)}" oninput="updatePasteRow(${i},'korean',this.value)" placeholder="韓国語" style="font-size:13px;padding:6px 8px;border:1px solid #ede8e2;border-radius:6px;font-family:inherit;box-sizing:border-box">
         <input type="text" value="${esc(c.japanese)}" oninput="updatePasteRow(${i},'japanese',this.value)" placeholder="日本語訳" style="font-size:13px;padding:6px 8px;border:1px solid #ede8e2;border-radius:6px;font-family:inherit;box-sizing:border-box">
+        <div id="memoRow${i}" style="display:${c.memo?'block':'none'}">
+          <input type="text" value="${esc(c.memo||'')}" oninput="updatePasteRow(${i},'memo',this.value)" placeholder="覚え方・用法など" style="font-size:12px;padding:5px 8px;border:1px solid #ede8e2;border-radius:6px;font-family:inherit;box-sizing:border-box;width:100%;color:#a08070">
+        </div>
+        <button onclick="toggleMemoRow(${i})" style="background:none;border:none;color:#c0a898;font-size:11px;cursor:pointer;text-align:left;padding:0">${c.memo?'📝 メモを隠す':'📝 メモを追加'}</button>
       </div>
       <button onclick="removePasteRow(${i})" style="background:none;border:none;color:#c04040;font-size:18px;cursor:pointer;padding:4px 8px">✕</button>
     </div>
   `).join('');
+}
+function toggleMemoRow(i){
+  const row=document.getElementById(`memoRow${i}`);
+  const isHidden=row.style.display==='none';
+  row.style.display=isHidden?'block':'none';
+  event.target.textContent=isHidden?'📝 メモを隠す':'📝 メモを追加';
+  if(isHidden) row.querySelector('input').focus();
 }
 function updatePasteRow(i,field,val){ if(pasteCandidates[i]) pasteCandidates[i][field]=val; }
 function removePasteRow(i){ pasteCandidates.splice(i,1); renderPasteRows(); }
@@ -2910,7 +2921,7 @@ function confirmPasteImport(){
     const ko=c.korean.trim();
     if(existing.has(ko)){ dup++; return; }
     existing.add(ko);
-    newW.push({id:Date.now()+i,korean:ko,japanese:c.japanese.trim(),memo:'',example:'',exampleJp:'',category:cat,date,level:'unset',addedAt:new Date().toISOString()});
+    newW.push({id:Date.now()+i,korean:ko,japanese:c.japanese.trim(),memo:(c.memo||'').trim(),example:'',exampleJp:'',category:cat,date,level:'unset',addedAt:new Date().toISOString()});
   });
   if(newW.length===0){ showToast('すべて登録済みの単語でした','err'); return; }
   words=[...words,...newW];
